@@ -37,7 +37,41 @@ public sealed class MainWindow : Window
             Process.Start(new ProcessStartInfo { FileName = PluginInfo.DiscordUrl, UseShellExecute = true });
 
         ImGui.Separator();
+        ImGui.TextColored(new Vector4(1f, 0.35f, 0.35f, 1f), "Experimental Background No-Render");
+        ImGui.TextDisabled("Background-only render gate. It skips the DX11 post-tick while the game is inactive, and lets a safety frame through every 5 seconds.");
 
+        var onlyWhenMinimized = cfg.BackgroundNoRenderOnlyWhenMinimized;
+        if (ImGui.Checkbox("Only trigger while minimized/iconic", ref onlyWhenMinimized))
+        {
+            cfg.BackgroundNoRenderOnlyWhenMinimized = onlyWhenMinimized;
+            cfg.Save();
+            plugin.ApplyConfiguration();
+        }
+
+        ImGui.PushStyleColor(ImGuiCol.Button, new Vector4(0.72f, 0.11f, 0.11f, 1f));
+        ImGui.PushStyleColor(ImGuiCol.ButtonHovered, new Vector4(0.86f, 0.18f, 0.18f, 1f));
+        ImGui.PushStyleColor(ImGuiCol.ButtonActive, new Vector4(0.58f, 0.08f, 0.08f, 1f));
+        var backgroundButtonText = cfg.BackgroundNoRenderEnabled
+            ? "CLICK AGAIN TO DISABLE EXPERIMENTAL BACKGROUND NO-RENDER"
+            : "EXPERIMENTAL BACKGROUND NO-RENDER";
+        if (ImGui.Button(backgroundButtonText, new Vector2(-1f, 46f)))
+        {
+            cfg.PluginEnabled = true;
+            cfg.BackgroundNoRenderEnabled = !cfg.BackgroundNoRenderEnabled;
+            cfg.Save();
+            plugin.ApplyConfiguration();
+            plugin.UpdateDtrBar();
+            Plugin.Log.Information("[DPS] Background no-render test {State}.", cfg.BackgroundNoRenderEnabled ? "armed" : "disarmed");
+        }
+        ImGui.PopStyleColor(3);
+
+        ImGui.Text(cfg.BackgroundNoRenderEnabled
+            ? "State: armed. Click the red button again to disable."
+            : "State: off. Click the red button to enable.");
+        ImGui.TextWrapped($"Render gate status: {plugin.BackgroundRenderGateService.Status}");
+        ImGui.TextDisabled("After arming: alt-tab away, or minimize if you checked the iconic-only option. Come back and make sure rendering wakes back up cleanly.");
+
+        ImGui.Separator();
         var enabled = cfg.PluginEnabled;
         if (ImGui.Checkbox("Enabled", ref enabled))
         {
@@ -60,8 +94,11 @@ public sealed class MainWindow : Window
         if (ImGui.SmallButton("Settings"))
             plugin.ToggleConfigUi();
 
-        ImGui.TextWrapped("Potato experiments: optional actor suppression plus direct in-place texture blacking for character, world, and VFX loads.");
-        ImGui.TextDisabled("Texture redirect now rewrites loaded material textures in place with black contents. Actor suppression remains separate if you still want hard hide behavior.");
+        ImGui.TextWrapped("Potato experiments: background no-render at the top, plus optional hide toggles below for reducing clutter in busy public areas.");
+
+        ImGui.Separator();
+        ImGui.Text("Reduce Problems In Public Areas");
+        ImGui.TextDisabled("Optional actor hide toggles for crowds, minions, and pets when you still want the game rendering normally.");
 
         ImGui.Spacing();
         if (ImGui.BeginTable("DpsToggles", 2, ImGuiTableFlags.SizingStretchProp))
@@ -111,7 +148,6 @@ public sealed class MainWindow : Window
             ImGui.EndTable();
         }
 
-        ImGui.Separator();
         ImGui.Text($"Players hidden: {plugin.ActorSuppressionService.HiddenPlayers}");
         ImGui.Text($"Pets hidden: {plugin.ActorSuppressionService.HiddenPets}");
         ImGui.Text($"Chocobos hidden: {plugin.ActorSuppressionService.HiddenChocobos}");

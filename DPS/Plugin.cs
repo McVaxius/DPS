@@ -30,6 +30,7 @@ public sealed class Plugin : IDalamudPlugin
     public Configuration Configuration { get; }
     public ActorSuppressionService ActorSuppressionService { get; }
     public TextureRedirectService TextureRedirectService { get; }
+    public BackgroundRenderGateService BackgroundRenderGateService { get; }
     public bool DebugModeEnabled { get; private set; }
 
     public WindowSystem WindowSystem { get; } = new(PluginInfo.InternalName);
@@ -43,6 +44,7 @@ public sealed class Plugin : IDalamudPlugin
         Configuration = PluginInterface.GetPluginConfig() as Configuration ?? new Configuration();
         ActorSuppressionService = new ActorSuppressionService();
         TextureRedirectService = new TextureRedirectService();
+        BackgroundRenderGateService = new BackgroundRenderGateService();
 
         mainWindow = new MainWindow(this);
         configWindow = new ConfigWindow(this);
@@ -68,6 +70,7 @@ public sealed class Plugin : IDalamudPlugin
     public void Dispose()
     {
         Framework.Update -= OnFrameworkUpdate;
+        BackgroundRenderGateService.Dispose();
         TextureRedirectService.Dispose();
         ActorSuppressionService.ShowAll();
         PluginInterface.UiBuilder.Draw -= WindowSystem.Draw;
@@ -91,6 +94,15 @@ public sealed class Plugin : IDalamudPlugin
 
     public void ApplyConfiguration()
     {
+        try
+        {
+            BackgroundRenderGateService.RefreshState(Configuration);
+        }
+        catch (Exception ex)
+        {
+            Log.Warning(ex, "[DPS] Background no-render refresh failed.");
+        }
+
         try
         {
             TextureRedirectService.RefreshState(Configuration, DebugModeEnabled);

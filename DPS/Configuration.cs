@@ -22,6 +22,8 @@ public class Configuration : IPluginConfiguration
     public TextureRedirectScope TextureRedirectScope { get; set; } = TextureRedirectScope.CharaOnly;
     public TextureReplacementAsset TextureReplacementAsset { get; set; } = TextureReplacementAsset.Black16x16;
     public bool LogTextureRedirects { get; set; }
+    public bool BackgroundNoRenderEnabled { get; set; }
+    public bool BackgroundNoRenderOnlyWhenMinimized { get; set; }
 
     public void Save()
         => Plugin.PluginInterface.SavePluginConfig(this);

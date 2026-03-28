@@ -39,6 +39,32 @@ public sealed class ConfigWindow : Window
             plugin.UpdateDtrBar();
         }
 
+        ImGui.Separator();
+        ImGui.Text("Experimental Background No-Render");
+        ImGui.TextDisabled("Main release candidate feature. Use the big red button in the main window for the fastest live toggle.");
+
+        var backgroundNoRenderEnabled = cfg.BackgroundNoRenderEnabled;
+        if (ImGui.Checkbox("Enable background no-render", ref backgroundNoRenderEnabled))
+        {
+            cfg.BackgroundNoRenderEnabled = backgroundNoRenderEnabled;
+            cfg.Save();
+            plugin.ApplyConfiguration();
+        }
+
+        var onlyWhenMinimized = cfg.BackgroundNoRenderOnlyWhenMinimized;
+        if (ImGui.Checkbox("Only trigger while minimized/iconic", ref onlyWhenMinimized))
+        {
+            cfg.BackgroundNoRenderOnlyWhenMinimized = onlyWhenMinimized;
+            cfg.Save();
+            plugin.ApplyConfiguration();
+        }
+
+        ImGui.TextWrapped($"Render gate status: {plugin.BackgroundRenderGateService.Status}");
+
+        ImGui.Separator();
+        ImGui.Text("Reduce Problems In Public Areas");
+        ImGui.TextDisabled("Optional crowd reduction toggles when you want the client active but visually quieter.");
+
         var keepTargetVisible = cfg.KeepCurrentTargetVisible;
         if (ImGui.Checkbox("Keep current target visible", ref keepTargetVisible))
         {
