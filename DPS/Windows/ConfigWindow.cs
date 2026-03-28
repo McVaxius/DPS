@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using Dalamud.Bindings.ImGui;
 using Dalamud.Interface.Windowing;
+using DPS.Services;
 
 namespace DPS.Windows;
 
@@ -43,6 +44,7 @@ public sealed class ConfigWindow : Window
         {
             cfg.KeepCurrentTargetVisible = keepTargetVisible;
             cfg.Save();
+            plugin.ApplyConfiguration();
         }
 
         var hidePlayers = cfg.HideNonPartyPlayers;
@@ -50,6 +52,7 @@ public sealed class ConfigWindow : Window
         {
             cfg.HideNonPartyPlayers = hidePlayers;
             cfg.Save();
+            plugin.ApplyConfiguration();
         }
 
         var hidePets = cfg.HideNonPartyPets;
@@ -57,6 +60,7 @@ public sealed class ConfigWindow : Window
         {
             cfg.HideNonPartyPets = hidePets;
             cfg.Save();
+            plugin.ApplyConfiguration();
         }
 
         var hideChocobos = cfg.HideNonPartyChocobos;
@@ -64,6 +68,7 @@ public sealed class ConfigWindow : Window
         {
             cfg.HideNonPartyChocobos = hideChocobos;
             cfg.Save();
+            plugin.ApplyConfiguration();
         }
 
         var hideMinions = cfg.HideNonPartyMinions;
@@ -71,6 +76,78 @@ public sealed class ConfigWindow : Window
         {
             cfg.HideNonPartyMinions = hideMinions;
             cfg.Save();
+            plugin.ApplyConfiguration();
+        }
+
+        ImGui.Separator();
+        if (plugin.DebugModeEnabled)
+        {
+            ImGui.Text("Experimental Texture Redirect");
+            ImGui.TextDisabled("Direct in-place texture blacking experiment. Character/world/VFX/global scopes all stay available.");
+
+            var textureEnabled = cfg.TextureRedirectEnabled;
+            if (ImGui.Checkbox("Enable texture redirect##Config", ref textureEnabled))
+            {
+                cfg.TextureRedirectEnabled = textureEnabled;
+                cfg.Save();
+                plugin.ApplyConfiguration();
+            }
+
+            var scope = cfg.TextureRedirectScope;
+            if (ImGui.BeginCombo("Texture scope##Config", TextureRedirectService.ScopeLabel(scope)))
+            {
+                foreach (var value in Enum.GetValues<TextureRedirectScope>())
+                {
+                    var selected = value == scope;
+                    if (ImGui.Selectable(TextureRedirectService.ScopeLabel(value), selected))
+                    {
+                        cfg.TextureRedirectScope = value;
+                        cfg.Save();
+                        plugin.ApplyConfiguration();
+                    }
+
+                    if (selected)
+                        ImGui.SetItemDefaultFocus();
+                }
+
+                ImGui.EndCombo();
+            }
+
+            var asset = cfg.TextureReplacementAsset;
+            if (ImGui.BeginCombo("Replacement asset##Config", TextureRedirectService.AssetLabel(asset)))
+            {
+                foreach (var value in Enum.GetValues<TextureReplacementAsset>())
+                {
+                    var selected = value == asset;
+                    if (ImGui.Selectable(TextureRedirectService.AssetLabel(value), selected))
+                    {
+                        cfg.TextureReplacementAsset = value;
+                        cfg.Save();
+                        plugin.ApplyConfiguration();
+                    }
+
+                    if (selected)
+                        ImGui.SetItemDefaultFocus();
+                }
+
+                ImGui.EndCombo();
+            }
+            ImGui.TextDisabled("Size selection is currently ignored because the loaded source texture is blacked in place.");
+
+            var logRedirects = cfg.LogTextureRedirects;
+            if (ImGui.Checkbox("Log redirected textures##Config", ref logRedirects))
+            {
+                cfg.LogTextureRedirects = logRedirects;
+                cfg.Save();
+                plugin.ApplyConfiguration();
+            }
+
+            ImGui.TextDisabled("Use 16x16 first. Global + 1x1 remain the riskiest combination.");
+            ImGui.TextWrapped($"Hook status: {plugin.TextureRedirectService.Status}");
+        }
+        else
+        {
+            ImGui.TextDisabled("Experimental texture controls are hidden. Use /dps debug to expose them for this session.");
         }
     }
 }

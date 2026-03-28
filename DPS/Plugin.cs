@@ -23,10 +23,14 @@ public sealed class Plugin : IDalamudPlugin
     [PluginService] internal static ICondition Condition { get; private set; } = null!;
     [PluginService] internal static IDtrBar DtrBar { get; private set; } = null!;
     [PluginService] internal static IPluginLog Log { get; private set; } = null!;
+    [PluginService] internal static IGameInteropProvider GameInteropProvider { get; private set; } = null!;
+    [PluginService] internal static ISigScanner SigScanner { get; private set; } = null!;
 
     public static Plugin PluginInstance { get; private set; } = null!;
     public Configuration Configuration { get; }
     public ActorSuppressionService ActorSuppressionService { get; }
+    public TextureRedirectService TextureRedirectService { get; }
+    public bool DebugModeEnabled { get; private set; }
 
     public WindowSystem WindowSystem { get; } = new(PluginInfo.InternalName);
     private readonly MainWindow mainWindow;
@@ -38,6 +42,7 @@ public sealed class Plugin : IDalamudPlugin
         PluginInstance = this;
         Configuration = PluginInterface.GetPluginConfig() as Configuration ?? new Configuration();
         ActorSuppressionService = new ActorSuppressionService();
+        TextureRedirectService = new TextureRedirectService();
 
         mainWindow = new MainWindow(this);
         configWindow = new ConfigWindow(this);
@@ -46,7 +51,7 @@ public sealed class Plugin : IDalamudPlugin
 
         CommandManager.AddHandler(PluginInfo.Command, new CommandInfo(OnCommand)
         {
-            HelpMessage = $"Open {PluginInfo.DisplayName}.",
+            HelpMessage = $"Open {PluginInfo.DisplayName}. Use '/dps debug' to expose the paused experimental texture lab for this session.",
         });
 
         PluginInterface.UiBuilder.Draw += WindowSystem.Draw;
@@ -55,6 +60,7 @@ public sealed class Plugin : IDalamudPlugin
         Framework.Update += OnFrameworkUpdate;
 
         SetupDtrBar();
+        ApplyConfiguration();
         UpdateDtrBar();
         Log.Information("[DPS] Plugin loaded.");
     }
@@ -62,6 +68,7 @@ public sealed class Plugin : IDalamudPlugin
     public void Dispose()
     {
         Framework.Update -= OnFrameworkUpdate;
+        TextureRedirectService.Dispose();
         ActorSuppressionService.ShowAll();
         PluginInterface.UiBuilder.Draw -= WindowSystem.Draw;
         PluginInterface.UiBuilder.OpenConfigUi -= ToggleConfigUi;
@@ -73,6 +80,38 @@ public sealed class Plugin : IDalamudPlugin
 
     public void ToggleMainUi() => mainWindow.Toggle();
     public void ToggleConfigUi() => configWindow.Toggle();
+    public void SetDebugMode(bool enabled)
+    {
+        if (DebugModeEnabled == enabled)
+            return;
+
+        DebugModeEnabled = enabled;
+        ApplyConfiguration();
+    }
+
+    public void ApplyConfiguration()
+    {
+        try
+        {
+            TextureRedirectService.RefreshState(Configuration, DebugModeEnabled);
+        }
+        catch (Exception ex)
+        {
+            Log.Warning(ex, "[DPS] Texture redirect refresh failed.");
+        }
+
+        Framework.RunOnTick(() =>
+        {
+            try
+            {
+                ActorSuppressionService.Update(Configuration);
+            }
+            catch (Exception ex)
+            {
+                Log.Warning(ex, "[DPS] Actor suppression update failed during apply.");
+            }
+        });
+    }
 
     public void UpdateDtrBar()
     {
@@ -101,6 +140,7 @@ public sealed class Plugin : IDalamudPlugin
         {
             Configuration.PluginEnabled = !Configuration.PluginEnabled;
             Configuration.Save();
+            ApplyConfiguration();
             UpdateDtrBar();
             if (!Configuration.PluginEnabled)
                 ActorSuppressionService.ShowAll();
@@ -109,12 +149,48 @@ public sealed class Plugin : IDalamudPlugin
 
     private void OnCommand(string command, string arguments)
     {
+        var trimmedArguments = arguments?.Trim() ?? string.Empty;
+        if (trimmedArguments.Equals("debug", StringComparison.OrdinalIgnoreCase))
+        {
+            if (!DebugModeEnabled)
+            {
+                DebugModeEnabled = true;
+                ApplyConfiguration();
+                Log.Information("[DPS] Debug mode enabled for this session.");
+            }
+
+            mainWindow.IsOpen = true;
+            return;
+        }
+
+        if (trimmedArguments.Equals("debug off", StringComparison.OrdinalIgnoreCase) ||
+            trimmedArguments.Equals("nodebug", StringComparison.OrdinalIgnoreCase))
+        {
+            if (DebugModeEnabled)
+            {
+                DebugModeEnabled = false;
+                ApplyConfiguration();
+                Log.Information("[DPS] Debug mode disabled for this session.");
+            }
+
+            mainWindow.IsOpen = true;
+            return;
+        }
+
         ToggleMainUi();
     }
 
     private void OnFrameworkUpdate(IFramework framework)
     {
-        ActorSuppressionService.Update(Configuration);
+        try
+        {
+            ActorSuppressionService.Update(Configuration);
+        }
+        catch (Exception ex)
+        {
+            Log.Warning(ex, "[DPS] Actor suppression update failed during framework tick.");
+        }
+
         UpdateDtrBar();
     }
 }

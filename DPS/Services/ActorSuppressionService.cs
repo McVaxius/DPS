@@ -17,6 +17,7 @@ public sealed class ActorSuppressionService
     public int HiddenPets { get; private set; }
     public int HiddenChocobos { get; private set; }
     public int HiddenMinions { get; private set; }
+    public string Status { get; private set; } = "Suppression idle.";
 
     public string Summary => "Render-flag suppression for non-party actors.";
 
@@ -26,12 +27,27 @@ public sealed class ActorSuppressionService
         {
             ShowAll();
             ResetCounters();
+            Status = "Suppression disabled.";
+            return;
+        }
+
+        if (!configuration.HideNonPartyPlayers
+         && !configuration.HideNonPartyPets
+         && !configuration.HideNonPartyChocobos
+         && !configuration.HideNonPartyMinions)
+        {
+            ShowAll();
+            ResetCounters();
+            Status = "Suppression idle.";
             return;
         }
 
         var localPlayer = Plugin.ObjectTable.LocalPlayer;
         if (localPlayer == null)
+        {
+            Status = "Suppression waiting for local player.";
             return;
+        }
 
         var hiddenPlayers = 0;
         var hiddenPets = 0;
@@ -42,14 +58,18 @@ public sealed class ActorSuppressionService
         foreach (var obj in Plugin.ObjectTable)
         {
             if (obj == null || obj.Address == nint.Zero || obj.EntityId == 0 || obj.EntityId == localPlayer.EntityId)
+            {
                 continue;
+            }
 
             var character = (Character*)obj.Address;
             switch (obj.ObjectKind)
             {
                 case DalamudObjectKind.Player:
                 {
-                    var shouldShow = IsPartyMember(obj.EntityId) || obj.EntityId == targetId;
+                    var shouldShow = !configuration.HideNonPartyPlayers
+                                     || IsPartyMember(obj.EntityId)
+                                     || obj.EntityId == targetId;
                     ProcessCharacter(character, shouldShow, ref hiddenPlayers);
                     break;
                 }
@@ -90,6 +110,10 @@ public sealed class ActorSuppressionService
         HiddenPets = hiddenPets;
         HiddenChocobos = hiddenChocobos;
         HiddenMinions = hiddenMinions;
+        var totalHidden = hiddenPlayers + hiddenPets + hiddenChocobos + hiddenMinions;
+        Status = totalHidden > 0
+            ? $"Suppression active: {totalHidden} hidden."
+            : "Suppression active: nothing currently hidden.";
     }
 
     public unsafe void ShowAll()
@@ -97,10 +121,12 @@ public sealed class ActorSuppressionService
         foreach (var obj in Plugin.ObjectTable.Where(obj => obj != null && obj.Address != nint.Zero && hiddenEntityIds.Contains(obj.EntityId)))
         {
             var character = (Character*)obj.Address;
+            character->GameObject.EnableDraw();
             character->GameObject.RenderFlags &= ~HiddenFlags;
         }
 
         hiddenEntityIds.Clear();
+        Status = "All hidden actors restored.";
     }
 
     private unsafe void ProcessCharacter(Character* character, bool shouldShow, ref int counter)
@@ -109,7 +135,10 @@ public sealed class ActorSuppressionService
         if (shouldShow)
         {
             if (hiddenEntityIds.Remove(entityId))
+            {
+                character->GameObject.EnableDraw();
                 character->GameObject.RenderFlags &= ~HiddenFlags;
+            }
             return;
         }
 
@@ -117,10 +146,12 @@ public sealed class ActorSuppressionService
         if (!hiddenEntityIds.Contains(entityId))
         {
             hiddenEntityIds.Add(entityId);
+            character->GameObject.DisableDraw();
             character->GameObject.RenderFlags |= HiddenFlags;
             return;
         }
 
+        character->GameObject.DisableDraw();
         character->GameObject.RenderFlags |= HiddenFlags;
     }
 
