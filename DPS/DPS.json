@@ -1,6 +1,6 @@
 {
   "$schema": "https://raw.githubusercontent.com/goatcorp/Dalamud/master/Dalamud/Configuration/PluginManifest/pluginmanifest.schema.json",
-  "Author": "DhogGPT, XA",
+  "Author": "DhogGPT",
   "Name": "Dhog Potato System",
   "Punchline": "Hide the junk. Keep the party.",
   "Description": "A potato-mode Dalamud plugin for weak machines: suppress non-party players, pets, chocobos, and minions so the client spends less effort rendering garbage you do not need.",
