@@ -46,6 +46,7 @@ public sealed class Plugin : IDalamudPlugin
     {
         PluginInstance = this;
         Configuration = PluginInterface.GetPluginConfig() as Configuration ?? new Configuration();
+        MigrateConfiguration();
         ActorSuppressionService = new ActorSuppressionService();
         TextureRedirectService = new TextureRedirectService();
         BackgroundRenderGateService = new BackgroundRenderGateService();
@@ -69,6 +70,21 @@ public sealed class Plugin : IDalamudPlugin
         ApplyConfiguration();
         UpdateDtrBar();
         Log.Information("[DPS] Plugin loaded.");
+    }
+
+    private void MigrateConfiguration()
+    {
+        var changed = false;
+
+        if (Configuration.Version < 2)
+        {
+            Configuration.CleanDisableExperimentalRenderHack = true;
+            Configuration.Version = 2;
+            changed = true;
+        }
+
+        if (changed)
+            Configuration.Save();
     }
 
     public void Dispose()
