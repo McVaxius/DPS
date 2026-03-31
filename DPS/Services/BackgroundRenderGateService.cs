@@ -12,9 +12,6 @@ public sealed unsafe class BackgroundRenderGateService : IDisposable
 {
     private const string DeviceDx11PostTickSignature = "48 89 5C 24 ?? 48 89 6C 24 ?? 48 89 74 24 ?? 57 41 54 41 55 41 56 41 57 B8 ?? ?? ?? ?? E8 ?? ?? ?? ?? 48 2B E0 48 8B 05 ?? ?? ?? ?? 48 33 C4 48 89 84 24 ?? ?? ?? ?? 8B 15";
     private const string NamePlateDrawSignature = "0F B7 81 ?? ?? ?? ?? 81 A1 ?? ?? ?? ?? ?? ?? ?? ?? 81 A1 ?? ?? ?? ?? ?? ?? ?? ?? 66 C1 E0 06 0F B7 D0 66 89 91 ?? ?? ?? ?? C1 E2 0D 09 91 ?? ?? ?? ?? 09 91 ?? ?? ?? ?? E9 ?? ?? ?? ?? CC CC CC CC CC CC CC CC CC CC CC CC CC CC CC CC CC CC CC 33 C0";
-    private const int SafetyFrameIntervalMs = 5_000;
-    private const int BackgroundThrottleSleepMs = 50;
-
     private delegate void DeviceDx11PostTickDelegate(nint instance);
     private delegate void NamePlateDrawDelegate(AtkUnitBase* addon);
 
@@ -25,13 +22,20 @@ public sealed unsafe class BackgroundRenderGateService : IDisposable
     private bool armed;
     private bool onlyWhenMinimized;
     private long nextSafetyRenderTick;
+    private int safetyFrameIntervalMs = 5_000;
+    private int backgroundThrottleSleepMs = 50;
 
     public bool HooksActive => initialized && deviceDx11PostTickHook?.IsEnabled == true;
     public bool IsNoRenderActive { get; private set; }
     public string Status { get; private set; } = "Background no-render idle.";
+    public int SafetyFrameIntervalMs => safetyFrameIntervalMs;
+    public int BackgroundThrottleSleepMs => backgroundThrottleSleepMs;
+    public double SafetyFramesPerMinute => safetyFrameIntervalMs <= 0 ? 0d : 60_000d / safetyFrameIntervalMs;
 
     public void RefreshState(Configuration configuration)
     {
+        safetyFrameIntervalMs = Math.Clamp(configuration.BackgroundSafetyFrameIntervalSeconds, 1, 60) * 1_000;
+        backgroundThrottleSleepMs = Math.Clamp(configuration.BackgroundThrottleSleepMs, 0, 500);
         onlyWhenMinimized = configuration.BackgroundNoRenderOnlyWhenMinimized;
         armed = configuration.PluginEnabled && configuration.BackgroundNoRenderEnabled;
 
@@ -139,14 +143,14 @@ public sealed unsafe class BackgroundRenderGateService : IDisposable
         var currentTick = Environment.TickCount64;
         if (nextSafetyRenderTick - currentTick < 0)
         {
-            nextSafetyRenderTick = currentTick + SafetyFrameIntervalMs;
+            nextSafetyRenderTick = currentTick + safetyFrameIntervalMs;
             deviceDx11PostTickHook!.Original(instance);
             return;
         }
 
         var uiModule = UIModule.Instance();
-        if (uiModule != null && uiModule->ShouldLimitFps())
-            Thread.Sleep(BackgroundThrottleSleepMs);
+        if (uiModule != null && uiModule->ShouldLimitFps() && backgroundThrottleSleepMs > 0)
+            Thread.Sleep(backgroundThrottleSleepMs);
     }
 
     private void NamePlateDrawDetour(AtkUnitBase* addon)

@@ -24,6 +24,13 @@ public class Configuration : IPluginConfiguration
     public bool LogTextureRedirects { get; set; }
     public bool BackgroundNoRenderEnabled { get; set; }
     public bool BackgroundNoRenderOnlyWhenMinimized { get; set; }
+    public bool CleanDisableExperimentalRenderHack { get; set; } = true;
+    public int BackgroundSafetyFrameIntervalSeconds { get; set; } = 5;
+    public int BackgroundThrottleSleepMs { get; set; } = 50;
+    public bool BackgroundRecoveryLoopEnabled { get; set; }
+    public int BackgroundRecoveryMinMinutes { get; set; } = 15;
+    public int BackgroundRecoveryMaxMinutes { get; set; } = 20;
+    public int BackgroundRecoveryPulseSeconds { get; set; } = 5;
 
     public void Save()
         => Plugin.PluginInterface.SavePluginConfig(this);

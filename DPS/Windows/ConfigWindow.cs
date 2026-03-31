@@ -41,15 +41,14 @@ public sealed class ConfigWindow : Window
 
         ImGui.Separator();
         ImGui.Text("Experimental Background No-Render");
-        ImGui.TextDisabled("Main release candidate feature. Use the big red button in the main window for the fastest live toggle.");
+        ImGui.TextDisabled("Main release candidate feature. Use the big red button in the main window or /dps roff and /dps ron for the fastest live toggle.");
 
         var backgroundNoRenderEnabled = cfg.BackgroundNoRenderEnabled;
         if (ImGui.Checkbox("Enable background no-render", ref backgroundNoRenderEnabled))
-        {
-            cfg.BackgroundNoRenderEnabled = backgroundNoRenderEnabled;
-            cfg.Save();
-            plugin.ApplyConfiguration();
-        }
+            if (backgroundNoRenderEnabled)
+                plugin.ArmBackgroundNoRender("settings");
+            else
+                plugin.DisableBackgroundNoRender("settings");
 
         var onlyWhenMinimized = cfg.BackgroundNoRenderOnlyWhenMinimized;
         if (ImGui.Checkbox("Only trigger while minimized/iconic", ref onlyWhenMinimized))
@@ -59,7 +58,71 @@ public sealed class ConfigWindow : Window
             plugin.ApplyConfiguration();
         }
 
+        var cleanDisable = cfg.CleanDisableExperimentalRenderHack;
+        if (ImGui.Checkbox("Clean disable experimental render hack", ref cleanDisable))
+        {
+            cfg.CleanDisableExperimentalRenderHack = cleanDisable;
+            cfg.Save();
+            plugin.ApplyConfiguration();
+        }
+        ImGui.TextDisabled("If enabled, disabling background no-render fully disables DPS first to clear the render hack the same way as the plugin off path.");
+
+        var safetyFrameInterval = cfg.BackgroundSafetyFrameIntervalSeconds;
+        if (ImGui.SliderInt("Safety frame interval (sec)", ref safetyFrameInterval, 1, 60))
+        {
+            cfg.BackgroundSafetyFrameIntervalSeconds = safetyFrameInterval;
+            cfg.Save();
+            plugin.ApplyConfiguration();
+        }
+
+        var throttleSleepMs = cfg.BackgroundThrottleSleepMs;
+        if (ImGui.SliderInt("Throttle sleep while gated (ms)", ref throttleSleepMs, 0, 200))
+        {
+            cfg.BackgroundThrottleSleepMs = throttleSleepMs;
+            cfg.Save();
+            plugin.ApplyConfiguration();
+        }
+        ImGui.TextDisabled($"Current cadence: {cfg.BackgroundSafetyFrameIntervalSeconds}s between safety frames (~{plugin.BackgroundRenderGateService.SafetyFramesPerMinute:0.0} frames/min).");
+
+        var recoveryLoopEnabled = cfg.BackgroundRecoveryLoopEnabled;
+        if (ImGui.Checkbox("Automatic /ron -> /roff recovery pulse", ref recoveryLoopEnabled))
+        {
+            cfg.BackgroundRecoveryLoopEnabled = recoveryLoopEnabled;
+            cfg.Save();
+            plugin.ApplyConfiguration();
+        }
+
+        if (cfg.BackgroundRecoveryLoopEnabled)
+        {
+            var recoveryMinMinutes = cfg.BackgroundRecoveryMinMinutes;
+            if (ImGui.InputInt("Recovery minimum (min)", ref recoveryMinMinutes))
+            {
+                cfg.BackgroundRecoveryMinMinutes = Math.Clamp(recoveryMinMinutes, 1, 120);
+                if (cfg.BackgroundRecoveryMaxMinutes < cfg.BackgroundRecoveryMinMinutes)
+                    cfg.BackgroundRecoveryMaxMinutes = cfg.BackgroundRecoveryMinMinutes;
+                cfg.Save();
+                plugin.ApplyConfiguration();
+            }
+
+            var recoveryMaxMinutes = cfg.BackgroundRecoveryMaxMinutes;
+            if (ImGui.InputInt("Recovery maximum (min)", ref recoveryMaxMinutes))
+            {
+                cfg.BackgroundRecoveryMaxMinutes = Math.Clamp(recoveryMaxMinutes, cfg.BackgroundRecoveryMinMinutes, 120);
+                cfg.Save();
+                plugin.ApplyConfiguration();
+            }
+
+            var recoveryPulseSeconds = cfg.BackgroundRecoveryPulseSeconds;
+            if (ImGui.InputInt("Recovery pulse (sec)", ref recoveryPulseSeconds))
+            {
+                cfg.BackgroundRecoveryPulseSeconds = Math.Clamp(recoveryPulseSeconds, 1, 30);
+                cfg.Save();
+                plugin.ApplyConfiguration();
+            }
+        }
+
         ImGui.TextWrapped($"Render gate status: {plugin.BackgroundRenderGateService.Status}");
+        ImGui.TextWrapped($"Recovery status: {plugin.BackgroundRecoveryStatus}");
 
         ImGui.Separator();
         ImGui.Text("Reduce Problems In Public Areas");

@@ -38,7 +38,7 @@ public sealed class MainWindow : Window
 
         ImGui.Separator();
         ImGui.TextColored(new Vector4(1f, 0.35f, 0.35f, 1f), "Experimental Background No-Render");
-        ImGui.TextDisabled("Background-only render gate. It skips the DX11 post-tick while the game is inactive, and lets a safety frame through every 5 seconds.");
+        ImGui.TextDisabled("Background-only render gate. It skips the DX11 post-tick while the game is inactive and lets periodic safety frames through on a configurable cadence.");
 
         var onlyWhenMinimized = cfg.BackgroundNoRenderOnlyWhenMinimized;
         if (ImGui.Checkbox("Only trigger while minimized/iconic", ref onlyWhenMinimized))
@@ -46,6 +46,61 @@ public sealed class MainWindow : Window
             cfg.BackgroundNoRenderOnlyWhenMinimized = onlyWhenMinimized;
             cfg.Save();
             plugin.ApplyConfiguration();
+        }
+
+        var cleanDisable = cfg.CleanDisableExperimentalRenderHack;
+        if (ImGui.Checkbox("Clean disable experimental render hack", ref cleanDisable))
+        {
+            cfg.CleanDisableExperimentalRenderHack = cleanDisable;
+            cfg.Save();
+            plugin.ApplyConfiguration();
+        }
+        ImGui.TextDisabled("If enabled, /dps ron and the red-button disable path fully disable DPS to clear the render hack exactly like the plugin off path.");
+
+        var safetyFrameInterval = cfg.BackgroundSafetyFrameIntervalSeconds;
+        if (ImGui.SliderInt("Safety frame interval (sec)", ref safetyFrameInterval, 1, 60))
+        {
+            cfg.BackgroundSafetyFrameIntervalSeconds = safetyFrameInterval;
+            cfg.Save();
+            plugin.ApplyConfiguration();
+        }
+        ImGui.TextDisabled($"Current cadence: {cfg.BackgroundSafetyFrameIntervalSeconds}s between safety frames (~{plugin.BackgroundRenderGateService.SafetyFramesPerMinute:0.0} frames/min).");
+
+        var recoveryLoopEnabled = cfg.BackgroundRecoveryLoopEnabled;
+        if (ImGui.Checkbox("Automatic /ron -> /roff recovery pulse", ref recoveryLoopEnabled))
+        {
+            cfg.BackgroundRecoveryLoopEnabled = recoveryLoopEnabled;
+            cfg.Save();
+            plugin.ApplyConfiguration();
+        }
+
+        if (cfg.BackgroundRecoveryLoopEnabled)
+        {
+            var recoveryMinMinutes = cfg.BackgroundRecoveryMinMinutes;
+            if (ImGui.InputInt("Recovery minimum (min)", ref recoveryMinMinutes))
+            {
+                cfg.BackgroundRecoveryMinMinutes = Math.Clamp(recoveryMinMinutes, 1, 120);
+                if (cfg.BackgroundRecoveryMaxMinutes < cfg.BackgroundRecoveryMinMinutes)
+                    cfg.BackgroundRecoveryMaxMinutes = cfg.BackgroundRecoveryMinMinutes;
+                cfg.Save();
+                plugin.ApplyConfiguration();
+            }
+
+            var recoveryMaxMinutes = cfg.BackgroundRecoveryMaxMinutes;
+            if (ImGui.InputInt("Recovery maximum (min)", ref recoveryMaxMinutes))
+            {
+                cfg.BackgroundRecoveryMaxMinutes = Math.Clamp(recoveryMaxMinutes, cfg.BackgroundRecoveryMinMinutes, 120);
+                cfg.Save();
+                plugin.ApplyConfiguration();
+            }
+
+            var recoveryPulseSeconds = cfg.BackgroundRecoveryPulseSeconds;
+            if (ImGui.InputInt("Recovery pulse (sec)", ref recoveryPulseSeconds))
+            {
+                cfg.BackgroundRecoveryPulseSeconds = Math.Clamp(recoveryPulseSeconds, 1, 30);
+                cfg.Save();
+                plugin.ApplyConfiguration();
+            }
         }
 
         ImGui.PushStyleColor(ImGuiCol.Button, new Vector4(0.72f, 0.11f, 0.11f, 1f));
@@ -56,30 +111,36 @@ public sealed class MainWindow : Window
             : "EXPERIMENTAL BACKGROUND NO-RENDER";
         if (ImGui.Button(backgroundButtonText, new Vector2(-1f, 46f)))
         {
-            cfg.PluginEnabled = true;
-            cfg.BackgroundNoRenderEnabled = !cfg.BackgroundNoRenderEnabled;
-            cfg.Save();
-            plugin.ApplyConfiguration();
-            plugin.UpdateDtrBar();
-            Plugin.Log.Information("[DPS] Background no-render test {State}.", cfg.BackgroundNoRenderEnabled ? "armed" : "disarmed");
+            if (cfg.BackgroundNoRenderEnabled)
+                plugin.DisableBackgroundNoRender("main window");
+            else
+                plugin.ArmBackgroundNoRender("main window");
         }
         ImGui.PopStyleColor(3);
 
         ImGui.Text(cfg.BackgroundNoRenderEnabled
-            ? "State: armed. Click the red button again to disable."
+            ? $"State: armed. Click the red button again to disable{(cfg.CleanDisableExperimentalRenderHack ? " with clean-disable" : string.Empty)}."
             : "State: off. Click the red button to enable.");
         ImGui.TextWrapped($"Render gate status: {plugin.BackgroundRenderGateService.Status}");
-        ImGui.TextDisabled("After arming: alt-tab away, or minimize if you checked the iconic-only option. Come back and make sure rendering wakes back up cleanly.");
+        ImGui.TextWrapped($"Recovery status: {plugin.BackgroundRecoveryStatus}");
+        ImGui.TextDisabled("Slash commands: /dps roff arms render-off. /dps ron disables it. After arming: alt-tab away, or minimize if you checked the iconic-only option.");
+
+        ImGui.Separator();
+        ImGui.Text("Optional Helpers");
+        var customResolutionInstalled = plugin.IsCustomResolutionInstalled();
+        var helperColor = customResolutionInstalled
+            ? new Vector4(0.2f, 0.8f, 0.2f, 1f)
+            : new Vector4(0.85f, 0.7f, 0.2f, 1f);
+        ImGui.TextColored(helperColor, customResolutionInstalled
+            ? "Custom Resolution detected."
+            : "Custom Resolution not detected.");
+        ImGui.TextWrapped("Custom Resolution by 0x0ade from the main Dalamud repo is a good companion if you want more display-space flexibility around DPS. It does not replace the DPS render gate.");
+        ImGui.TextWrapped("TTSL (Thick Thighs Save Lives) is the planned companion HUD for seeing core state while rendering is disabled. It is still experimental and not available yet.");
 
         ImGui.Separator();
         var enabled = cfg.PluginEnabled;
         if (ImGui.Checkbox("Enabled", ref enabled))
-        {
-            cfg.PluginEnabled = enabled;
-            cfg.Save();
-            plugin.ApplyConfiguration();
-            plugin.UpdateDtrBar();
-        }
+            plugin.SetPluginEnabled(enabled, "main window", showAllOnDisable: !enabled);
 
         ImGui.SameLine();
         var dtrEnabled = cfg.DtrBarEnabled;
@@ -299,12 +360,6 @@ public sealed class MainWindow : Window
         }
 
         if (ImGui.Button("Show Everything Again", new Vector2(170f, 28f)))
-        {
-            cfg.PluginEnabled = false;
-            cfg.Save();
-            plugin.ApplyConfiguration();
-            plugin.ActorSuppressionService.ShowAll();
-            plugin.UpdateDtrBar();
-        }
+            plugin.SetPluginEnabled(false, "Show Everything Again", showAllOnDisable: true);
     }
 }
