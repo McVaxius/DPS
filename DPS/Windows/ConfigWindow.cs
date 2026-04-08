@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Linq;
 using Dalamud.Bindings.ImGui;
 using Dalamud.Interface.Windowing;
 using DPS.Services;
@@ -38,6 +39,9 @@ public sealed class ConfigWindow : Window
             cfg.Save();
             plugin.UpdateDtrBar();
         }
+
+        ImGui.Separator();
+        DrawSuggestedPluginStatus();
 
         ImGui.Separator();
         ImGui.Text("Experimental Background No-Render");
@@ -237,6 +241,48 @@ public sealed class ConfigWindow : Window
         else
         {
             ImGui.TextDisabled("Experimental texture controls are hidden. Use /dps debug to expose them for this session.");
+        }
+    }
+
+    private void DrawSuggestedPluginStatus()
+    {
+        ImGui.Text("Suggested Plugins");
+        ImGui.TextDisabled("DPS runs on its own. These are companion helpers only.");
+
+        DrawPluginStatusLine(
+            "Custom Resolution",
+            plugin.IsCustomResolutionInstalled(),
+            "This lets you change internal display res.");
+
+        DrawPluginStatusLine(
+            "TTSL (Thick Thighs Save Lives)",
+            IsPluginLoaded("TTSL"),
+            "This lets you remote view parties. Handy if renderer is off.");
+    }
+
+    private static void DrawPluginStatusLine(string name, bool installed, string description)
+    {
+        var color = installed
+            ? new System.Numerics.Vector4(0.2f, 0.8f, 0.2f, 1f)
+            : new System.Numerics.Vector4(0.85f, 0.7f, 0.2f, 1f);
+
+        ImGui.TextColored(color, installed ? $"[OK] {name}" : $"[--] {name}");
+        ImGui.SameLine();
+        ImGui.TextDisabled(installed ? "Installed" : "Not installed");
+        ImGui.TextWrapped(description);
+    }
+
+    private static bool IsPluginLoaded(string internalName)
+    {
+        try
+        {
+            return Plugin.PluginInterface.InstalledPlugins.Any(plugin =>
+                string.Equals(plugin.InternalName, internalName, StringComparison.OrdinalIgnoreCase) &&
+                plugin.IsLoaded);
+        }
+        catch
+        {
+            return false;
         }
     }
 }

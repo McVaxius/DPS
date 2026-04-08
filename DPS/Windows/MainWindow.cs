@@ -22,6 +22,20 @@ public sealed class MainWindow : Window
         };
     }
 
+    private static bool IsPluginLoaded(string internalName)
+    {
+        try
+        {
+            return Plugin.PluginInterface.InstalledPlugins.Any(plugin =>
+                string.Equals(plugin.InternalName, internalName, StringComparison.OrdinalIgnoreCase) &&
+                plugin.IsLoaded);
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
     public override void Draw()
     {
         var cfg = plugin.Configuration;
@@ -134,8 +148,12 @@ public sealed class MainWindow : Window
         ImGui.TextColored(helperColor, customResolutionInstalled
             ? "Custom Resolution detected."
             : "Custom Resolution not detected.");
-        ImGui.TextWrapped("Custom Resolution by 0x0ade from the main Dalamud repo is a good companion if you want more display-space flexibility around DPS. It does not replace the DPS render gate.");
-        ImGui.TextWrapped("TTSL (Thick Thighs Save Lives) is the planned companion HUD for seeing core state while rendering is disabled. It is still experimental and not available yet.");
+        ImGui.TextColored(helperColor, IsPluginLoaded("TTSL")
+            ? "Thick Thighs Save Lives detected."
+            : "Thick Thighs Save Lives not detected.");
+
+        ImGui.TextWrapped("Custom Resolution: This lets you change internal display res.");
+        ImGui.TextWrapped("TTSL (Thick Thighs Save Lives): This lets you remote view parties. Handy if renderer is off.");
 
         ImGui.Separator();
         var enabled = cfg.PluginEnabled;
