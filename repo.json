@@ -6,11 +6,11 @@
     "Punchline": "Hide the junk. Keep the party.",
     "Description": "A potato-mode Dalamud plugin for weak machines: suppress non-party players, pets, chocobos, and minions so the client spends less effort rendering garbage you do not need.",
     "InternalName": "DPS",
-    "AssemblyVersion": "0.0.0.18",
+    "AssemblyVersion": "0.0.0.19",
     "TestingAssemblyVersion": "0.0.0.1",
     "RepoUrl": "https://github.com/McVaxius/DPS",
     "ApplicableVersion": "any",
-    "DalamudApiLevel": 14,
+    "DalamudApiLevel": 15,
     "Tags": [
       "performance",
       "visibility",
