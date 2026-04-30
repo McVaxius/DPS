@@ -65,7 +65,7 @@ public sealed class ActorSuppressionService
             var character = (Character*)obj.Address;
             switch (obj.ObjectKind)
             {
-                case DalamudObjectKind.Player:
+                case DalamudObjectKind.Pc:
                 {
                     var shouldShow = !configuration.HideNonPartyPlayers
                                      || IsPartyMember(obj.EntityId)
