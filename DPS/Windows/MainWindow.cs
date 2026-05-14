@@ -140,6 +140,32 @@ public sealed class MainWindow : Window
         ImGui.TextDisabled("Slash commands: /dps roff arms render-off. /dps ron disables it. After arming: alt-tab away, or minimize if you checked the iconic-only option.");
 
         ImGui.Separator();
+        ImGui.TextColored(new Vector4(0.3f, 0.9f, 0.35f, 1f), "Experimental FOREGROUND No-Render");
+        ImGui.TextDisabled("Immediate direct render-manager flag. This stops foreground 3D render until restored.");
+
+        ImGui.PushStyleColor(ImGuiCol.Button, new Vector4(0.08f, 0.48f, 0.16f, 1f));
+        ImGui.PushStyleColor(ImGuiCol.ButtonHovered, new Vector4(0.12f, 0.62f, 0.22f, 1f));
+        ImGui.PushStyleColor(ImGuiCol.ButtonActive, new Vector4(0.05f, 0.36f, 0.12f, 1f));
+        var foregroundButtonText = cfg.ForegroundNoRenderEnabled
+            ? "CLICK AGAIN TO RESTORE FOREGROUND RENDER"
+            : "EXPERIMENTAL FOREGROUND NO-RENDER";
+        if (ImGui.Button(foregroundButtonText, new Vector2(-1f, 46f)))
+        {
+            if (cfg.ForegroundNoRenderEnabled)
+                plugin.DisableForegroundNoRender("main window");
+            else
+                plugin.ArmForegroundNoRender("main window");
+        }
+        ImGui.PopStyleColor(3);
+
+        ImGui.Text(cfg.ForegroundNoRenderEnabled
+            ? $"State: armed. Click the green button again to restore foreground render{(cfg.CleanDisableExperimentalRenderHack ? " with clean-disable" : string.Empty)}."
+            : "State: off. Click the green button to stop foreground render.");
+        ImGui.TextWrapped($"Foreground render status: {plugin.ForegroundRenderControlService.Status}");
+        ImGui.TextWrapped($"Foreground diagnostics: {plugin.ForegroundRenderControlService.GetDiagnosticsLine()}");
+        ImGui.TextDisabled("Slash commands: /dps foff stops foreground render. /dps fon restores it. Foreground and background modes are mutually exclusive.");
+
+        ImGui.Separator();
         ImGui.Text("Optional Helpers");
         var customResolutionInstalled = plugin.IsCustomResolutionInstalled();
         var helperColor = customResolutionInstalled

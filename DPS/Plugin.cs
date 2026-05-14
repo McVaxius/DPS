@@ -32,6 +32,7 @@ public sealed class Plugin : IDalamudPlugin
     public ActorSuppressionService ActorSuppressionService { get; }
     public TextureRedirectService TextureRedirectService { get; }
     public BackgroundRenderGateService BackgroundRenderGateService { get; }
+    public ForegroundRenderControlService ForegroundRenderControlService { get; }
     public bool DebugModeEnabled { get; private set; }
 
     public WindowSystem WindowSystem { get; } = new(PluginInfo.InternalName);
@@ -50,6 +51,7 @@ public sealed class Plugin : IDalamudPlugin
         ActorSuppressionService = new ActorSuppressionService();
         TextureRedirectService = new TextureRedirectService();
         BackgroundRenderGateService = new BackgroundRenderGateService();
+        ForegroundRenderControlService = new ForegroundRenderControlService();
 
         mainWindow = new MainWindow(this);
         configWindow = new ConfigWindow(this);
@@ -58,7 +60,7 @@ public sealed class Plugin : IDalamudPlugin
 
         CommandManager.AddHandler(PluginInfo.Command, new CommandInfo(OnCommand)
         {
-            HelpMessage = $"Open {PluginInfo.DisplayName}. Use '/dps roff' to arm background no-render, '/dps ron' to disable it, and '/dps debug' to expose the paused experimental texture lab for this session.",
+            HelpMessage = $"Open {PluginInfo.DisplayName}. Use '/dps roff' and '/dps ron' for background no-render, '/dps foff' and '/dps fon' for foreground no-render, and '/dps debug' to expose the paused experimental texture lab for this session.",
         });
 
         PluginInterface.UiBuilder.Draw += WindowSystem.Draw;
@@ -83,6 +85,13 @@ public sealed class Plugin : IDalamudPlugin
             changed = true;
         }
 
+        if (Configuration.Version < 3)
+        {
+            Configuration.ForegroundNoRenderEnabled = false;
+            Configuration.Version = 3;
+            changed = true;
+        }
+
         if (changed)
             Configuration.Save();
     }
@@ -90,6 +99,7 @@ public sealed class Plugin : IDalamudPlugin
     public void Dispose()
     {
         Framework.Update -= OnFrameworkUpdate;
+        ForegroundRenderControlService.Dispose();
         BackgroundRenderGateService.Dispose();
         TextureRedirectService.Dispose();
         ActorSuppressionService.ShowAll();
@@ -115,6 +125,15 @@ public sealed class Plugin : IDalamudPlugin
 
     public void ApplyConfiguration()
     {
+        try
+        {
+            ForegroundRenderControlService.RefreshState(Configuration);
+        }
+        catch (Exception ex)
+        {
+            Log.Warning(ex, "[DPS] Foreground no-render refresh failed.");
+        }
+
         try
         {
             BackgroundRenderGateService.RefreshState(Configuration);
@@ -194,12 +213,40 @@ public sealed class Plugin : IDalamudPlugin
     public void ArmBackgroundNoRender(string source)
     {
         CancelBackgroundRecovery(source);
+        if (Configuration.ForegroundNoRenderEnabled || ForegroundRenderControlService.RenderDisabledByDps)
+        {
+            Configuration.ForegroundNoRenderEnabled = false;
+            ForegroundRenderControlService.RestoreRender($"background no-render arm via {source}");
+        }
+
         Configuration.PluginEnabled = true;
         Configuration.BackgroundNoRenderEnabled = true;
         Configuration.Save();
         ApplyConfiguration();
         UpdateDtrBar();
         Log.Information("[DPS] Background no-render armed via {Source}.", source);
+    }
+
+    public void ArmForegroundNoRender(string source)
+    {
+        Configuration.PluginEnabled = true;
+        Configuration.BackgroundNoRenderEnabled = false;
+        CancelBackgroundRecovery(source);
+
+        try
+        {
+            BackgroundRenderGateService.RefreshState(Configuration);
+        }
+        catch (Exception ex)
+        {
+            Log.Warning(ex, "[DPS] Background no-render refresh failed while arming foreground no-render.");
+        }
+
+        Configuration.ForegroundNoRenderEnabled = true;
+        Configuration.Save();
+        ApplyConfiguration();
+        UpdateDtrBar();
+        Log.Information("[DPS] Foreground no-render armed via {Source}.", source);
     }
 
     public void DisableBackgroundNoRender(string source)
@@ -209,6 +256,8 @@ public sealed class Plugin : IDalamudPlugin
         Configuration.BackgroundNoRenderEnabled = false;
         if (cleanDisable)
         {
+            Configuration.ForegroundNoRenderEnabled = false;
+            ForegroundRenderControlService.RestoreRender($"background no-render clean-disable via {source}");
             Configuration.PluginEnabled = false;
             ActorSuppressionService.ShowAll();
         }
@@ -219,12 +268,33 @@ public sealed class Plugin : IDalamudPlugin
         Log.Information("[DPS] Background no-render disabled via {Source}{Mode}.", source, cleanDisable ? " with clean-disable" : string.Empty);
     }
 
+    public void DisableForegroundNoRender(string source)
+    {
+        CancelBackgroundRecovery(source);
+        var cleanDisable = Configuration.CleanDisableExperimentalRenderHack;
+        Configuration.ForegroundNoRenderEnabled = false;
+        ForegroundRenderControlService.RestoreRender($"foreground no-render disable via {source}");
+        if (cleanDisable)
+        {
+            Configuration.BackgroundNoRenderEnabled = false;
+            Configuration.PluginEnabled = false;
+            ActorSuppressionService.ShowAll();
+        }
+
+        Configuration.Save();
+        ApplyConfiguration();
+        UpdateDtrBar();
+        Log.Information("[DPS] Foreground no-render disabled via {Source}{Mode}.", source, cleanDisable ? " with clean-disable" : string.Empty);
+    }
+
     public void SetPluginEnabled(bool enabled, string source, bool showAllOnDisable = false)
     {
         if (!enabled)
         {
             CancelBackgroundRecovery(source);
             Configuration.BackgroundNoRenderEnabled = false;
+            Configuration.ForegroundNoRenderEnabled = false;
+            ForegroundRenderControlService.RestoreRender($"plugin disable via {source}");
         }
 
         Configuration.PluginEnabled = enabled;
@@ -251,6 +321,20 @@ public sealed class Plugin : IDalamudPlugin
         if (trimmedArguments.Equals("ron", StringComparison.OrdinalIgnoreCase))
         {
             DisableBackgroundNoRender("slash command");
+            mainWindow.IsOpen = true;
+            return;
+        }
+
+        if (trimmedArguments.Equals("foff", StringComparison.OrdinalIgnoreCase))
+        {
+            ArmForegroundNoRender("slash command");
+            mainWindow.IsOpen = true;
+            return;
+        }
+
+        if (trimmedArguments.Equals("fon", StringComparison.OrdinalIgnoreCase))
+        {
+            DisableForegroundNoRender("slash command");
             mainWindow.IsOpen = true;
             return;
         }
@@ -367,6 +451,8 @@ public sealed class Plugin : IDalamudPlugin
 
         if (Configuration.CleanDisableExperimentalRenderHack)
         {
+            Configuration.ForegroundNoRenderEnabled = false;
+            ForegroundRenderControlService.RestoreRender("automatic background recovery pulse");
             Configuration.PluginEnabled = false;
             ActorSuppressionService.ShowAll();
         }

@@ -7,7 +7,7 @@ namespace DPS;
 [Serializable]
 public class Configuration : IPluginConfiguration
 {
-    public int Version { get; set; } = 1;
+    public int Version { get; set; } = 3;
     public bool PluginEnabled { get; set; }
     public bool DtrBarEnabled { get; set; } = true;
     public int DtrBarMode { get; set; } = 1;
@@ -23,6 +23,7 @@ public class Configuration : IPluginConfiguration
     public TextureReplacementAsset TextureReplacementAsset { get; set; } = TextureReplacementAsset.Black16x16;
     public bool LogTextureRedirects { get; set; }
     public bool BackgroundNoRenderEnabled { get; set; }
+    public bool ForegroundNoRenderEnabled { get; set; }
     public bool BackgroundNoRenderOnlyWhenMinimized { get; set; }
     public bool CleanDisableExperimentalRenderHack { get; set; } = true;
     public int BackgroundSafetyFrameIntervalSeconds { get; set; } = 5;

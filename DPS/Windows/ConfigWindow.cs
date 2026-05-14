@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Linq;
+using System.Numerics;
 using Dalamud.Bindings.ImGui;
 using Dalamud.Interface.Windowing;
 using DPS.Services;
@@ -127,6 +128,28 @@ public sealed class ConfigWindow : Window
 
         ImGui.TextWrapped($"Render gate status: {plugin.BackgroundRenderGateService.Status}");
         ImGui.TextWrapped($"Recovery status: {plugin.BackgroundRecoveryStatus}");
+
+        ImGui.Separator();
+        ImGui.Text("Experimental FOREGROUND No-Render");
+        ImGui.TextDisabled("Immediate direct render-manager flag. Use /dps foff and /dps fon for the fastest live toggle.");
+
+        ImGui.PushStyleColor(ImGuiCol.Button, new Vector4(0.08f, 0.48f, 0.16f, 1f));
+        ImGui.PushStyleColor(ImGuiCol.ButtonHovered, new Vector4(0.12f, 0.62f, 0.22f, 1f));
+        ImGui.PushStyleColor(ImGuiCol.ButtonActive, new Vector4(0.05f, 0.36f, 0.12f, 1f));
+        var foregroundButtonText = cfg.ForegroundNoRenderEnabled
+            ? "CLICK AGAIN TO RESTORE FOREGROUND RENDER"
+            : "EXPERIMENTAL FOREGROUND NO-RENDER";
+        if (ImGui.Button(foregroundButtonText, new Vector2(-1f, 36f)))
+        {
+            if (cfg.ForegroundNoRenderEnabled)
+                plugin.DisableForegroundNoRender("settings");
+            else
+                plugin.ArmForegroundNoRender("settings");
+        }
+        ImGui.PopStyleColor(3);
+
+        ImGui.TextWrapped($"Foreground render status: {plugin.ForegroundRenderControlService.Status}");
+        ImGui.TextWrapped($"Foreground diagnostics: {plugin.ForegroundRenderControlService.GetDiagnosticsLine()}");
 
         ImGui.Separator();
         ImGui.Text("Reduce Problems In Public Areas");
