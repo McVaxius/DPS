@@ -60,7 +60,7 @@ public sealed class Plugin : IDalamudPlugin
 
         CommandManager.AddHandler(PluginInfo.Command, new CommandInfo(OnCommand)
         {
-            HelpMessage = $"Open {PluginInfo.DisplayName}. Use '/dps roff' and '/dps ron' for background no-render, '/dps foff' and '/dps fon' for foreground no-render, and '/dps debug' to expose the paused experimental texture lab for this session.",
+            HelpMessage = $"Open {PluginInfo.DisplayName}. Use '/dps roff' and '/dps ron' for background no-render, '/dps foff' for foreground render OFF, '/dps fon' for foreground render ON, '/dps ws' to reset windows, '/dps j' to randomize windows, and '/dps debug' to expose the paused experimental texture lab for this session.",
         });
 
         PluginInterface.UiBuilder.Draw += WindowSystem.Draw;
@@ -113,6 +113,18 @@ public sealed class Plugin : IDalamudPlugin
 
     public void ToggleMainUi() => mainWindow.Toggle();
     public void ToggleConfigUi() => configWindow.Toggle();
+    public void ResetWindowPositions()
+    {
+        mainWindow.QueueTopLeftPlacement();
+        configWindow.QueueTopLeftPlacement();
+    }
+
+    public void RandomizeWindowPositions()
+    {
+        mainWindow.QueueRandomPlacement();
+        configWindow.QueueRandomPlacement();
+    }
+
     public string BackgroundRecoveryStatus { get; private set; } = "Automatic recovery pulse disabled.";
     public void SetDebugMode(bool enabled)
     {
@@ -352,6 +364,20 @@ public sealed class Plugin : IDalamudPlugin
             return;
         }
 
+        if (trimmedArguments.Equals("ws", StringComparison.OrdinalIgnoreCase))
+        {
+            ResetWindowPositions();
+            Log.Information("[DPS] Main and settings windows moved to 1,1.");
+            return;
+        }
+
+        if (trimmedArguments.Equals("j", StringComparison.OrdinalIgnoreCase))
+        {
+            RandomizeWindowPositions();
+            Log.Information("[DPS] Main and settings windows randomized within viewport.");
+            return;
+        }
+
         if (trimmedArguments.Equals("debug off", StringComparison.OrdinalIgnoreCase) ||
             trimmedArguments.Equals("nodebug", StringComparison.OrdinalIgnoreCase))
         {
@@ -371,6 +397,15 @@ public sealed class Plugin : IDalamudPlugin
 
     private void OnFrameworkUpdate(IFramework framework)
     {
+        try
+        {
+            ForegroundRenderControlService.Tick(Configuration);
+        }
+        catch (Exception ex)
+        {
+            Log.Warning(ex, "[DPS] Foreground no-render tick failed.");
+        }
+
         try
         {
             ActorSuppressionService.Update(Configuration);

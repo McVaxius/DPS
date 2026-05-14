@@ -6,10 +6,13 @@ public sealed unsafe class ForegroundRenderControlService : IDisposable
 {
     private const int ActiveRenderFlagOffset = 0x38358;
     private const long UnavailableWarningIntervalMs = 30_000;
+    private const byte RenderOnByte = 0;
+    private const byte RenderOffByte = 1;
 
     private bool disabledByDps;
     private bool disposed;
     private long nextUnavailableWarningTick;
+    private long nextRewriteInformationTick;
 
     public bool RenderDisabledByDps => disabledByDps;
     public string Status { get; private set; } = "Foreground no-render disabled.";
@@ -36,6 +39,14 @@ public sealed unsafe class ForegroundRenderControlService : IDisposable
             : "Foreground no-render disabled.";
     }
 
+    public void Tick(Configuration configuration)
+    {
+        if (disposed || !configuration.PluginEnabled || !configuration.ForegroundNoRenderEnabled)
+            return;
+
+        DisableRender("framework tick");
+    }
+
     public bool DisableRender(string source)
     {
         if (disposed)
@@ -43,26 +54,24 @@ public sealed unsafe class ForegroundRenderControlService : IDisposable
 
         var wasDisabledByDps = disabledByDps;
 
-        // 0 = render off, 1 = render on.
-        if (!TryWriteRenderByte(0, out var before, out var after, out var error))
+        // Live-observed semantics: 1 = render off, 0 = render on.
+        if (!TryWriteRenderByte(RenderOffByte, out var before, out var after, out var error))
         {
             Status = $"Foreground no-render unavailable: {error}";
             WarnUnavailableThrottled($"Could not disable foreground render via {source}: {error}");
             return false;
         }
 
-        if (after == 0)
-            disabledByDps = true;
+        disabledByDps = after == RenderOffByte;
 
-        Status = after == 0
-            ? "Foreground no-render ACTIVE. Render byte is 0."
+        Status = after == RenderOffByte
+            ? "Foreground no-render ACTIVE. Render byte is 1."
             : $"Foreground no-render armed, but render byte is {FormatByte(after)}.";
 
-        if (!wasDisabledByDps || before != 0)
-            Plugin.Log.Information("[DPS] Foreground render byte write via {Source}: before={Before} requested=0 after={After}.",
-                source, FormatByte(before), FormatByte(after));
+        if (!wasDisabledByDps || before != RenderOffByte)
+            LogDisableWrite(source, before, after, wasDisabledByDps && before != RenderOffByte);
 
-        return after == 0;
+        return after == RenderOffByte;
     }
 
     public bool RestoreRender(string source)
@@ -70,30 +79,24 @@ public sealed unsafe class ForegroundRenderControlService : IDisposable
         if (disposed)
             return false;
 
-        if (!disabledByDps)
-        {
-            Status = "Foreground no-render disabled.";
-            return true;
-        }
-
-        if (!TryWriteRenderByte(1, out var before, out var after, out var error))
+        if (!TryWriteRenderByte(RenderOnByte, out var before, out var after, out var error))
         {
             Status = $"Foreground no-render restore pending: {error}";
             WarnUnavailableThrottled($"Could not restore foreground render via {source}: {error}");
             return false;
         }
 
-        if (after != 0)
+        if (after == RenderOnByte)
             disabledByDps = false;
 
-        Status = after != 0
-            ? "Foreground no-render disabled. Render byte restored to 1."
-            : "Foreground no-render restore requested, but render byte is still 0.";
+        Status = after == RenderOnByte
+            ? "Foreground no-render disabled. Render byte restored to 0."
+            : $"Foreground no-render restore requested, but render byte is still {FormatByte(after)}.";
 
-        Plugin.Log.Information("[DPS] Foreground render byte restore via {Source}: before={Before} requested=1 after={After}.",
+        Plugin.Log.Information("[DPS] Foreground render byte restore via {Source}: before={Before} requested=0 after={After}.",
             source, FormatByte(before), FormatByte(after));
 
-        return after != 0;
+        return after == RenderOnByte;
     }
 
     public ForegroundRenderDiagnostics GetDiagnostics()
@@ -227,6 +230,21 @@ public sealed unsafe class ForegroundRenderControlService : IDisposable
             diagnostics.ManagerAddressText,
             diagnostics.RenderFlagAddressText,
             diagnostics.CurrentByteText);
+    }
+
+    private void LogDisableWrite(string source, byte? before, byte? after, bool throttle)
+    {
+        if (throttle)
+        {
+            var now = Environment.TickCount64;
+            if (nextRewriteInformationTick != 0 && nextRewriteInformationTick - now > 0)
+                return;
+
+            nextRewriteInformationTick = now + UnavailableWarningIntervalMs;
+        }
+
+        Plugin.Log.Information("[DPS] Foreground render byte write via {Source}: before={Before} requested=1 after={After}.",
+            source, FormatByte(before), FormatByte(after));
     }
 
     private static string FormatByte(byte? value)
