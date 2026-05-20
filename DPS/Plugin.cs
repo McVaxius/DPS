@@ -40,7 +40,6 @@ public sealed class Plugin : IDalamudPlugin
 
     public WindowSystem WindowSystem { get; } = new(PluginInfo.InternalName);
     private readonly MainWindow mainWindow;
-    private readonly ConfigWindow configWindow;
     private readonly Random backgroundRecoveryRandom = new();
     private IDtrBarEntry? dtrEntry;
     private DateTime? nextBackgroundRecoveryUtc;
@@ -61,13 +60,11 @@ public sealed class Plugin : IDalamudPlugin
         ForegroundRenderControlService = new ForegroundRenderControlService();
 
         mainWindow = new MainWindow(this);
-        configWindow = new ConfigWindow(this);
         WindowSystem.AddWindow(mainWindow);
-        WindowSystem.AddWindow(configWindow);
 
         CommandManager.AddHandler(PluginInfo.Command, new CommandInfo(OnCommand)
         {
-            HelpMessage = $"Open {PluginInfo.DisplayName}. Use '/dps roff' and '/dps ron' for background no-render, '/dps foff' for foreground render OFF, '/dps fon' for foreground render ON, '/dps ws' to reset windows, '/dps j' to randomize windows, and '/dps debug' to expose the paused experimental texture lab for this session.",
+            HelpMessage = $"Open {PluginInfo.DisplayName}. Use '/dps roff' and '/dps ron' for background no-render, '/dps foff' for foreground render OFF, '/dps fon' for foreground render ON, '/dps ws' to reset the main window, '/dps j' to randomize the main window, and '/dps debug' to expose the paused experimental texture lab for this session.",
         });
 
         PluginInterface.UiBuilder.Draw += WindowSystem.Draw;
@@ -129,17 +126,15 @@ public sealed class Plugin : IDalamudPlugin
     }
 
     public void ToggleMainUi() => mainWindow.Toggle();
-    public void ToggleConfigUi() => configWindow.Toggle();
+    public void ToggleConfigUi() => mainWindow.OpenHotkeysTab();
     public void ResetWindowPositions()
     {
         mainWindow.QueueTopLeftPlacement();
-        configWindow.QueueTopLeftPlacement();
     }
 
     public void RandomizeWindowPositions()
     {
         mainWindow.QueueRandomPlacement();
-        configWindow.QueueRandomPlacement();
     }
 
     public string BackgroundRecoveryStatus { get; private set; } = "Automatic recovery pulse disabled.";
@@ -448,14 +443,14 @@ public sealed class Plugin : IDalamudPlugin
         if (trimmedArguments.Equals("ws", StringComparison.OrdinalIgnoreCase))
         {
             ResetWindowPositions();
-            Log.Information("[DPS] Main and settings windows moved to 1,1.");
+            Log.Information("[DPS] Main window moved to 1,1.");
             return;
         }
 
         if (trimmedArguments.Equals("j", StringComparison.OrdinalIgnoreCase))
         {
             RandomizeWindowPositions();
-            Log.Information("[DPS] Main and settings windows randomized within viewport.");
+            Log.Information("[DPS] Main window randomized within viewport.");
             return;
         }
 
@@ -534,7 +529,7 @@ public sealed class Plugin : IDalamudPlugin
 
     private bool IsKeyboardInputCaptured()
     {
-        if (configWindow.IsCapturingHotkey)
+        if (mainWindow.IsCapturingHotkey)
             return true;
 
         try

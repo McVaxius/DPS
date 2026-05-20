@@ -2,6 +2,7 @@ using System.Diagnostics;
 using System.Numerics;
 using System.Reflection;
 using Dalamud.Bindings.ImGui;
+using Dalamud.Game.ClientState.Keys;
 using Dalamud.Interface.Windowing;
 using DPS.Services;
 
@@ -16,8 +17,20 @@ public sealed class MainWindow : Window
         Random,
     }
 
+    private enum HotkeyTarget
+    {
+        Foreground,
+        Background,
+        Crowd,
+        AllOff,
+    }
+
     private readonly Plugin plugin;
     private PendingPlacement pendingPlacement;
+    private HotkeyTarget? hotkeyCaptureTarget;
+    private bool selectHotkeysTab;
+
+    public bool IsCapturingHotkey => hotkeyCaptureTarget != null;
 
     public MainWindow(Plugin plugin)
         : base($"{PluginInfo.DisplayName}##DPSMain")
@@ -42,6 +55,12 @@ public sealed class MainWindow : Window
         IsOpen = true;
     }
 
+    public void OpenHotkeysTab()
+    {
+        selectHotkeysTab = true;
+        IsOpen = true;
+    }
+
     public override void Draw()
     {
         ApplyPendingPlacement();
@@ -58,6 +77,14 @@ public sealed class MainWindow : Window
             if (ImGui.BeginTabItem("Crowd"))
             {
                 DrawCrowdTab();
+                ImGui.EndTabItem();
+            }
+
+            var hotkeyTabFlags = selectHotkeysTab ? ImGuiTabItemFlags.SetSelected : ImGuiTabItemFlags.None;
+            if (ImGui.BeginTabItem("Hotkeys", hotkeyTabFlags))
+            {
+                selectHotkeysTab = false;
+                DrawHotkeysTab();
                 ImGui.EndTabItem();
             }
 
@@ -128,8 +155,8 @@ public sealed class MainWindow : Window
             plugin.UpdateDtrBar();
         }
         ImGui.SameLine();
-        if (UiHelpers.CompactButton("Settings", 76f))
-            plugin.ToggleConfigUi();
+        if (UiHelpers.CompactButton("Hotkeys", 76f))
+            OpenHotkeysTab();
         ImGui.SameLine();
         UiHelpers.LinkButton("Ko-fi", PluginInfo.SupportUrl);
         ImGui.SameLine();
@@ -174,6 +201,13 @@ public sealed class MainWindow : Window
         if (ImGui.SliderInt("Safety frame interval (sec)", ref safetyFrameInterval, 1, 60))
         {
             cfg.BackgroundSafetyFrameIntervalSeconds = safetyFrameInterval;
+            SaveAndApply();
+        }
+
+        var throttleSleepMs = cfg.BackgroundThrottleSleepMs;
+        if (ImGui.SliderInt("Throttle sleep while gated (ms)", ref throttleSleepMs, 0, 200))
+        {
+            cfg.BackgroundThrottleSleepMs = throttleSleepMs;
             SaveAndApply();
         }
 
@@ -273,6 +307,187 @@ public sealed class MainWindow : Window
             plugin.SetPluginEnabled(false, "crowd tab", showAllOnDisable: true);
     }
 
+    private void DrawHotkeysTab()
+    {
+        ProcessHotkeyCapture();
+
+        UiHelpers.SectionHeader("Hotkeys");
+        if (ImGui.BeginTable("##DpsHotkeyTable", 5, ImGuiTableFlags.BordersInnerH | ImGuiTableFlags.RowBg | ImGuiTableFlags.SizingStretchProp))
+        {
+            ImGui.TableSetupColumn("Action");
+            ImGui.TableSetupColumn("Enable");
+            ImGui.TableSetupColumn("Binding");
+            ImGui.TableSetupColumn("Set");
+            ImGui.TableSetupColumn("Clear");
+            ImGui.TableHeadersRow();
+
+            DrawHotkeyRow("Foreground", HotkeyTarget.Foreground, plugin.Configuration.ForegroundToggleHotkey);
+            DrawHotkeyRow("Background", HotkeyTarget.Background, plugin.Configuration.BackgroundToggleHotkey);
+            DrawHotkeyRow("Crowd", HotkeyTarget.Crowd, plugin.Configuration.CrowdToggleHotkey);
+            DrawHotkeyRow("All Off", HotkeyTarget.AllOff, plugin.Configuration.AllOffHotkey);
+
+            ImGui.EndTable();
+        }
+
+        if (hotkeyCaptureTarget is { } target)
+        {
+            ImGui.Spacing();
+            UiHelpers.StatusPill("Capture", $"{HotkeyTargetLabel(target)} listening", UiHelpers.Info);
+        }
+    }
+
+    private void DrawHotkeyRow(string label, HotkeyTarget target, HotkeyBinding binding)
+    {
+        ImGui.TableNextRow();
+        ImGui.TableSetColumnIndex(0);
+        ImGui.TextUnformatted(label);
+
+        ImGui.TableSetColumnIndex(1);
+        var enabled = binding.Enabled;
+        if (ImGui.Checkbox($"##{target}Enabled", ref enabled))
+        {
+            binding.Enabled = enabled;
+            if (enabled)
+                ClearDuplicateHotkeys(target, binding);
+            SaveAndApply();
+        }
+
+        ImGui.TableSetColumnIndex(2);
+        ImGui.TextUnformatted(UiHelpers.HotkeyStatusText(binding));
+
+        ImGui.TableSetColumnIndex(3);
+        if (ImGui.SmallButton(hotkeyCaptureTarget == target ? $"...##{target}Set" : $"Set##{target}"))
+            hotkeyCaptureTarget = target;
+
+        ImGui.TableSetColumnIndex(4);
+        if (ImGui.SmallButton($"Clear##{target}"))
+        {
+            binding.Clear();
+            if (hotkeyCaptureTarget == target)
+                hotkeyCaptureTarget = null;
+            SaveAndApply();
+        }
+    }
+
+    private void ProcessHotkeyCapture()
+    {
+        if (hotkeyCaptureTarget == null)
+            return;
+
+        if (!TryReadCapturedHotkey(out var binding, out var clear, out var cancel))
+            return;
+
+        var target = hotkeyCaptureTarget.Value;
+        hotkeyCaptureTarget = null;
+
+        if (cancel)
+            return;
+
+        var targetBinding = GetHotkeyBinding(target);
+        if (clear)
+            targetBinding.Clear();
+        else
+            AssignHotkey(target, binding);
+
+        SaveAndApply();
+    }
+
+    private static bool TryReadCapturedHotkey(out HotkeyBinding binding, out bool clear, out bool cancel)
+    {
+        binding = new HotkeyBinding();
+        clear = false;
+        cancel = false;
+
+        foreach (var key in Plugin.KeyState.GetValidVirtualKeys())
+        {
+            var keyCode = (int)key;
+            if (!Plugin.IsVirtualKeyPressed(keyCode))
+                continue;
+
+            if (keyCode == (int)VirtualKey.ESCAPE)
+            {
+                cancel = true;
+                return true;
+            }
+
+            if (keyCode == (int)VirtualKey.BACK || keyCode == (int)VirtualKey.DELETE)
+            {
+                clear = true;
+                return true;
+            }
+
+            if (!IsCaptureKey(keyCode))
+                continue;
+
+            binding = new HotkeyBinding
+            {
+                Enabled = true,
+                KeyCode = keyCode,
+                Ctrl = Plugin.IsCtrlDown(),
+                Alt = Plugin.IsAltDown(),
+                Shift = Plugin.IsShiftDown(),
+            };
+            return true;
+        }
+
+        return false;
+    }
+
+    private static bool IsCaptureKey(int keyCode)
+        => keyCode != (int)VirtualKey.NO_KEY
+        && keyCode != (int)VirtualKey.LBUTTON
+        && keyCode != (int)VirtualKey.RBUTTON
+        && keyCode != (int)VirtualKey.MBUTTON
+        && keyCode != (int)VirtualKey.XBUTTON1
+        && keyCode != (int)VirtualKey.XBUTTON2
+        && keyCode != (int)VirtualKey.ESCAPE
+        && keyCode != (int)VirtualKey.BACK
+        && keyCode != (int)VirtualKey.DELETE
+        && !Plugin.IsModifierKey(keyCode)
+        && Plugin.KeyState.IsVirtualKeyValid(keyCode);
+
+    private void AssignHotkey(HotkeyTarget target, HotkeyBinding binding)
+    {
+        ClearDuplicateHotkeys(target, binding);
+        GetHotkeyBinding(target).SetFrom(binding);
+    }
+
+    private void ClearDuplicateHotkeys(HotkeyTarget owner, HotkeyBinding binding)
+    {
+        if (!binding.HasChord)
+            return;
+
+        foreach (var target in Enum.GetValues<HotkeyTarget>())
+        {
+            if (target == owner)
+                continue;
+
+            var other = GetHotkeyBinding(target);
+            if (other.SameChord(binding))
+                other.Clear();
+        }
+    }
+
+    private HotkeyBinding GetHotkeyBinding(HotkeyTarget target)
+        => target switch
+        {
+            HotkeyTarget.Foreground => plugin.Configuration.ForegroundToggleHotkey,
+            HotkeyTarget.Background => plugin.Configuration.BackgroundToggleHotkey,
+            HotkeyTarget.Crowd => plugin.Configuration.CrowdToggleHotkey,
+            HotkeyTarget.AllOff => plugin.Configuration.AllOffHotkey,
+            _ => plugin.Configuration.AllOffHotkey,
+        };
+
+    private static string HotkeyTargetLabel(HotkeyTarget target)
+        => target switch
+        {
+            HotkeyTarget.Foreground => "Foreground",
+            HotkeyTarget.Background => "Background",
+            HotkeyTarget.Crowd => "Crowd",
+            HotkeyTarget.AllOff => "All Off",
+            _ => "Hotkey",
+        };
+
     private void DrawDiagnosticsTab()
     {
         UiHelpers.SectionHeader("Foreground Byte");
@@ -316,15 +531,68 @@ public sealed class MainWindow : Window
         ImGui.TextUnformatted($"{PluginInfo.DisplayName} {version}");
         ImGui.TextUnformatted(PluginInfo.Summary);
 
+        DrawDtrSection();
+
         UiHelpers.SectionHeader("Commands");
         ImGui.TextUnformatted("/dps");
         ImGui.TextUnformatted("/dps roff    arm background no-render");
         ImGui.TextUnformatted("/dps ron     restore background no-render");
         ImGui.TextUnformatted("/dps foff    foreground render OFF");
         ImGui.TextUnformatted("/dps fon     foreground render ON");
-        ImGui.TextUnformatted("/dps ws      move main/settings to 1,1");
-        ImGui.TextUnformatted("/dps j       randomize main/settings in viewport");
+        ImGui.TextUnformatted("/dps ws      move main window to 1,1");
+        ImGui.TextUnformatted("/dps j       randomize main window in viewport");
         ImGui.TextUnformatted("/dps debug   show texture lab");
+        ImGui.TextUnformatted("/dps debug off");
+    }
+
+    private void DrawDtrSection()
+    {
+        var cfg = plugin.Configuration;
+
+        UiHelpers.SectionHeader("DTR");
+        var dtrEnabled = cfg.DtrBarEnabled;
+        if (ImGui.Checkbox("Show DTR bar entry", ref dtrEnabled))
+        {
+            cfg.DtrBarEnabled = dtrEnabled;
+            SaveAndApply(updateDtr: true);
+        }
+
+        var mode = cfg.DtrBarMode;
+        if (ImGui.BeginCombo("DTR mode", DtrModeLabel(mode)))
+        {
+            for (var value = 0; value <= 2; value++)
+            {
+                var selected = value == mode;
+                if (ImGui.Selectable(DtrModeLabel(value), selected))
+                {
+                    cfg.DtrBarMode = value;
+                    SaveAndApply(updateDtr: true);
+                }
+
+                if (selected)
+                    ImGui.SetItemDefaultFocus();
+            }
+
+            ImGui.EndCombo();
+        }
+
+        var enabledIcon = cfg.DtrIconEnabled;
+        if (ImGui.InputText("Enabled icon", ref enabledIcon, 16))
+        {
+            cfg.DtrIconEnabled = enabledIcon;
+            SaveAndApply(updateDtr: true);
+        }
+
+        var disabledIcon = cfg.DtrIconDisabled;
+        if (ImGui.InputText("Disabled icon", ref disabledIcon, 16))
+        {
+            cfg.DtrIconDisabled = disabledIcon;
+            SaveAndApply(updateDtr: true);
+        }
+
+        UiHelpers.StatusPill("Plugin", cfg.PluginEnabled);
+        ImGui.SameLine();
+        UiHelpers.StatusPill("DTR", cfg.DtrBarEnabled);
     }
 
     private void DrawTextureLab(string id)
@@ -444,11 +712,21 @@ public sealed class MainWindow : Window
         plugin.UpdateDtrBar();
     }
 
-    private void SaveAndApply()
+    private void SaveAndApply(bool updateDtr = false)
     {
         plugin.Configuration.Save();
         plugin.ApplyConfiguration();
+        if (updateDtr)
+            plugin.UpdateDtrBar();
     }
+
+    private static string DtrModeLabel(int mode)
+        => mode switch
+        {
+            1 => "Icon + DPS",
+            2 => "Icon only",
+            _ => "Text status",
+        };
 
     private static bool IsPluginLoaded(string internalName)
     {
