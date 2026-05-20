@@ -23,7 +23,7 @@ public sealed class ActorSuppressionService
 
     public unsafe void Update(Configuration configuration)
     {
-        if (!configuration.PluginEnabled)
+        if (!configuration.PluginEnabled || !configuration.CrowdSuppressionEnabled)
         {
             ShowAll();
             ResetCounters();

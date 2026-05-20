@@ -1,8 +1,10 @@
 using Dalamud.Game.ClientState.Conditions;
+using Dalamud.Game.ClientState.Keys;
 using Dalamud.Game.Command;
 using Dalamud.Game.Gui.Dtr;
 using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Game.Text.SeStringHandling.Payloads;
+using Dalamud.Bindings.ImGui;
 using Dalamud.IoC;
 using Dalamud.Interface.Windowing;
 using Dalamud.Plugin;
@@ -23,6 +25,7 @@ public sealed class Plugin : IDalamudPlugin
     [PluginService] internal static ITargetManager TargetManager { get; private set; } = null!;
     [PluginService] internal static ICondition Condition { get; private set; } = null!;
     [PluginService] internal static IDtrBar DtrBar { get; private set; } = null!;
+    [PluginService] internal static IKeyState KeyState { get; private set; } = null!;
     [PluginService] internal static IPluginLog Log { get; private set; } = null!;
     [PluginService] internal static IGameInteropProvider GameInteropProvider { get; private set; } = null!;
     [PluginService] internal static ISigScanner SigScanner { get; private set; } = null!;
@@ -42,6 +45,10 @@ public sealed class Plugin : IDalamudPlugin
     private IDtrBarEntry? dtrEntry;
     private DateTime? nextBackgroundRecoveryUtc;
     private DateTime? backgroundRecoveryResumeUtc;
+    private bool foregroundHotkeyDown;
+    private bool backgroundHotkeyDown;
+    private bool crowdHotkeyDown;
+    private bool allOffHotkeyDown;
 
     public Plugin()
     {
@@ -89,6 +96,16 @@ public sealed class Plugin : IDalamudPlugin
         {
             Configuration.ForegroundNoRenderEnabled = false;
             Configuration.Version = 3;
+            changed = true;
+        }
+
+        if (Configuration.Version < 4)
+        {
+            Configuration.CrowdSuppressionEnabled = Configuration.HideNonPartyPlayers
+                                                 || Configuration.HideNonPartyPets
+                                                 || Configuration.HideNonPartyChocobos
+                                                 || Configuration.HideNonPartyMinions;
+            Configuration.Version = 4;
             changed = true;
         }
 
@@ -299,6 +316,70 @@ public sealed class Plugin : IDalamudPlugin
         Log.Information("[DPS] Foreground no-render disabled via {Source}{Mode}.", source, cleanDisable ? " with clean-disable" : string.Empty);
     }
 
+    public void ToggleBackgroundNoRenderHotkey()
+    {
+        if (Configuration.BackgroundNoRenderEnabled)
+        {
+            CancelBackgroundRecovery("background hotkey");
+            Configuration.BackgroundNoRenderEnabled = false;
+            Configuration.Save();
+            ApplyConfiguration();
+            UpdateDtrBar();
+            Log.Information("[DPS] Background no-render toggled off via hotkey.");
+            return;
+        }
+
+        ArmBackgroundNoRender("background hotkey");
+    }
+
+    public void ToggleForegroundNoRenderHotkey()
+    {
+        if (Configuration.ForegroundNoRenderEnabled || ForegroundRenderControlService.RenderDisabledByDps)
+        {
+            CancelBackgroundRecovery("foreground hotkey");
+            Configuration.ForegroundNoRenderEnabled = false;
+            ForegroundRenderControlService.RestoreRender("foreground hotkey");
+            Configuration.Save();
+            ApplyConfiguration();
+            UpdateDtrBar();
+            Log.Information("[DPS] Foreground no-render toggled off via hotkey.");
+            return;
+        }
+
+        ArmForegroundNoRender("foreground hotkey");
+    }
+
+    public void SetCrowdSuppressionEnabled(bool enabled, string source, bool enablePluginOnEnable = false)
+    {
+        Configuration.CrowdSuppressionEnabled = enabled;
+        if (enabled && enablePluginOnEnable)
+            Configuration.PluginEnabled = true;
+        if (!enabled)
+            ActorSuppressionService.ShowAll();
+
+        Configuration.Save();
+        ApplyConfiguration();
+        UpdateDtrBar();
+        Log.Information("[DPS] Crowd suppression {State} via {Source}.", enabled ? "enabled" : "disabled", source);
+    }
+
+    public void ToggleCrowdSuppressionHotkey()
+        => SetCrowdSuppressionEnabled(!Configuration.CrowdSuppressionEnabled, "crowd hotkey", enablePluginOnEnable: true);
+
+    public void AllOff(string source)
+    {
+        CancelBackgroundRecovery(source);
+        Configuration.BackgroundNoRenderEnabled = false;
+        Configuration.ForegroundNoRenderEnabled = false;
+        Configuration.CrowdSuppressionEnabled = false;
+        ForegroundRenderControlService.RestoreRender($"all off via {source}");
+        ActorSuppressionService.ShowAll();
+        Configuration.Save();
+        ApplyConfiguration();
+        UpdateDtrBar();
+        Log.Information("[DPS] All operation modes disabled via {Source}.", source);
+    }
+
     public void SetPluginEnabled(bool enabled, string source, bool showAllOnDisable = false)
     {
         if (!enabled)
@@ -397,6 +478,8 @@ public sealed class Plugin : IDalamudPlugin
 
     private void OnFrameworkUpdate(IFramework framework)
     {
+        TickHotkeys();
+
         try
         {
             ForegroundRenderControlService.Tick(Configuration);
@@ -418,6 +501,95 @@ public sealed class Plugin : IDalamudPlugin
         TickBackgroundRecoveryLoop();
         UpdateDtrBar();
     }
+
+    private void TickHotkeys()
+    {
+        var inputCaptured = IsKeyboardInputCaptured();
+        TickHotkey(Configuration.ForegroundToggleHotkey, ref foregroundHotkeyDown, ToggleForegroundNoRenderHotkey, inputCaptured);
+        TickHotkey(Configuration.BackgroundToggleHotkey, ref backgroundHotkeyDown, ToggleBackgroundNoRenderHotkey, inputCaptured);
+        TickHotkey(Configuration.CrowdToggleHotkey, ref crowdHotkeyDown, ToggleCrowdSuppressionHotkey, inputCaptured);
+        TickHotkey(Configuration.AllOffHotkey, ref allOffHotkeyDown, () => AllOff("all off hotkey"), inputCaptured);
+    }
+
+    private void TickHotkey(HotkeyBinding binding, ref bool wasDown, Action action, bool inputCaptured)
+    {
+        if (!IsUsableHotkey(binding))
+        {
+            wasDown = false;
+            return;
+        }
+
+        var isDown = IsHotkeyDown(binding);
+        if (inputCaptured)
+        {
+            wasDown = isDown;
+            return;
+        }
+
+        if (isDown && !wasDown)
+            action();
+
+        wasDown = isDown;
+    }
+
+    private bool IsKeyboardInputCaptured()
+    {
+        if (configWindow.IsCapturingHotkey)
+            return true;
+
+        try
+        {
+            var io = ImGui.GetIO();
+            return io.WantCaptureKeyboard || io.WantTextInput;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    private static bool IsUsableHotkey(HotkeyBinding binding)
+        => binding.Enabled
+        && binding.KeyCode != 0
+        && !IsModifierKey(binding.KeyCode)
+        && KeyState.IsVirtualKeyValid(binding.KeyCode);
+
+    private static bool IsHotkeyDown(HotkeyBinding binding)
+        => IsVirtualKeyPressed(binding.KeyCode)
+        && binding.Ctrl == IsCtrlDown()
+        && binding.Alt == IsAltDown()
+        && binding.Shift == IsShiftDown();
+
+    internal static bool IsVirtualKeyPressed(int keyCode)
+        => KeyState.IsVirtualKeyValid(keyCode) && KeyState[keyCode];
+
+    internal static bool IsModifierKey(int keyCode)
+        => keyCode == (int)VirtualKey.SHIFT
+        || keyCode == (int)VirtualKey.LSHIFT
+        || keyCode == (int)VirtualKey.RSHIFT
+        || keyCode == (int)VirtualKey.CONTROL
+        || keyCode == (int)VirtualKey.LCONTROL
+        || keyCode == (int)VirtualKey.RCONTROL
+        || keyCode == (int)VirtualKey.MENU
+        || keyCode == (int)VirtualKey.LMENU
+        || keyCode == (int)VirtualKey.RMENU
+        || keyCode == (int)VirtualKey.LWIN
+        || keyCode == (int)VirtualKey.RWIN;
+
+    internal static bool IsCtrlDown()
+        => IsVirtualKeyPressed((int)VirtualKey.CONTROL)
+        || IsVirtualKeyPressed((int)VirtualKey.LCONTROL)
+        || IsVirtualKeyPressed((int)VirtualKey.RCONTROL);
+
+    internal static bool IsAltDown()
+        => IsVirtualKeyPressed((int)VirtualKey.MENU)
+        || IsVirtualKeyPressed((int)VirtualKey.LMENU)
+        || IsVirtualKeyPressed((int)VirtualKey.RMENU);
+
+    internal static bool IsShiftDown()
+        => IsVirtualKeyPressed((int)VirtualKey.SHIFT)
+        || IsVirtualKeyPressed((int)VirtualKey.LSHIFT)
+        || IsVirtualKeyPressed((int)VirtualKey.RSHIFT);
 
     private void TickBackgroundRecoveryLoop()
     {

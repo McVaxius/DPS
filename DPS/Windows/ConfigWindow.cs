@@ -1,6 +1,7 @@
 using System.Numerics;
 using System.Reflection;
 using Dalamud.Bindings.ImGui;
+using Dalamud.Game.ClientState.Keys;
 using Dalamud.Interface.Windowing;
 using DPS.Services;
 
@@ -15,8 +16,19 @@ public sealed class ConfigWindow : Window
         Random,
     }
 
+    private enum HotkeyTarget
+    {
+        Foreground,
+        Background,
+        Crowd,
+        AllOff,
+    }
+
     private readonly Plugin plugin;
     private PendingPlacement pendingPlacement;
+    private HotkeyTarget? hotkeyCaptureTarget;
+
+    public bool IsCapturingHotkey => hotkeyCaptureTarget != null;
 
     public ConfigWindow(Plugin plugin)
         : base($"{PluginInfo.DisplayName} Settings##DPSConfig")
@@ -75,6 +87,12 @@ public sealed class ConfigWindow : Window
             if (ImGui.BeginTabItem("Texture Lab"))
             {
                 DrawTextureLabTab();
+                ImGui.EndTabItem();
+            }
+
+            if (ImGui.BeginTabItem("Hotkeys"))
+            {
+                DrawHotkeysTab();
                 ImGui.EndTabItem();
             }
 
@@ -198,6 +216,7 @@ public sealed class ConfigWindow : Window
         }
 
         UiHelpers.SectionHeader("Mode Toggles");
+        UiHelpers.HotkeyStatus("Background hotkey", cfg.BackgroundToggleHotkey);
         var backgroundNoRenderEnabled = cfg.BackgroundNoRenderEnabled;
         if (ImGui.Checkbox("Background no-render", ref backgroundNoRenderEnabled))
         {
@@ -207,6 +226,7 @@ public sealed class ConfigWindow : Window
                 plugin.DisableBackgroundNoRender("settings render tab");
         }
 
+        UiHelpers.HotkeyStatus("Foreground hotkey", cfg.ForegroundToggleHotkey);
         UiHelpers.ForegroundRenderOffCheckbox(plugin, "settings render tab");
         UiHelpers.ForegroundRenderStatus(plugin);
         UiHelpers.Wrapped(plugin.ForegroundRenderControlService.Status);
@@ -243,6 +263,9 @@ public sealed class ConfigWindow : Window
         }
 
         UiHelpers.Wrapped(plugin.BackgroundRecoveryStatus);
+        UiHelpers.HotkeyStatus("All Off hotkey", cfg.AllOffHotkey);
+        if (UiHelpers.CompactButton("All Off", 86f))
+            plugin.AllOff("settings render tab");
     }
 
     private void DrawCrowdDefaultsTab()
@@ -250,6 +273,10 @@ public sealed class ConfigWindow : Window
         var cfg = plugin.Configuration;
 
         UiHelpers.SectionHeader("Crowd Defaults");
+        var crowdEnabled = cfg.CrowdSuppressionEnabled;
+        if (ImGui.Checkbox("Crowd suppression", ref crowdEnabled))
+            plugin.SetCrowdSuppressionEnabled(crowdEnabled, "settings crowd tab", enablePluginOnEnable: true);
+        UiHelpers.HotkeyStatus("Crowd hotkey", cfg.CrowdToggleHotkey);
         DrawToggle("Hide players", cfg.HideNonPartyPlayers, value => cfg.HideNonPartyPlayers = value);
         DrawToggle("Hide pets", cfg.HideNonPartyPets, value => cfg.HideNonPartyPets = value);
         DrawToggle("Hide chocobos", cfg.HideNonPartyChocobos, value => cfg.HideNonPartyChocobos = value);
@@ -332,6 +359,187 @@ public sealed class ConfigWindow : Window
 
         UiHelpers.Wrapped(plugin.TextureRedirectService.Status);
     }
+
+    private void DrawHotkeysTab()
+    {
+        ProcessHotkeyCapture();
+
+        UiHelpers.SectionHeader("Hotkeys");
+        if (ImGui.BeginTable("##DpsHotkeyTable", 5, ImGuiTableFlags.BordersInnerH | ImGuiTableFlags.RowBg | ImGuiTableFlags.SizingStretchProp))
+        {
+            ImGui.TableSetupColumn("Action");
+            ImGui.TableSetupColumn("Enable");
+            ImGui.TableSetupColumn("Binding");
+            ImGui.TableSetupColumn("Set");
+            ImGui.TableSetupColumn("Clear");
+            ImGui.TableHeadersRow();
+
+            DrawHotkeyRow("Foreground", HotkeyTarget.Foreground, plugin.Configuration.ForegroundToggleHotkey);
+            DrawHotkeyRow("Background", HotkeyTarget.Background, plugin.Configuration.BackgroundToggleHotkey);
+            DrawHotkeyRow("Crowd", HotkeyTarget.Crowd, plugin.Configuration.CrowdToggleHotkey);
+            DrawHotkeyRow("All Off", HotkeyTarget.AllOff, plugin.Configuration.AllOffHotkey);
+
+            ImGui.EndTable();
+        }
+
+        if (hotkeyCaptureTarget is { } target)
+        {
+            ImGui.Spacing();
+            UiHelpers.StatusPill("Capture", $"{HotkeyTargetLabel(target)} listening", UiHelpers.Info);
+        }
+    }
+
+    private void DrawHotkeyRow(string label, HotkeyTarget target, HotkeyBinding binding)
+    {
+        ImGui.TableNextRow();
+        ImGui.TableSetColumnIndex(0);
+        ImGui.TextUnformatted(label);
+
+        ImGui.TableSetColumnIndex(1);
+        var enabled = binding.Enabled;
+        if (ImGui.Checkbox($"##{target}Enabled", ref enabled))
+        {
+            binding.Enabled = enabled;
+            if (enabled)
+                ClearDuplicateHotkeys(target, binding);
+            SaveAndApply();
+        }
+
+        ImGui.TableSetColumnIndex(2);
+        ImGui.TextUnformatted(UiHelpers.HotkeyStatusText(binding));
+
+        ImGui.TableSetColumnIndex(3);
+        if (ImGui.SmallButton(hotkeyCaptureTarget == target ? $"...##{target}Set" : $"Set##{target}"))
+            hotkeyCaptureTarget = target;
+
+        ImGui.TableSetColumnIndex(4);
+        if (ImGui.SmallButton($"Clear##{target}"))
+        {
+            binding.Clear();
+            if (hotkeyCaptureTarget == target)
+                hotkeyCaptureTarget = null;
+            SaveAndApply();
+        }
+    }
+
+    private void ProcessHotkeyCapture()
+    {
+        if (hotkeyCaptureTarget == null)
+            return;
+
+        if (!TryReadCapturedHotkey(out var binding, out var clear, out var cancel))
+            return;
+
+        var target = hotkeyCaptureTarget.Value;
+        hotkeyCaptureTarget = null;
+
+        if (cancel)
+            return;
+
+        var targetBinding = GetHotkeyBinding(target);
+        if (clear)
+            targetBinding.Clear();
+        else
+            AssignHotkey(target, binding);
+
+        SaveAndApply();
+    }
+
+    private static bool TryReadCapturedHotkey(out HotkeyBinding binding, out bool clear, out bool cancel)
+    {
+        binding = new HotkeyBinding();
+        clear = false;
+        cancel = false;
+
+        foreach (var key in Plugin.KeyState.GetValidVirtualKeys())
+        {
+            var keyCode = (int)key;
+            if (!Plugin.IsVirtualKeyPressed(keyCode))
+                continue;
+
+            if (keyCode == (int)VirtualKey.ESCAPE)
+            {
+                cancel = true;
+                return true;
+            }
+
+            if (keyCode == (int)VirtualKey.BACK || keyCode == (int)VirtualKey.DELETE)
+            {
+                clear = true;
+                return true;
+            }
+
+            if (!IsCaptureKey(keyCode))
+                continue;
+
+            binding = new HotkeyBinding
+            {
+                Enabled = true,
+                KeyCode = keyCode,
+                Ctrl = Plugin.IsCtrlDown(),
+                Alt = Plugin.IsAltDown(),
+                Shift = Plugin.IsShiftDown(),
+            };
+            return true;
+        }
+
+        return false;
+    }
+
+    private static bool IsCaptureKey(int keyCode)
+        => keyCode != (int)VirtualKey.NO_KEY
+        && keyCode != (int)VirtualKey.LBUTTON
+        && keyCode != (int)VirtualKey.RBUTTON
+        && keyCode != (int)VirtualKey.MBUTTON
+        && keyCode != (int)VirtualKey.XBUTTON1
+        && keyCode != (int)VirtualKey.XBUTTON2
+        && keyCode != (int)VirtualKey.ESCAPE
+        && keyCode != (int)VirtualKey.BACK
+        && keyCode != (int)VirtualKey.DELETE
+        && !Plugin.IsModifierKey(keyCode)
+        && Plugin.KeyState.IsVirtualKeyValid(keyCode);
+
+    private void AssignHotkey(HotkeyTarget target, HotkeyBinding binding)
+    {
+        ClearDuplicateHotkeys(target, binding);
+        GetHotkeyBinding(target).SetFrom(binding);
+    }
+
+    private void ClearDuplicateHotkeys(HotkeyTarget owner, HotkeyBinding binding)
+    {
+        if (!binding.HasChord)
+            return;
+
+        foreach (var target in Enum.GetValues<HotkeyTarget>())
+        {
+            if (target == owner)
+                continue;
+
+            var other = GetHotkeyBinding(target);
+            if (other.SameChord(binding))
+                other.Clear();
+        }
+    }
+
+    private HotkeyBinding GetHotkeyBinding(HotkeyTarget target)
+        => target switch
+        {
+            HotkeyTarget.Foreground => plugin.Configuration.ForegroundToggleHotkey,
+            HotkeyTarget.Background => plugin.Configuration.BackgroundToggleHotkey,
+            HotkeyTarget.Crowd => plugin.Configuration.CrowdToggleHotkey,
+            HotkeyTarget.AllOff => plugin.Configuration.AllOffHotkey,
+            _ => plugin.Configuration.AllOffHotkey,
+        };
+
+    private static string HotkeyTargetLabel(HotkeyTarget target)
+        => target switch
+        {
+            HotkeyTarget.Foreground => "Foreground",
+            HotkeyTarget.Background => "Background",
+            HotkeyTarget.Crowd => "Crowd",
+            HotkeyTarget.AllOff => "All Off",
+            _ => "Hotkey",
+        };
 
     private void DrawAboutTab()
     {

@@ -111,10 +111,15 @@ public sealed class MainWindow : Window
         UiHelpers.StatusPill("BG", cfg.BackgroundNoRenderEnabled, plugin.BackgroundRenderGateService.IsNoRenderActive ? "ACTIVE" : "ARMED");
         UiHelpers.SameLineIfFits(132f);
         UiHelpers.ForegroundRenderStatus(plugin, includeIntent: false);
+        UiHelpers.SameLineIfFits(104f);
+        UiHelpers.StatusPill("Crowd", cfg.CrowdSuppressionEnabled);
 
         ImGui.Spacing();
         if (UiHelpers.CompactButton(cfg.PluginEnabled ? "Stop" : "Run", 58f))
             plugin.SetPluginEnabled(!cfg.PluginEnabled, "main window top bar", showAllOnDisable: cfg.PluginEnabled);
+        ImGui.SameLine();
+        if (UiHelpers.CompactButton("All Off", 70f))
+            plugin.AllOff("main window top bar");
         ImGui.SameLine();
         if (UiHelpers.CompactButton(cfg.DtrBarEnabled ? "DTR On" : "DTR Off", 72f))
         {
@@ -141,6 +146,7 @@ public sealed class MainWindow : Window
         var cfg = plugin.Configuration;
 
         UiHelpers.SectionHeader("Background");
+        UiHelpers.HotkeyStatus("Hotkey", cfg.BackgroundToggleHotkey);
         var backgroundEnabled = cfg.BackgroundNoRenderEnabled;
         if (ImGui.Checkbox("Background no-render", ref backgroundEnabled))
         {
@@ -177,6 +183,7 @@ public sealed class MainWindow : Window
         UiHelpers.Wrapped(plugin.BackgroundRenderGateService.Status);
 
         UiHelpers.SectionHeader("Foreground");
+        UiHelpers.HotkeyStatus("Hotkey", cfg.ForegroundToggleHotkey);
         UiHelpers.ForegroundRenderOffCheckbox(plugin, "main render tab");
         UiHelpers.ForegroundRenderStatus(plugin);
         UiHelpers.Wrapped(plugin.ForegroundRenderControlService.Status);
@@ -222,6 +229,10 @@ public sealed class MainWindow : Window
         UiHelpers.Wrapped(plugin.BackgroundRecoveryStatus);
 
         UiHelpers.SectionHeader("Restore");
+        UiHelpers.HotkeyStatus("All Off hotkey", cfg.AllOffHotkey);
+        if (UiHelpers.CompactButton("All Off", 86f))
+            plugin.AllOff("main restore button");
+        ImGui.SameLine();
         if (UiHelpers.CompactButton("Restore FG", 92f))
             plugin.DisableForegroundNoRender("main restore button");
         ImGui.SameLine();
@@ -237,6 +248,10 @@ public sealed class MainWindow : Window
         var cfg = plugin.Configuration;
 
         UiHelpers.SectionHeader("Visibility");
+        var crowdEnabled = cfg.CrowdSuppressionEnabled;
+        if (ImGui.Checkbox("Crowd suppression", ref crowdEnabled))
+            plugin.SetCrowdSuppressionEnabled(crowdEnabled, "main crowd tab", enablePluginOnEnable: true);
+        UiHelpers.HotkeyStatus("Hotkey", cfg.CrowdToggleHotkey);
         DrawToggle("Hide players", cfg.HideNonPartyPlayers, value => cfg.HideNonPartyPlayers = value);
         DrawToggle("Hide pets", cfg.HideNonPartyPets, value => cfg.HideNonPartyPets = value);
         DrawToggle("Hide chocobos", cfg.HideNonPartyChocobos, value => cfg.HideNonPartyChocobos = value);
