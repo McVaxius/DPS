@@ -53,31 +53,8 @@ internal static class UiHelpers
             ImGui.SameLine();
     }
 
-    public static bool CompactButton(string label, float width = 84f, string? tooltip = null)
-    {
-        var clicked = ImGui.Button(label, new Vector2(width, 0f));
-        Tooltip(tooltip);
-        return clicked;
-    }
-
-    public static bool SmallButton(string label, string? tooltip = null)
-    {
-        var clicked = ImGui.SmallButton(label);
-        Tooltip(tooltip);
-        return clicked;
-    }
-
-    public static void Tooltip(string? text)
-    {
-        if (string.IsNullOrWhiteSpace(text) || !ImGui.IsItemHovered())
-            return;
-
-        ImGui.BeginTooltip();
-        ImGui.PushTextWrapPos(ImGui.GetFontSize() * 28f);
-        ImGui.TextUnformatted(text);
-        ImGui.PopTextWrapPos();
-        ImGui.EndTooltip();
-    }
+    public static bool CompactButton(string label, float width = 84f)
+        => ImGui.Button(label, new Vector2(width, 0f));
 
     public static void HotkeyStatus(string label, HotkeyBinding binding)
         => StatusPill(label, HotkeyStatusText(binding), binding.Enabled && binding.HasChord ? Good : Muted);
@@ -151,9 +128,9 @@ internal static class UiHelpers
         StatusPill("FG intent", intentOff ? "OFF" : "ON", intentOff ? Warn : Muted);
     }
 
-    public static void LinkButton(string label, string url, string? tooltip = null)
+    public static void LinkButton(string label, string url)
     {
-        if (SmallButton(label, tooltip))
+        if (ImGui.SmallButton(label))
             Process.Start(new ProcessStartInfo { FileName = url, UseShellExecute = true });
     }
 

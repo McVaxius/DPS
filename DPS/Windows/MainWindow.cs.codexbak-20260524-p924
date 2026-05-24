@@ -142,42 +142,27 @@ public sealed class MainWindow : Window
         UiHelpers.StatusPill("Crowd", cfg.CrowdSuppressionEnabled);
 
         ImGui.Spacing();
-        if (UiHelpers.CompactButton(
-                cfg.PluginEnabled ? "Stop" : "Run",
-                58f,
-                cfg.PluginEnabled ? "Stop DPS and restore visibility." : "Start DPS controls."))
-        {
+        if (UiHelpers.CompactButton(cfg.PluginEnabled ? "Stop" : "Run", 58f))
             plugin.SetPluginEnabled(!cfg.PluginEnabled, "main window top bar", showAllOnDisable: cfg.PluginEnabled);
-        }
-
-        UiHelpers.SameLineIfFits(78f);
-        if (UiHelpers.CompactButton("All Off", 70f, "Disable foreground, background, and crowd suppression."))
+        ImGui.SameLine();
+        if (UiHelpers.CompactButton("All Off", 70f))
             plugin.AllOff("main window top bar");
-        UiHelpers.SameLineIfFits(100f);
-        if (UiHelpers.CompactButton("Restore FG", 92f, "Restore foreground rendering."))
-            plugin.DisableForegroundNoRender("main window top bar");
-        UiHelpers.SameLineIfFits(100f);
-        if (UiHelpers.CompactButton("Restore BG", 92f, "Restore background rendering."))
-            plugin.DisableBackgroundNoRender("main window top bar");
-        UiHelpers.SameLineIfFits(94f);
-        if (UiHelpers.CompactButton("Show All", 86f, "Disable DPS and restore all hidden visuals."))
-            plugin.SetPluginEnabled(false, "main window top bar show all", showAllOnDisable: true);
-        UiHelpers.SameLineIfFits(80f);
-        if (UiHelpers.CompactButton(cfg.DtrBarEnabled ? "DTR On" : "DTR Off", 72f, "Toggle the DPS DTR bar entry."))
+        ImGui.SameLine();
+        if (UiHelpers.CompactButton(cfg.DtrBarEnabled ? "DTR On" : "DTR Off", 72f))
         {
             cfg.DtrBarEnabled = !cfg.DtrBarEnabled;
             cfg.Save();
             plugin.UpdateDtrBar();
         }
-        UiHelpers.SameLineIfFits(84f);
-        if (UiHelpers.CompactButton("Hotkeys", 76f, "Open hotkey bindings."))
+        ImGui.SameLine();
+        if (UiHelpers.CompactButton("Hotkeys", 76f))
             OpenHotkeysTab();
-        UiHelpers.SameLineIfFits(54f);
-        UiHelpers.LinkButton("Ko-fi", PluginInfo.SupportUrl, "Open Ko-fi support page.");
-        UiHelpers.SameLineIfFits(70f);
-        UiHelpers.LinkButton("Discord", PluginInfo.DiscordUrl, "Open Discord community link.");
-        UiHelpers.SameLineIfFits(58f);
-        if (UiHelpers.SmallButton("Close", "Close this window."))
+        ImGui.SameLine();
+        UiHelpers.LinkButton("Ko-fi", PluginInfo.SupportUrl);
+        ImGui.SameLine();
+        UiHelpers.LinkButton("Discord", PluginInfo.DiscordUrl);
+        ImGui.SameLine();
+        if (ImGui.SmallButton("Close"))
             IsOpen = false;
 
         ImGui.Separator();
@@ -186,20 +171,6 @@ public sealed class MainWindow : Window
     private void DrawRenderTab()
     {
         var cfg = plugin.Configuration;
-
-        UiHelpers.SectionHeader("Foreground");
-        UiHelpers.HotkeyStatus("Hotkey", cfg.ForegroundToggleHotkey);
-        UiHelpers.ForegroundRenderOffCheckbox(plugin, "main render tab");
-        UiHelpers.ForegroundRenderStatus(plugin);
-        UiHelpers.Wrapped(plugin.ForegroundRenderControlService.Status);
-
-        if (cfg.BackgroundNoRenderEnabled && cfg.ForegroundNoRenderEnabled)
-            UiHelpers.WarningStrip("Mutual exclusion failed: both render modes are enabled.", danger: true);
-        else
-            UiHelpers.StatusPill("Mutual exclusion", "OK", UiHelpers.Good);
-
-        ImGui.Spacing();
-        ImGui.Separator();
 
         UiHelpers.SectionHeader("Background");
         UiHelpers.HotkeyStatus("Hotkey", cfg.BackgroundToggleHotkey);
@@ -245,6 +216,17 @@ public sealed class MainWindow : Window
         UiHelpers.StatusPill("Gate", plugin.BackgroundRenderGateService.IsNoRenderActive, "ACTIVE", "WAIT");
         UiHelpers.Wrapped(plugin.BackgroundRenderGateService.Status);
 
+        UiHelpers.SectionHeader("Foreground");
+        UiHelpers.HotkeyStatus("Hotkey", cfg.ForegroundToggleHotkey);
+        UiHelpers.ForegroundRenderOffCheckbox(plugin, "main render tab");
+        UiHelpers.ForegroundRenderStatus(plugin);
+        UiHelpers.Wrapped(plugin.ForegroundRenderControlService.Status);
+
+        if (cfg.BackgroundNoRenderEnabled && cfg.ForegroundNoRenderEnabled)
+            UiHelpers.WarningStrip("Mutual exclusion failed: both render modes are enabled.", danger: true);
+        else
+            UiHelpers.StatusPill("Mutual exclusion", "OK", UiHelpers.Good);
+
         UiHelpers.SectionHeader("Recovery");
         var recoveryLoopEnabled = cfg.BackgroundRecoveryLoopEnabled;
         if (ImGui.Checkbox("Automatic recovery pulse", ref recoveryLoopEnabled))
@@ -279,6 +261,20 @@ public sealed class MainWindow : Window
             }
         }
         UiHelpers.Wrapped(plugin.BackgroundRecoveryStatus);
+
+        UiHelpers.SectionHeader("Restore");
+        UiHelpers.HotkeyStatus("All Off hotkey", cfg.AllOffHotkey);
+        if (UiHelpers.CompactButton("All Off", 86f))
+            plugin.AllOff("main restore button");
+        ImGui.SameLine();
+        if (UiHelpers.CompactButton("Restore FG", 92f))
+            plugin.DisableForegroundNoRender("main restore button");
+        ImGui.SameLine();
+        if (UiHelpers.CompactButton("Restore BG", 92f))
+            plugin.DisableBackgroundNoRender("main restore button");
+        ImGui.SameLine();
+        if (UiHelpers.CompactButton("Show All", 86f))
+            plugin.SetPluginEnabled(false, "main show all", showAllOnDisable: true);
     }
 
     private void DrawCrowdTab()
@@ -307,7 +303,7 @@ public sealed class MainWindow : Window
         }
 
         UiHelpers.Wrapped(plugin.ActorSuppressionService.Status);
-        if (UiHelpers.CompactButton("Show Everything Again", 170f, "Disable DPS and restore all hidden crowd actors."))
+        if (UiHelpers.CompactButton("Show Everything Again", 170f))
             plugin.SetPluginEnabled(false, "crowd tab", showAllOnDisable: true);
     }
 
@@ -360,15 +356,11 @@ public sealed class MainWindow : Window
         ImGui.TextUnformatted(UiHelpers.HotkeyStatusText(binding));
 
         ImGui.TableSetColumnIndex(3);
-        if (UiHelpers.SmallButton(
-                hotkeyCaptureTarget == target ? $"...##{target}Set" : $"Set##{target}",
-                $"Capture a new hotkey for {label}."))
-        {
+        if (ImGui.SmallButton(hotkeyCaptureTarget == target ? $"...##{target}Set" : $"Set##{target}"))
             hotkeyCaptureTarget = target;
-        }
 
         ImGui.TableSetColumnIndex(4);
-        if (UiHelpers.SmallButton($"Clear##{target}", $"Clear the {label} hotkey."))
+        if (ImGui.SmallButton($"Clear##{target}"))
         {
             binding.Clear();
             if (hotkeyCaptureTarget == target)
@@ -520,7 +512,7 @@ public sealed class MainWindow : Window
         else
         {
             ImGui.TextDisabled("Debug texture lab hidden for this session.");
-            if (UiHelpers.CompactButton("Enable Debug", 112f, "Show texture diagnostics for this session."))
+            if (UiHelpers.CompactButton("Enable Debug", 112f))
                 plugin.SetDebugMode(true);
         }
     }
@@ -530,9 +522,9 @@ public sealed class MainWindow : Window
         var version = Assembly.GetExecutingAssembly().GetName().Version?.ToString() ?? "0.0.0.0";
 
         UiHelpers.SectionHeader("Links");
-        UiHelpers.LinkButton("Ko-fi", PluginInfo.SupportUrl, "Open Ko-fi support page.");
+        UiHelpers.LinkButton("Ko-fi", PluginInfo.SupportUrl);
         ImGui.SameLine();
-        UiHelpers.LinkButton("Discord", PluginInfo.DiscordUrl, "Open Discord community link.");
+        UiHelpers.LinkButton("Discord", PluginInfo.DiscordUrl);
         UiHelpers.Wrapped(PluginInfo.DiscordFeedbackNote);
 
         UiHelpers.SectionHeader("Version");
@@ -659,16 +651,16 @@ public sealed class MainWindow : Window
             SaveAndApply();
         }
 
-        if (UiHelpers.CompactButton($"Chara##{id}", 74f, "Redirect character textures to the black 16x16 asset."))
+        if (UiHelpers.CompactButton($"Chara##{id}", 74f))
             ApplyTexturePreset(TextureRedirectScope.CharaOnly, TextureReplacementAsset.Black16x16);
         ImGui.SameLine();
-        if (UiHelpers.CompactButton($"World##{id}", 74f, "Redirect world textures to the black 16x16 asset."))
+        if (UiHelpers.CompactButton($"World##{id}", 74f))
             ApplyTexturePreset(TextureRedirectScope.WorldOnly, TextureReplacementAsset.Black16x16);
         ImGui.SameLine();
-        if (UiHelpers.CompactButton($"VFX##{id}", 64f, "Redirect effect textures to the black 16x16 asset."))
+        if (UiHelpers.CompactButton($"VFX##{id}", 64f))
             ApplyTexturePreset(TextureRedirectScope.EffectsOnly, TextureReplacementAsset.Black16x16);
         ImGui.SameLine();
-        if (UiHelpers.CompactButton($"Global##{id}", 76f, "Redirect all tracked textures to the black 1x1 asset."))
+        if (UiHelpers.CompactButton($"Global##{id}", 76f))
             ApplyTexturePreset(TextureRedirectScope.EverythingTex, TextureReplacementAsset.Black1x1);
 
         ImGui.TextUnformatted($"Status: {plugin.TextureRedirectService.Status}");
@@ -677,7 +669,7 @@ public sealed class MainWindow : Window
         ImGui.TextUnformatted($"Failed loads: {plugin.TextureRedirectService.FailedRedirectLoads}");
         UiHelpers.Wrapped($"Last game path: {plugin.TextureRedirectService.LastGameTexturePath}");
         UiHelpers.Wrapped($"Replacement path: {plugin.TextureRedirectService.LastReplacementPath}");
-        if (UiHelpers.SmallButton($"Clear Texture Stats##{id}", "Reset texture redirect counters."))
+        if (ImGui.SmallButton($"Clear Texture Stats##{id}"))
             plugin.TextureRedirectService.ResetStats();
     }
 
