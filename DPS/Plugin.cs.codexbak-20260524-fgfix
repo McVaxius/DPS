@@ -11,7 +11,6 @@ using Dalamud.Plugin;
 using Dalamud.Plugin.Services;
 using DPS.Services;
 using DPS.Windows;
-using System.Diagnostics;
 using System.Linq;
 
 namespace DPS;
@@ -45,9 +44,6 @@ public sealed class Plugin : IDalamudPlugin
     private IDtrBarEntry? dtrEntry;
     private DateTime? nextBackgroundRecoveryUtc;
     private DateTime? backgroundRecoveryResumeUtc;
-    private DateTime nextFrameworkHitchLogUtc = DateTime.MinValue;
-    private double lastFrameworkSlowUpdateMs;
-    private string lastFrameworkSlowSection = "none";
     private bool foregroundHotkeyDown;
     private bool backgroundHotkeyDown;
     private bool crowdHotkeyDown;
@@ -61,7 +57,7 @@ public sealed class Plugin : IDalamudPlugin
         ActorSuppressionService = new ActorSuppressionService();
         TextureRedirectService = new TextureRedirectService();
         BackgroundRenderGateService = new BackgroundRenderGateService();
-        ForegroundRenderControlService = new ForegroundRenderControlService(BackgroundRenderGateService);
+        ForegroundRenderControlService = new ForegroundRenderControlService();
 
         mainWindow = new MainWindow(this);
         WindowSystem.AddWindow(mainWindow);
@@ -110,20 +106,6 @@ public sealed class Plugin : IDalamudPlugin
             changed = true;
         }
 
-        if (Configuration.Version < 5)
-        {
-            Configuration.ForegroundNoRenderMode = ForegroundNoRenderMode.SafeFrozenFrame;
-            Configuration.Version = 5;
-            changed = true;
-        }
-
-        if (Configuration.Version < 6)
-        {
-            Configuration.BackgroundThrottleSleepMs = 0;
-            Configuration.Version = 6;
-            changed = true;
-        }
-
         if (changed)
             Configuration.Save();
     }
@@ -169,20 +151,20 @@ public sealed class Plugin : IDalamudPlugin
     {
         try
         {
-            BackgroundRenderGateService.RefreshState(Configuration);
-        }
-        catch (Exception ex)
-        {
-            Log.Warning(ex, "[DPS] Background no-render refresh failed.");
-        }
-
-        try
-        {
             ForegroundRenderControlService.RefreshState(Configuration);
         }
         catch (Exception ex)
         {
             Log.Warning(ex, "[DPS] Foreground no-render refresh failed.");
+        }
+
+        try
+        {
+            BackgroundRenderGateService.RefreshState(Configuration);
+        }
+        catch (Exception ex)
+        {
+            Log.Warning(ex, "[DPS] Background no-render refresh failed.");
         }
 
         try
@@ -327,47 +309,6 @@ public sealed class Plugin : IDalamudPlugin
         ApplyConfiguration();
         UpdateDtrBar();
         Log.Information("[DPS] Foreground no-render disabled via {Source}{Mode}.", source, cleanDisable ? " with clean-disable" : string.Empty);
-    }
-
-    public void SetForegroundNoRenderMode(ForegroundNoRenderMode mode, string source)
-    {
-        if (Configuration.ForegroundNoRenderMode == mode)
-            return;
-
-        var previousMode = Configuration.ForegroundNoRenderMode;
-        var foregroundWasEnabled = Configuration.ForegroundNoRenderEnabled;
-        var legacyByteWasActive = previousMode == ForegroundNoRenderMode.LegacyBlackScreen
-                               && ForegroundRenderControlService.RenderDisabledByDps;
-        if (foregroundWasEnabled || ForegroundRenderControlService.RenderDisabledByDps || BackgroundRenderGateService.IsForegroundNoRenderActive)
-        {
-            Configuration.ForegroundNoRenderEnabled = false;
-
-            try
-            {
-                BackgroundRenderGateService.RefreshState(Configuration);
-            }
-            catch (Exception ex)
-            {
-                Log.Warning(ex, "[DPS] Background no-render refresh failed while switching foreground no-render mode.");
-            }
-
-            var restored = ForegroundRenderControlService.RestoreRender($"foreground mode switch via {source}");
-            Configuration.ForegroundNoRenderEnabled = foregroundWasEnabled;
-
-            if (!restored && legacyByteWasActive)
-            {
-                ApplyConfiguration();
-                UpdateDtrBar();
-                Log.Warning("[DPS] Foreground no-render mode switch via {Source} aborted because legacy render byte restore failed.", source);
-                return;
-            }
-        }
-
-        Configuration.ForegroundNoRenderMode = mode;
-        Configuration.Save();
-        ApplyConfiguration();
-        UpdateDtrBar();
-        Log.Information("[DPS] Foreground no-render mode changed via {Source}: {PreviousMode} -> {Mode}.", source, previousMode, mode);
     }
 
     public void ToggleBackgroundNoRenderHotkey()
@@ -532,82 +473,28 @@ public sealed class Plugin : IDalamudPlugin
 
     private void OnFrameworkUpdate(IFramework framework)
     {
-        var updateStopwatch = Stopwatch.StartNew();
-        var slowestSection = "none";
-        var slowestMs = 0d;
+        TickHotkeys();
 
-        void Measure(string section, Action action)
+        try
         {
-            var sectionStopwatch = Stopwatch.StartNew();
-            action();
-            sectionStopwatch.Stop();
-
-            var elapsedMs = sectionStopwatch.Elapsed.TotalMilliseconds;
-            if (elapsedMs > slowestMs)
-            {
-                slowestMs = elapsedMs;
-                slowestSection = section;
-            }
+            ForegroundRenderControlService.Tick(Configuration);
+        }
+        catch (Exception ex)
+        {
+            Log.Warning(ex, "[DPS] Foreground no-render tick failed.");
         }
 
-        Measure("hotkeys", TickHotkeys);
-
-        Measure("foreground-render", () =>
+        try
         {
-            try
-            {
-                ForegroundRenderControlService.Tick(Configuration);
-            }
-            catch (Exception ex)
-            {
-                Log.Warning(ex, "[DPS] Foreground no-render tick failed.");
-            }
-        });
-
-        Measure("actor-suppression", () =>
+            ActorSuppressionService.Update(Configuration);
+        }
+        catch (Exception ex)
         {
-            try
-            {
-                ActorSuppressionService.Update(Configuration);
-            }
-            catch (Exception ex)
-            {
-                Log.Warning(ex, "[DPS] Actor suppression update failed during framework tick.");
-            }
-        });
+            Log.Warning(ex, "[DPS] Actor suppression update failed during framework tick.");
+        }
 
-        Measure("background-recovery", TickBackgroundRecoveryLoop);
-        Measure("dtr", UpdateDtrBar);
-
-        updateStopwatch.Stop();
-        ReportFrameworkHitch(updateStopwatch.Elapsed.TotalMilliseconds, slowestSection, slowestMs);
-    }
-
-    private void ReportFrameworkHitch(double elapsedMs, string slowestSection, double slowestMs)
-    {
-        lastFrameworkSlowUpdateMs = elapsedMs;
-        lastFrameworkSlowSection = slowestSection;
-        if (elapsedMs < 100d)
-            return;
-
-        var now = DateTime.UtcNow;
-        if (now < nextFrameworkHitchLogUtc)
-            return;
-
-        nextFrameworkHitchLogUtc = now.AddSeconds(5);
-        var transition = Condition[ConditionFlag.BetweenAreas] || Condition[ConditionFlag.BetweenAreas51];
-        Log.Warning(
-            "[DPS][HITCH] framework update slow elapsedMs={ElapsedMs:0.0}; slowSection={SlowSection}; slowSectionMs={SlowSectionMs:0.0}; transition={Transition}; mode=bg:{BackgroundEnabled}/fg:{ForegroundEnabled}:{ForegroundMode}; activeGate={ActiveGate}; hooksActive={HooksActive}; lastHookMaxMs={HookMaxMs:0.0}.",
-            elapsedMs,
-            slowestSection,
-            slowestMs,
-            transition,
-            Configuration.BackgroundNoRenderEnabled,
-            Configuration.ForegroundNoRenderEnabled,
-            Configuration.ForegroundNoRenderMode,
-            BackgroundRenderGateService.ActiveGateMode,
-            BackgroundRenderGateService.HooksActive,
-            BackgroundRenderGateService.MaxRenderHookDelayMs);
+        TickBackgroundRecoveryLoop();
+        UpdateDtrBar();
     }
 
     private void TickHotkeys()
@@ -743,7 +630,7 @@ public sealed class Plugin : IDalamudPlugin
 
         if (now >= nextBackgroundRecoveryUtc.Value)
         {
-            if (BackgroundRenderGateService.IsBackgroundNoRenderActive)
+            if (BackgroundRenderGateService.IsNoRenderActive)
             {
                 StartBackgroundRecoveryPulse();
             }

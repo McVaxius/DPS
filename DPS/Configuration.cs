@@ -4,10 +4,16 @@ using DPS.Services;
 
 namespace DPS;
 
+public enum ForegroundNoRenderMode
+{
+    SafeFrozenFrame = 0,
+    LegacyBlackScreen = 1,
+}
+
 [Serializable]
 public class Configuration : IPluginConfiguration
 {
-    public int Version { get; set; } = 4;
+    public int Version { get; set; } = 6;
     public bool PluginEnabled { get; set; }
     public bool DtrBarEnabled { get; set; } = true;
     public int DtrBarMode { get; set; } = 1;
@@ -25,10 +31,11 @@ public class Configuration : IPluginConfiguration
     public bool LogTextureRedirects { get; set; }
     public bool BackgroundNoRenderEnabled { get; set; }
     public bool ForegroundNoRenderEnabled { get; set; }
+    public ForegroundNoRenderMode ForegroundNoRenderMode { get; set; } = ForegroundNoRenderMode.LegacyBlackScreen;
     public bool BackgroundNoRenderOnlyWhenMinimized { get; set; }
     public bool CleanDisableExperimentalRenderHack { get; set; } = true;
     public int BackgroundSafetyFrameIntervalSeconds { get; set; } = 5;
-    public int BackgroundThrottleSleepMs { get; set; } = 50;
+    public int BackgroundThrottleSleepMs { get; set; }
     public bool BackgroundRecoveryLoopEnabled { get; set; }
     public int BackgroundRecoveryMinMinutes { get; set; } = 15;
     public int BackgroundRecoveryMaxMinutes { get; set; } = 20;

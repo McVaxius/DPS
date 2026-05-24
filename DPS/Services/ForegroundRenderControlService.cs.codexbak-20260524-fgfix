@@ -9,38 +9,20 @@ public sealed unsafe class ForegroundRenderControlService : IDisposable
     private const byte RenderOnByte = 0;
     private const byte RenderOffByte = 1;
 
-    private readonly BackgroundRenderGateService renderGate;
-    private Configuration? configuration;
     private bool disabledByDps;
     private bool disposed;
     private long nextUnavailableWarningTick;
     private long nextRewriteInformationTick;
 
-    public ForegroundRenderControlService(BackgroundRenderGateService renderGate)
-    {
-        this.renderGate = renderGate;
-    }
-
-    public bool RenderDisabledByDps
-        => !disposed
-        && (disabledByDps
-            || (SafeModeRequested && renderGate.HooksActive && !renderGate.InitializationFailed));
-
+    public bool RenderDisabledByDps => disabledByDps;
     public string Status { get; private set; } = "Foreground no-render disabled.";
-
-    private bool SafeModeRequested
-        => configuration?.PluginEnabled == true
-        && configuration.ForegroundNoRenderEnabled
-        && configuration.ForegroundNoRenderMode == ForegroundNoRenderMode.SafeFrozenFrame;
 
     public void RefreshState(Configuration configuration)
     {
         if (disposed)
             return;
 
-        this.configuration = configuration;
-
-        if (ShouldUseLegacyRenderByte(configuration))
+        if (configuration.PluginEnabled && configuration.ForegroundNoRenderEnabled)
         {
             DisableRender("configuration");
             return;
@@ -52,29 +34,17 @@ public sealed unsafe class ForegroundRenderControlService : IDisposable
             return;
         }
 
-        UpdateStatus();
+        Status = configuration.ForegroundNoRenderEnabled
+            ? "Foreground no-render waiting for plugin enable."
+            : "Foreground no-render disabled.";
     }
 
     public void Tick(Configuration configuration)
     {
-        if (disposed)
+        if (disposed || !configuration.PluginEnabled || !configuration.ForegroundNoRenderEnabled)
             return;
 
-        this.configuration = configuration;
-
-        if (ShouldUseLegacyRenderByte(configuration))
-        {
-            DisableRender("framework tick");
-            return;
-        }
-
-        if (disabledByDps)
-        {
-            RestoreRender("framework tick");
-            return;
-        }
-
-        UpdateStatus();
+        DisableRender("framework tick");
     }
 
     public bool DisableRender(string source)
@@ -109,14 +79,6 @@ public sealed unsafe class ForegroundRenderControlService : IDisposable
         if (disposed)
             return false;
 
-        var shouldWriteRenderByte = disabledByDps
-                                 || configuration?.ForegroundNoRenderMode == ForegroundNoRenderMode.LegacyBlackScreen;
-        if (!shouldWriteRenderByte)
-        {
-            UpdateStatus();
-            return true;
-        }
-
         if (!TryWriteRenderByte(RenderOnByte, out var before, out var after, out var error))
         {
             Status = $"Foreground no-render restore pending: {error}";
@@ -147,10 +109,9 @@ public sealed unsafe class ForegroundRenderControlService : IDisposable
             ? string.Empty
             : $"; Error={diagnostics.Error}";
 
-        return $"DPS DLL={diagnostics.DpsAssemblyPath}; Mode={diagnostics.ModeText}; Intent={diagnostics.IntentText}; " +
-               $"Gate={diagnostics.GateText}; ClientStructs DLL={diagnostics.ClientStructsAssemblyPath}; " +
+        return $"DPS DLL={diagnostics.DpsAssemblyPath}; ClientStructs DLL={diagnostics.ClientStructsAssemblyPath}; " +
                $"ClientStructs version={diagnostics.ClientStructsAssemblyVersion}; Manager={diagnostics.ManagerAddressText}; " +
-               $"Flag={diagnostics.RenderFlagAddressText}; Byte={diagnostics.CurrentByteText}; Status={diagnostics.Status}{error}";
+               $"Flag={diagnostics.RenderFlagAddressText}; Byte={diagnostics.CurrentByteText}{error}";
     }
 
     public void Dispose()
@@ -162,13 +123,7 @@ public sealed unsafe class ForegroundRenderControlService : IDisposable
             RestoreRender("dispose");
 
         disposed = true;
-        Status = "Foreground no-render disabled.";
     }
-
-    private static bool ShouldUseLegacyRenderByte(Configuration configuration)
-        => configuration.PluginEnabled
-        && configuration.ForegroundNoRenderEnabled
-        && configuration.ForegroundNoRenderMode == ForegroundNoRenderMode.LegacyBlackScreen;
 
     private static bool TryWriteRenderByte(byte value, out byte? before, out byte? after, out string error)
     {
@@ -218,120 +173,46 @@ public sealed unsafe class ForegroundRenderControlService : IDisposable
         return true;
     }
 
-    private ForegroundRenderDiagnostics CreateDiagnostics()
+    private static ForegroundRenderDiagnostics CreateDiagnostics()
     {
         var dpsAssemblyPath = NormalizeAssemblyPath(typeof(ForegroundRenderControlService).Assembly.Location);
         var clientStructsAssembly = typeof(Manager).Assembly;
         var clientStructsAssemblyPath = NormalizeAssemblyPath(clientStructsAssembly.Location);
         var clientStructsAssemblyVersion = clientStructsAssembly.GetName().Version?.ToString() ?? "(unknown)";
-        var mode = configuration?.ForegroundNoRenderMode ?? ForegroundNoRenderMode.SafeFrozenFrame;
-        var pluginEnabled = configuration?.PluginEnabled == true;
-        var foregroundEnabled = configuration?.ForegroundNoRenderEnabled == true;
-        var byteModeUsed = mode == ForegroundNoRenderMode.LegacyBlackScreen || disabledByDps;
 
         Manager* manager = null;
         byte* flagPointer = null;
         byte? currentByte = null;
         string? error = null;
 
-        if (mode == ForegroundNoRenderMode.SafeFrozenFrame && renderGate.InitializationFailed)
-            error = renderGate.InitializationError ?? "Render gate hook initialization failed.";
-
-        if (byteModeUsed)
+        if (TryGetRenderFlagPointer(out manager, out flagPointer, out var pointerError))
         {
-            if (TryGetRenderFlagPointer(out manager, out flagPointer, out var pointerError))
+            try
             {
-                try
-                {
-                    currentByte = *flagPointer;
-                }
-                catch (Exception ex)
-                {
-                    error = AppendError(error, $"render flag read failed: {ex.GetType().Name}: {ex.Message}");
-                }
+                currentByte = *flagPointer;
             }
-            else
+            catch (Exception ex)
             {
-                error = AppendError(error, pointerError);
+                error = $"render flag read failed: {ex.GetType().Name}: {ex.Message}";
             }
+        }
+        else
+        {
+            error = pointerError;
         }
 
         return new ForegroundRenderDiagnostics(
             dpsAssemblyPath,
             clientStructsAssemblyPath,
             clientStructsAssemblyVersion,
-            mode,
-            pluginEnabled,
-            foregroundEnabled,
-            renderGate.InitializationAttempted,
-            renderGate.InitializationFailed,
-            renderGate.HooksActive,
-            renderGate.IsForegroundNoRenderArmed,
-            renderGate.IsForegroundNoRenderActive,
-            byteModeUsed,
             (nint)(void*)manager,
             (nint)flagPointer,
             currentByte,
-            Status,
             error);
-    }
-
-    private void UpdateStatus()
-    {
-        if (configuration == null || !configuration.ForegroundNoRenderEnabled)
-        {
-            Status = "Foreground no-render disabled.";
-            return;
-        }
-
-        if (!configuration.PluginEnabled)
-        {
-            Status = "Foreground no-render waiting for plugin enable.";
-            return;
-        }
-
-        if (configuration.ForegroundNoRenderMode == ForegroundNoRenderMode.LegacyBlackScreen)
-        {
-            Status = disabledByDps
-                ? "Foreground no-render ACTIVE. Render byte is 1."
-                : "Foreground no-render armed. Legacy render byte mode ready.";
-            return;
-        }
-
-        if (configuration.ForegroundNoRenderMode != ForegroundNoRenderMode.SafeFrozenFrame)
-        {
-            Status = $"Foreground no-render unavailable: unsupported mode {configuration.ForegroundNoRenderMode}.";
-            return;
-        }
-
-        if (renderGate.InitializationFailed)
-        {
-            Status = $"Foreground no-render unavailable: {renderGate.InitializationError ?? "render gate hook initialization failed"}";
-            return;
-        }
-
-        if (!renderGate.InitializationAttempted)
-        {
-            Status = "Foreground no-render armed. Render gate hook not initialized yet.";
-            return;
-        }
-
-        if (!renderGate.HooksActive)
-        {
-            Status = "Foreground no-render unavailable: render gate hook is not active.";
-            return;
-        }
-
-        Status = renderGate.IsForegroundNoRenderActive
-            ? "Foreground no-render ACTIVE. Render gate is suppressing frames."
-            : "Foreground no-render armed. Render gate ready.";
     }
 
     private static string NormalizeAssemblyPath(string path)
         => string.IsNullOrWhiteSpace(path) ? "(dynamic or unavailable)" : path;
-
-    private static string AppendError(string? current, string next)
-        => string.IsNullOrWhiteSpace(current) ? next : $"{current}; {next}";
 
     private void WarnUnavailableThrottled(string message)
     {
@@ -374,63 +255,14 @@ public sealed record ForegroundRenderDiagnostics(
     string DpsAssemblyPath,
     string ClientStructsAssemblyPath,
     string ClientStructsAssemblyVersion,
-    ForegroundNoRenderMode Mode,
-    bool PluginEnabled,
-    bool ForegroundNoRenderEnabled,
-    bool HookInitializationAttempted,
-    bool HookInitializationFailed,
-    bool HooksActive,
-    bool GateArmed,
-    bool GateActive,
-    bool ByteModeUsed,
     nint ManagerAddress,
     nint RenderFlagAddress,
     byte? CurrentByte,
-    string Status,
     string? Error)
 {
-    public string ModeText
-        => Mode == ForegroundNoRenderMode.LegacyBlackScreen
-            ? "legacy black screen"
-            : "safe frozen frame";
-
-    public string IntentText
-    {
-        get
-        {
-            if (!ForegroundNoRenderEnabled)
-                return "ON";
-
-            return PluginEnabled ? $"OFF requested ({ModeText})" : "OFF requested, waiting for plugin enable";
-        }
-    }
-
-    public string GateText
-    {
-        get
-        {
-            if (Mode != ForegroundNoRenderMode.SafeFrozenFrame)
-                return "NOT USED";
-
-            if (HookInitializationFailed)
-                return "FAILED";
-
-            if (GateActive)
-                return "ACTIVE";
-
-            if (GateArmed)
-                return "ARMED";
-
-            return HooksActive ? "READY" : HookInitializationAttempted ? "IDLE" : "NOT INITIALIZED";
-        }
-    }
-
-    public string ManagerAddressText => ByteModeUsed ? FormatAddress(ManagerAddress) : "(not used)";
-    public string RenderFlagAddressText => ByteModeUsed ? FormatAddress(RenderFlagAddress) : "(not used)";
-    public string CurrentByteText => ByteModeUsed ? FormatByte(CurrentByte) : "(not used)";
-
-    private static string FormatByte(byte? value)
-        => value.HasValue ? $"{value.Value} (0x{value.Value:X2})" : "(unavailable)";
+    public string ManagerAddressText => FormatAddress(ManagerAddress);
+    public string RenderFlagAddressText => FormatAddress(RenderFlagAddress);
+    public string CurrentByteText => CurrentByte.HasValue ? $"{CurrentByte.Value} (0x{CurrentByte.Value:X2})" : "(unavailable)";
 
     private static string FormatAddress(nint address)
     {

@@ -135,7 +135,7 @@ public sealed class MainWindow : Window
         UiHelpers.SameLineIfFits(86f);
         UiHelpers.StatusPill("Plugin", cfg.PluginEnabled);
         UiHelpers.SameLineIfFits(92f);
-        UiHelpers.StatusPill("BG", cfg.BackgroundNoRenderEnabled, plugin.BackgroundRenderGateService.IsBackgroundNoRenderActive ? "ACTIVE" : "ARMED");
+        UiHelpers.StatusPill("BG", cfg.BackgroundNoRenderEnabled, plugin.BackgroundRenderGateService.IsNoRenderActive ? "ACTIVE" : "ARMED");
         UiHelpers.SameLineIfFits(132f);
         UiHelpers.ForegroundRenderStatus(plugin, includeIntent: false);
         UiHelpers.SameLineIfFits(104f);
@@ -190,7 +190,6 @@ public sealed class MainWindow : Window
         UiHelpers.SectionHeader("Foreground");
         UiHelpers.HotkeyStatus("Hotkey", cfg.ForegroundToggleHotkey);
         UiHelpers.ForegroundRenderOffCheckbox(plugin, "main render tab");
-        DrawForegroundNoRenderModeSelector();
         UiHelpers.ForegroundRenderStatus(plugin);
         UiHelpers.Wrapped(plugin.ForegroundRenderControlService.Status);
 
@@ -235,18 +234,15 @@ public sealed class MainWindow : Window
         }
 
         var throttleSleepMs = cfg.BackgroundThrottleSleepMs;
-        if (ImGui.SliderInt("Advanced throttle sleep while gated (unsafe, ms)", ref throttleSleepMs, 0, 200))
+        if (ImGui.SliderInt("Throttle sleep while gated (ms)", ref throttleSleepMs, 0, 200))
         {
             cfg.BackgroundThrottleSleepMs = throttleSleepMs;
             SaveAndApply();
         }
-        UiHelpers.Tooltip("0 is recommended. Sleeping inside the render hook can hitch area changes.");
 
         UiHelpers.StatusPill("Hook", plugin.BackgroundRenderGateService.HooksActive, "READY", "IDLE");
         ImGui.SameLine();
-        UiHelpers.StatusPill("Gate", plugin.BackgroundRenderGateService.IsBackgroundNoRenderActive, "ACTIVE", "WAIT");
-        ImGui.SameLine();
-        UiHelpers.StatusPill("Transition", !plugin.BackgroundRenderGateService.TransitionBypassActive, "NORMAL", "BYPASS");
+        UiHelpers.StatusPill("Gate", plugin.BackgroundRenderGateService.IsNoRenderActive, "ACTIVE", "WAIT");
         UiHelpers.Wrapped(plugin.BackgroundRenderGateService.Status);
 
         UiHelpers.SectionHeader("Recovery");
@@ -283,20 +279,6 @@ public sealed class MainWindow : Window
             }
         }
         UiHelpers.Wrapped(plugin.BackgroundRecoveryStatus);
-    }
-
-    private void DrawForegroundNoRenderModeSelector()
-    {
-        var cfg = plugin.Configuration;
-        var safeMode = cfg.ForegroundNoRenderMode == ForegroundNoRenderMode.SafeFrozenFrame;
-        if (ImGui.RadioButton("De-render with occasional recovery frames", safeMode))
-            plugin.SetForegroundNoRenderMode(ForegroundNoRenderMode.SafeFrozenFrame, "main render tab");
-        UiHelpers.Tooltip("Uses the render gate path and leaves the last rendered frame visible.");
-
-        var legacyMode = cfg.ForegroundNoRenderMode == ForegroundNoRenderMode.LegacyBlackScreen;
-        if (ImGui.RadioButton("De-render with black screen", legacyMode))
-            plugin.SetForegroundNoRenderMode(ForegroundNoRenderMode.LegacyBlackScreen, "main render tab");
-        UiHelpers.Tooltip("Uses the legacy render-byte path and blanks foreground rendering.");
     }
 
     private void DrawCrowdTab()
@@ -516,17 +498,14 @@ public sealed class MainWindow : Window
 
     private void DrawDiagnosticsTab()
     {
-        UiHelpers.SectionHeader("Foreground Render");
+        UiHelpers.SectionHeader("Foreground Byte");
         UiHelpers.Wrapped(plugin.ForegroundRenderControlService.GetDiagnosticsLine());
 
         UiHelpers.SectionHeader("Background Hook");
         UiHelpers.StatusPill("Hook active", plugin.BackgroundRenderGateService.HooksActive, "YES", "NO");
         ImGui.SameLine();
-        UiHelpers.StatusPill("No-render", plugin.BackgroundRenderGateService.IsBackgroundNoRenderActive, "YES", "NO");
-        ImGui.SameLine();
-        UiHelpers.StatusPill("Transition bypass", plugin.BackgroundRenderGateService.TransitionBypassActive, "YES", "NO");
+        UiHelpers.StatusPill("No-render", plugin.BackgroundRenderGateService.IsNoRenderActive, "YES", "NO");
         UiHelpers.Wrapped(plugin.BackgroundRenderGateService.Status);
-        UiHelpers.Wrapped($"Max render-hook delay: {plugin.BackgroundRenderGateService.MaxRenderHookDelayMs:0.0} ms");
 
         UiHelpers.SectionHeader("Recovery");
         UiHelpers.Wrapped(plugin.BackgroundRecoveryStatus);
