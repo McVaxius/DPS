@@ -13,7 +13,7 @@ public enum ForegroundNoRenderMode
 [Serializable]
 public class Configuration : IPluginConfiguration
 {
-    public int Version { get; set; } = 6;
+    public int Version { get; set; } = 7;
     public bool PluginEnabled { get; set; }
     public bool DtrBarEnabled { get; set; } = true;
     public int DtrBarMode { get; set; } = 1;
@@ -44,9 +44,24 @@ public class Configuration : IPluginConfiguration
     public HotkeyBinding BackgroundToggleHotkey { get; set; } = new();
     public HotkeyBinding CrowdToggleHotkey { get; set; } = new();
     public HotkeyBinding AllOffHotkey { get; set; } = new();
+    public bool WindowPlacementAutoLoadEnabled { get; set; }
+    public SavedWindowPlacement? WindowPlacement { get; set; }
 
     public void Save()
         => Plugin.PluginInterface.SavePluginConfig(this);
+}
+
+[Serializable]
+public sealed class SavedWindowPlacement
+{
+    public int X { get; set; }
+    public int Y { get; set; }
+    public string? MonitorDeviceName { get; set; }
+    public int MonitorLeft { get; set; }
+    public int MonitorTop { get; set; }
+    public int MonitorRight { get; set; }
+    public int MonitorBottom { get; set; }
+    public DateTime SavedUtc { get; set; }
 }
 
 [Serializable]

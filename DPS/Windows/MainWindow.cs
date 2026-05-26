@@ -88,6 +88,12 @@ public sealed class MainWindow : Window
                 ImGui.EndTabItem();
             }
 
+            if (ImGui.BeginTabItem("Window XY"))
+            {
+                DrawWindowPlacementTab();
+                ImGui.EndTabItem();
+            }
+
             if (ImGui.BeginTabItem("Diagnostics"))
             {
                 DrawDiagnosticsTab();
@@ -514,6 +520,60 @@ public sealed class MainWindow : Window
             _ => "Hotkey",
         };
 
+    private void DrawWindowPlacementTab()
+    {
+        var cfg = plugin.Configuration;
+
+        UiHelpers.SectionHeader("Current Game Window");
+        if (plugin.WindowPlacementService.TryReadCurrentPlacement(out var current, out var currentStatus))
+        {
+            if (ImGui.BeginTable("##DpsCurrentGameWindowPlacement", 2, ImGuiTableFlags.SizingStretchProp))
+            {
+                DrawInfoRow("X/Y", $"{current.X}, {current.Y}");
+                DrawInfoRow("Size", $"{current.Width}x{current.Height}");
+                DrawInfoRow("Monitor", WindowPlacementService.FormatMonitor(current.MonitorDeviceName));
+                DrawInfoRow("Monitor bounds", WindowPlacementService.FormatBounds(current.MonitorLeft, current.MonitorTop, current.MonitorRight, current.MonitorBottom));
+                ImGui.EndTable();
+            }
+        }
+        else
+        {
+            UiHelpers.WarningStrip(currentStatus);
+        }
+
+        UiHelpers.SectionHeader("Saved Position");
+        var saved = cfg.WindowPlacement;
+        if (saved == null)
+        {
+            ImGui.TextDisabled("No saved game window placement.");
+        }
+        else if (ImGui.BeginTable("##DpsSavedGameWindowPlacement", 2, ImGuiTableFlags.SizingStretchProp))
+        {
+            DrawInfoRow("X/Y", $"{saved.X}, {saved.Y}");
+            DrawInfoRow("Monitor", WindowPlacementService.FormatMonitor(saved.MonitorDeviceName));
+            DrawInfoRow("Monitor bounds", WindowPlacementService.FormatBounds(saved.MonitorLeft, saved.MonitorTop, saved.MonitorRight, saved.MonitorBottom));
+            DrawInfoRow("Saved UTC", saved.SavedUtc == default ? "unknown" : saved.SavedUtc.ToString("u"));
+            ImGui.EndTable();
+        }
+
+        UiHelpers.SectionHeader("Load");
+        var autoLoad = cfg.WindowPlacementAutoLoadEnabled;
+        if (ImGui.Checkbox("Load saved window position + display on client load", ref autoLoad))
+            plugin.SetWindowPlacementAutoLoadEnabled(autoLoad, "main window xy tab");
+
+        if (UiHelpers.CompactButton("Save Current Window", 164f, "Save the current game client top-left position and monitor."))
+            plugin.SaveCurrentWindowPlacement("main window xy tab");
+        UiHelpers.SameLineIfFits(164f);
+        if (UiHelpers.CompactButton("Load Saved Window", 156f, "Move the game client to the saved position and monitor."))
+            plugin.LoadSavedWindowPlacement("main window xy tab");
+        UiHelpers.SameLineIfFits(132f);
+        if (UiHelpers.CompactButton("Reset This Tab", 122f, "Clear saved game window placement and disable auto-load."))
+            plugin.ResetWindowPlacementTab("main window xy tab");
+
+        UiHelpers.SectionHeader("Last Action");
+        UiHelpers.Wrapped(plugin.WindowPlacementService.Status);
+    }
+
     private void DrawDiagnosticsTab()
     {
         UiHelpers.SectionHeader("Foreground Render");
@@ -568,8 +628,11 @@ public sealed class MainWindow : Window
         ImGui.TextUnformatted("/dps ron     restore background no-render");
         ImGui.TextUnformatted("/dps foff    foreground render OFF");
         ImGui.TextUnformatted("/dps fon     foreground render ON");
-        ImGui.TextUnformatted("/dps ws      move main window to 1,1");
-        ImGui.TextUnformatted("/dps j       randomize main window in viewport");
+        ImGui.TextUnformatted("/dps ws      move plugin UI window to 1,1");
+        ImGui.TextUnformatted("/dps j       randomize plugin UI window in viewport");
+        ImGui.TextUnformatted("/dps wsave   save game window X/Y + monitor");
+        ImGui.TextUnformatted("/dps wload   load saved game window X/Y + monitor");
+        ImGui.TextUnformatted("/dps wreset  reset Window XY tab");
         ImGui.TextUnformatted("/dps debug   show texture lab");
         ImGui.TextUnformatted("/dps debug off");
     }
@@ -719,6 +782,15 @@ public sealed class MainWindow : Window
         ImGui.TextUnformatted(label);
         ImGui.TableSetColumnIndex(1);
         ImGui.TextUnformatted(value.ToString());
+    }
+
+    private static void DrawInfoRow(string label, string value)
+    {
+        ImGui.TableNextRow();
+        ImGui.TableSetColumnIndex(0);
+        ImGui.TextUnformatted(label);
+        ImGui.TableSetColumnIndex(1);
+        ImGui.TextUnformatted(value);
     }
 
     private static void DrawHelperStatus(string label, bool loaded)
