@@ -13,12 +13,18 @@ public enum ForegroundNoRenderMode
 [Serializable]
 public class Configuration : IPluginConfiguration
 {
-    public int Version { get; set; } = 7;
+    public int Version { get; set; } = 8;
     public bool PluginEnabled { get; set; }
     public bool DtrBarEnabled { get; set; } = true;
     public int DtrBarMode { get; set; } = 1;
     public string DtrIconEnabled { get; set; } = "\uE0BB";
     public string DtrIconDisabled { get; set; } = "\uE0BC";
+    public bool DtrClickTurnEverythingOff { get; set; } = true;
+    public bool DtrClickOpenMainWindow { get; set; } = true;
+    public bool DtrClickTogglePluginEnabled { get; set; }
+    public bool DtrClickToggleBackgroundNoRender { get; set; }
+    public bool DtrClickToggleForegroundNoRender { get; set; }
+    public bool DtrClickToggleCrowdSuppression { get; set; }
     public bool CrowdSuppressionEnabled { get; set; }
     public bool HideNonPartyPlayers { get; set; }
     public bool HideNonPartyPets { get; set; }

@@ -88,6 +88,12 @@ public sealed class MainWindow : Window
                 ImGui.EndTabItem();
             }
 
+            if (ImGui.BeginTabItem("DTR"))
+            {
+                DrawDtrTab();
+                ImGui.EndTabItem();
+            }
+
             if (ImGui.BeginTabItem("Window XY"))
             {
                 DrawWindowPlacementTab();
@@ -620,8 +626,6 @@ public sealed class MainWindow : Window
         ImGui.TextUnformatted($"{PluginInfo.DisplayName} {version}");
         ImGui.TextUnformatted(PluginInfo.Summary);
 
-        DrawDtrSection();
-
         UiHelpers.SectionHeader("Commands");
         ImGui.TextUnformatted("/dps");
         ImGui.TextUnformatted("/dps roff    arm background no-render");
@@ -637,11 +641,21 @@ public sealed class MainWindow : Window
         ImGui.TextUnformatted("/dps debug off");
     }
 
-    private void DrawDtrSection()
+    private void DrawDtrTab()
+    {
+        DrawDtrDisplaySection();
+
+        ImGui.Spacing();
+        ImGui.Separator();
+
+        DrawDtrClickActionsSection();
+    }
+
+    private void DrawDtrDisplaySection()
     {
         var cfg = plugin.Configuration;
 
-        UiHelpers.SectionHeader("DTR");
+        UiHelpers.SectionHeader("Display");
         var dtrEnabled = cfg.DtrBarEnabled;
         if (ImGui.Checkbox("Show DTR bar entry", ref dtrEnabled))
         {
@@ -685,6 +699,66 @@ public sealed class MainWindow : Window
         UiHelpers.StatusPill("Plugin", cfg.PluginEnabled);
         ImGui.SameLine();
         UiHelpers.StatusPill("DTR", cfg.DtrBarEnabled);
+        ImGui.SameLine();
+        UiHelpers.StatusPill("Click", HasAnyDtrClickAction(cfg), "CONFIGURED", "NOOP");
+        UiHelpers.Wrapped($"Preview: {DtrPreviewText(cfg)}");
+        UiHelpers.Wrapped($"Tooltip: {PluginInfo.DisplayName} {(cfg.PluginEnabled ? "On" : "Off")}. {plugin.GetDtrClickActionSummary()}");
+    }
+
+    private void DrawDtrClickActionsSection()
+    {
+        var cfg = plugin.Configuration;
+
+        UiHelpers.SectionHeader("Click Actions");
+        DrawDtrClickActionToggle("Turn everything off", cfg.DtrClickTurnEverythingOff, value => cfg.DtrClickTurnEverythingOff = value);
+        DrawDtrClickActionToggle("Toggle plugin enabled", cfg.DtrClickTogglePluginEnabled, value => cfg.DtrClickTogglePluginEnabled = value);
+        DrawDtrClickActionToggle("Toggle background no-render", cfg.DtrClickToggleBackgroundNoRender, value => cfg.DtrClickToggleBackgroundNoRender = value);
+        DrawDtrClickActionToggle("Toggle foreground no-render", cfg.DtrClickToggleForegroundNoRender, value => cfg.DtrClickToggleForegroundNoRender = value);
+        DrawDtrClickActionToggle("Toggle crowd suppression", cfg.DtrClickToggleCrowdSuppression, value => cfg.DtrClickToggleCrowdSuppression = value);
+        DrawDtrClickActionToggle("Open main window", cfg.DtrClickOpenMainWindow, value => cfg.DtrClickOpenMainWindow = value);
+
+        if (UiHelpers.CompactButton("Reset DTR Defaults", 154f, "Restore default DTR click actions."))
+        {
+            cfg.DtrClickTurnEverythingOff = true;
+            cfg.DtrClickOpenMainWindow = true;
+            cfg.DtrClickTogglePluginEnabled = false;
+            cfg.DtrClickToggleBackgroundNoRender = false;
+            cfg.DtrClickToggleForegroundNoRender = false;
+            cfg.DtrClickToggleCrowdSuppression = false;
+            SaveAndApply(updateDtr: true);
+        }
+
+        UiHelpers.Wrapped(plugin.GetDtrClickActionSummary());
+    }
+
+    private void DrawDtrClickActionToggle(string label, bool value, Action<bool> setValue)
+    {
+        var current = value;
+        if (ImGui.Checkbox(label, ref current))
+        {
+            setValue(current);
+            SaveAndApply(updateDtr: true);
+        }
+    }
+
+    private static bool HasAnyDtrClickAction(Configuration cfg)
+        => cfg.DtrClickTurnEverythingOff
+        || cfg.DtrClickTogglePluginEnabled
+        || cfg.DtrClickToggleBackgroundNoRender
+        || cfg.DtrClickToggleForegroundNoRender
+        || cfg.DtrClickToggleCrowdSuppression
+        || cfg.DtrClickOpenMainWindow;
+
+    private static string DtrPreviewText(Configuration cfg)
+    {
+        var icon = cfg.PluginEnabled ? cfg.DtrIconEnabled : cfg.DtrIconDisabled;
+        var status = cfg.PluginEnabled ? "On" : "Off";
+        return cfg.DtrBarMode switch
+        {
+            1 => $"{icon} DPS",
+            2 => icon,
+            _ => $"DPS: {status}",
+        };
     }
 
     private void DrawTextureLab(string id)

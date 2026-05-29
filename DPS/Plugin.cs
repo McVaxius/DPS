@@ -134,6 +134,18 @@ public sealed class Plugin : IDalamudPlugin
             changed = true;
         }
 
+        if (Configuration.Version < 8)
+        {
+            Configuration.DtrClickTurnEverythingOff = true;
+            Configuration.DtrClickOpenMainWindow = true;
+            Configuration.DtrClickTogglePluginEnabled = false;
+            Configuration.DtrClickToggleBackgroundNoRender = false;
+            Configuration.DtrClickToggleForegroundNoRender = false;
+            Configuration.DtrClickToggleCrowdSuppression = false;
+            Configuration.Version = 8;
+            changed = true;
+        }
+
         if (changed)
             Configuration.Save();
     }
@@ -295,17 +307,68 @@ public sealed class Plugin : IDalamudPlugin
             2 => new SeString(new TextPayload(icon)),
             _ => new SeString(new TextPayload($"DPS: {status}")),
         };
-        dtrEntry.Tooltip = new SeString(new TextPayload($"{PluginInfo.DisplayName} {status}. Click to toggle."));
+        dtrEntry.Tooltip = new SeString(new TextPayload($"{PluginInfo.DisplayName} {status}. {GetDtrClickActionSummary()}"));
     }
 
     private void SetupDtrBar()
     {
         dtrEntry = DtrBar.Get(PluginInfo.DisplayName);
-        dtrEntry.OnClick = _ =>
+        dtrEntry.OnClick = _ => RunDtrClickActions();
+    }
+
+    public string GetDtrClickActionSummary()
+    {
+        var actions = new List<string>();
+
+        if (Configuration.DtrClickTurnEverythingOff)
+            actions.Add("turn everything off");
+        if (Configuration.DtrClickTogglePluginEnabled)
+            actions.Add("toggle plugin");
+        if (Configuration.DtrClickToggleBackgroundNoRender)
+            actions.Add("toggle background no-render");
+        if (Configuration.DtrClickToggleForegroundNoRender)
+            actions.Add("toggle foreground no-render");
+        if (Configuration.DtrClickToggleCrowdSuppression)
+            actions.Add("toggle crowd suppression");
+        if (Configuration.DtrClickOpenMainWindow)
+            actions.Add("open main window");
+
+        return actions.Count == 0
+            ? "No click actions configured."
+            : $"Click: {string.Join("; then ", actions)}.";
+    }
+
+    public void RunDtrClickActions()
+    {
+        if (!Configuration.DtrClickTurnEverythingOff
+            && !Configuration.DtrClickTogglePluginEnabled
+            && !Configuration.DtrClickToggleBackgroundNoRender
+            && !Configuration.DtrClickToggleForegroundNoRender
+            && !Configuration.DtrClickToggleCrowdSuppression
+            && !Configuration.DtrClickOpenMainWindow)
         {
-            var enabled = !Configuration.PluginEnabled;
-            SetPluginEnabled(enabled, "DTR", showAllOnDisable: !enabled);
-        };
+            return;
+        }
+
+        const string source = "DTR click";
+
+        if (Configuration.DtrClickTurnEverythingOff)
+            AllOff(source);
+
+        if (Configuration.DtrClickTogglePluginEnabled)
+            SetPluginEnabled(!Configuration.PluginEnabled, source, showAllOnDisable: Configuration.PluginEnabled);
+
+        if (Configuration.DtrClickToggleBackgroundNoRender)
+            ToggleBackgroundNoRender(source);
+
+        if (Configuration.DtrClickToggleForegroundNoRender)
+            ToggleForegroundNoRender(source);
+
+        if (Configuration.DtrClickToggleCrowdSuppression)
+            SetCrowdSuppressionEnabled(!Configuration.CrowdSuppressionEnabled, source, enablePluginOnEnable: true);
+
+        if (Configuration.DtrClickOpenMainWindow)
+            mainWindow.IsOpen = true;
     }
 
     public bool IsCustomResolutionInstalled()
@@ -440,36 +503,42 @@ public sealed class Plugin : IDalamudPlugin
     }
 
     public void ToggleBackgroundNoRenderHotkey()
+        => ToggleBackgroundNoRender("background hotkey");
+
+    private void ToggleBackgroundNoRender(string source)
     {
         if (Configuration.BackgroundNoRenderEnabled)
         {
-            CancelBackgroundRecovery("background hotkey");
+            CancelBackgroundRecovery(source);
             Configuration.BackgroundNoRenderEnabled = false;
             Configuration.Save();
             ApplyConfiguration();
             UpdateDtrBar();
-            Log.Information("[DPS] Background no-render toggled off via hotkey.");
+            Log.Information("[DPS] Background no-render toggled off via {Source}.", source);
             return;
         }
 
-        ArmBackgroundNoRender("background hotkey");
+        ArmBackgroundNoRender(source);
     }
 
     public void ToggleForegroundNoRenderHotkey()
+        => ToggleForegroundNoRender("foreground hotkey");
+
+    private void ToggleForegroundNoRender(string source)
     {
         if (Configuration.ForegroundNoRenderEnabled || ForegroundRenderControlService.RenderDisabledByDps)
         {
-            CancelBackgroundRecovery("foreground hotkey");
+            CancelBackgroundRecovery(source);
             Configuration.ForegroundNoRenderEnabled = false;
-            ForegroundRenderControlService.RestoreRender("foreground hotkey");
+            ForegroundRenderControlService.RestoreRender(source);
             Configuration.Save();
             ApplyConfiguration();
             UpdateDtrBar();
-            Log.Information("[DPS] Foreground no-render toggled off via hotkey.");
+            Log.Information("[DPS] Foreground no-render toggled off via {Source}.", source);
             return;
         }
 
-        ArmForegroundNoRender("foreground hotkey");
+        ArmForegroundNoRender(source);
     }
 
     public void SetCrowdSuppressionEnabled(bool enabled, string source, bool enablePluginOnEnable = false)
@@ -492,6 +561,7 @@ public sealed class Plugin : IDalamudPlugin
     public void AllOff(string source)
     {
         CancelBackgroundRecovery(source);
+        Configuration.PluginEnabled = false;
         Configuration.BackgroundNoRenderEnabled = false;
         Configuration.ForegroundNoRenderEnabled = false;
         Configuration.CrowdSuppressionEnabled = false;
