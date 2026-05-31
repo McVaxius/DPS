@@ -529,14 +529,17 @@ public sealed class MainWindow : Window
     private void DrawWindowPlacementTab()
     {
         var cfg = plugin.Configuration;
+        var hasCurrent = plugin.WindowPlacementService.TryReadCurrentPlacement(out var current, out var currentStatus);
 
         UiHelpers.SectionHeader("Current Game Window");
-        if (plugin.WindowPlacementService.TryReadCurrentPlacement(out var current, out var currentStatus))
+        if (hasCurrent)
         {
             if (ImGui.BeginTable("##DpsCurrentGameWindowPlacement", 2, ImGuiTableFlags.SizingStretchProp))
             {
-                DrawInfoRow("X/Y", $"{current.X}, {current.Y}");
-                DrawInfoRow("Size", $"{current.Width}x{current.Height}");
+                DrawInfoRow("X", current.X.ToString());
+                DrawInfoRow("Y", current.Y.ToString());
+                DrawInfoRow("Width", current.Width.ToString());
+                DrawInfoRow("Height", current.Height.ToString());
                 DrawInfoRow("Monitor", WindowPlacementService.FormatMonitor(current.MonitorDeviceName));
                 DrawInfoRow("Monitor bounds", WindowPlacementService.FormatBounds(current.MonitorLeft, current.MonitorTop, current.MonitorRight, current.MonitorBottom));
                 ImGui.EndTable();
@@ -547,15 +550,34 @@ public sealed class MainWindow : Window
             UiHelpers.WarningStrip(currentStatus);
         }
 
-        UiHelpers.SectionHeader("Saved Position");
+        if (hasCurrent)
+        {
+            var liveX = current.X;
+            var liveY = current.Y;
+            var liveWidth = Math.Max(1, current.Width);
+            var liveHeight = Math.Max(1, current.Height);
+
+            UiHelpers.SectionHeader("Position Editor");
+            DrawWindowScalarEditor("X", ref liveX, target => plugin.MoveGameWindow(target, liveY, "main window xy position editor"), positiveOnly: false);
+            DrawWindowScalarEditor("Y", ref liveY, target => plugin.MoveGameWindow(liveX, target, "main window xy position editor"), positiveOnly: false);
+
+            UiHelpers.SectionHeader("Size Editor");
+            DrawWindowScalarEditor("Width", ref liveWidth, target => plugin.ResizeGameWindow(target, liveHeight, "main window xy size editor"), positiveOnly: true);
+            DrawWindowScalarEditor("Height", ref liveHeight, target => plugin.ResizeGameWindow(liveWidth, target, "main window xy size editor"), positiveOnly: true);
+        }
+
+        UiHelpers.SectionHeader("Saved Window");
         var saved = cfg.WindowPlacement;
         if (saved == null)
         {
-            ImGui.TextDisabled("No saved game window placement.");
+            ImGui.TextDisabled("No saved game window placement/size.");
         }
         else if (ImGui.BeginTable("##DpsSavedGameWindowPlacement", 2, ImGuiTableFlags.SizingStretchProp))
         {
-            DrawInfoRow("X/Y", $"{saved.X}, {saved.Y}");
+            DrawInfoRow("X", saved.X.ToString());
+            DrawInfoRow("Y", saved.Y.ToString());
+            DrawInfoRow("Width", FormatSavedWindowDimension(saved.Width));
+            DrawInfoRow("Height", FormatSavedWindowDimension(saved.Height));
             DrawInfoRow("Monitor", WindowPlacementService.FormatMonitor(saved.MonitorDeviceName));
             DrawInfoRow("Monitor bounds", WindowPlacementService.FormatBounds(saved.MonitorLeft, saved.MonitorTop, saved.MonitorRight, saved.MonitorBottom));
             DrawInfoRow("Saved UTC", saved.SavedUtc == default ? "unknown" : saved.SavedUtc.ToString("u"));
@@ -567,18 +589,63 @@ public sealed class MainWindow : Window
         if (ImGui.Checkbox("Load saved window position + display on client load", ref autoLoad))
             plugin.SetWindowPlacementAutoLoadEnabled(autoLoad, "main window xy tab");
 
-        if (UiHelpers.CompactButton("Save Current Window", 164f, "Save the current game client top-left position and monitor."))
+        var sizeAutoLoad = cfg.WindowSizeAutoLoadEnabled;
+        if (ImGui.Checkbox("Load saved window size on client load", ref sizeAutoLoad))
+            plugin.SetWindowSizeAutoLoadEnabled(sizeAutoLoad, "main window xy tab");
+
+        if (UiHelpers.CompactButton("Save Current Window", 164f, "Save the current game client position, size, and monitor."))
             plugin.SaveCurrentWindowPlacement("main window xy tab");
         UiHelpers.SameLineIfFits(164f);
         if (UiHelpers.CompactButton("Load Saved Window", 156f, "Move the game client to the saved position and monitor."))
             plugin.LoadSavedWindowPlacement("main window xy tab");
+        UiHelpers.SameLineIfFits(142f);
+        if (UiHelpers.CompactButton("Load Saved Size", 134f, "Resize the game client to the saved size."))
+            plugin.LoadSavedWindowSize("main window xy tab");
         UiHelpers.SameLineIfFits(132f);
-        if (UiHelpers.CompactButton("Reset This Tab", 122f, "Clear saved game window placement and disable auto-load."))
+        if (UiHelpers.CompactButton("Reset This Tab", 122f, "Clear saved game window placement/size and disable auto-load."))
             plugin.ResetWindowPlacementTab("main window xy tab");
 
         UiHelpers.SectionHeader("Last Action");
         UiHelpers.Wrapped(plugin.WindowPlacementService.Status);
     }
+
+    private void DrawWindowScalarEditor(string label, ref int value, Func<int, bool> applyValue, bool positiveOnly)
+    {
+        ImGui.AlignTextToFramePadding();
+        ImGui.TextUnformatted(label);
+        ImGui.SameLine(78f);
+
+        var inputValue = value;
+        ImGui.SetNextItemWidth(110f);
+        if (ImGui.InputInt($"##DpsWindow{label}", ref inputValue, 0, 0))
+            ApplyWindowScalarValue(ref value, inputValue, applyValue, positiveOnly);
+
+        ImGui.SameLine();
+        if (UiHelpers.SmallButton($"[-]##DpsWindow{label}Minus", $"Decrease {label} by 1."))
+            ApplyWindowScalarValue(ref value, value - 1, applyValue, positiveOnly);
+
+        ImGui.SameLine();
+        if (UiHelpers.SmallButton($"[+]##DpsWindow{label}Plus", $"Increase {label} by 1."))
+            ApplyWindowScalarValue(ref value, value + 1, applyValue, positiveOnly);
+    }
+
+    private static bool ApplyWindowScalarValue(ref int value, int target, Func<int, bool> applyValue, bool positiveOnly)
+    {
+        if (positiveOnly)
+            target = Math.Max(1, target);
+
+        if (target == value)
+            return false;
+
+        if (!applyValue(target))
+            return false;
+
+        value = target;
+        return true;
+    }
+
+    private static string FormatSavedWindowDimension(int value)
+        => value > 0 ? value.ToString() : "unknown";
 
     private void DrawDiagnosticsTab()
     {
@@ -634,9 +701,9 @@ public sealed class MainWindow : Window
         ImGui.TextUnformatted("/dps fon     foreground render ON");
         ImGui.TextUnformatted("/dps ws      move plugin UI window to 1,1");
         ImGui.TextUnformatted("/dps j       randomize plugin UI window in viewport");
-        ImGui.TextUnformatted("/dps wsave   save game window X/Y + monitor");
+        ImGui.TextUnformatted("/dps wsave   save game window X/Y + size + monitor");
         ImGui.TextUnformatted("/dps wload   load saved game window X/Y + monitor");
-        ImGui.TextUnformatted("/dps wreset  reset Window XY tab");
+        ImGui.TextUnformatted("/dps wreset  reset saved game window position/size");
         ImGui.TextUnformatted("/dps debug   show texture lab");
         ImGui.TextUnformatted("/dps debug off");
     }

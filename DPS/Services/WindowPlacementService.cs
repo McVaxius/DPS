@@ -8,6 +8,7 @@ public sealed class WindowPlacementService
 {
     private const uint MonitorDefaultToNearest = 0x00000002;
     private const uint SwpNoSize = 0x0001;
+    private const uint SwpNoMove = 0x0002;
     private const uint SwpNoZOrder = 0x0004;
     private const uint SwpNoActivate = 0x0010;
 
@@ -92,6 +93,8 @@ public sealed class WindowPlacementService
         {
             X = snapshot.X,
             Y = snapshot.Y,
+            Width = snapshot.Width,
+            Height = snapshot.Height,
             MonitorDeviceName = snapshot.MonitorDeviceName,
             MonitorLeft = snapshot.MonitorLeft,
             MonitorTop = snapshot.MonitorTop,
@@ -100,11 +103,47 @@ public sealed class WindowPlacementService
             SavedUtc = DateTime.UtcNow,
         };
 
-        status = $"Saved game window at X/Y {placement.X}, {placement.Y} on {FormatMonitor(placement.MonitorDeviceName)}.";
+        status = $"Saved game window at X/Y {placement.X}, {placement.Y}, size {placement.Width}x{placement.Height} on {FormatMonitor(placement.MonitorDeviceName)}.";
         return true;
     }
 
-    public bool TryRestore(SavedWindowPlacement placement, out string status)
+    public bool TryMove(int x, int y, out string status)
+    {
+        if (!TryResolveWindowHandle(out var windowHandle, out status))
+            return false;
+
+        if (!SetWindowPos(windowHandle, nint.Zero, x, y, 0, 0, SwpNoSize | SwpNoZOrder | SwpNoActivate))
+        {
+            status = LastWin32Error("SetWindowPos");
+            return false;
+        }
+
+        status = $"Moved game window to exact X/Y {x}, {y}.";
+        return true;
+    }
+
+    public bool TryResize(int width, int height, out string status)
+    {
+        if (width <= 0 || height <= 0)
+        {
+            status = "Game window size must be positive.";
+            return false;
+        }
+
+        if (!TryResolveWindowHandle(out var windowHandle, out status))
+            return false;
+
+        if (!SetWindowPos(windowHandle, nint.Zero, 0, 0, width, height, SwpNoMove | SwpNoZOrder | SwpNoActivate))
+        {
+            status = LastWin32Error("SetWindowPos");
+            return false;
+        }
+
+        status = $"Resized game window to {width}x{height}.";
+        return true;
+    }
+
+    public bool TryRestorePosition(SavedWindowPlacement placement, out string status)
     {
         if (!TryResolveWindowHandle(out var windowHandle, out status))
             return false;
@@ -134,6 +173,21 @@ public sealed class WindowPlacementService
         if (wasClamped)
             status += " Target top-left was clamped into monitor bounds.";
 
+        return true;
+    }
+
+    public bool TryRestoreSize(SavedWindowPlacement placement, out string status)
+    {
+        if (placement.Width <= 0 || placement.Height <= 0)
+        {
+            status = "Saved game window size is unavailable.";
+            return false;
+        }
+
+        if (!TryResize(placement.Width, placement.Height, out status))
+            return false;
+
+        status = $"Loaded game window size {placement.Width}x{placement.Height}.";
         return true;
     }
 

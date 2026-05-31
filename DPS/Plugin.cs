@@ -71,7 +71,7 @@ public sealed class Plugin : IDalamudPlugin
 
         CommandManager.AddHandler(PluginInfo.Command, new CommandInfo(OnCommand)
         {
-            HelpMessage = $"Open {PluginInfo.DisplayName}. Use '/dps roff' and '/dps ron' for background no-render, '/dps foff' and '/dps fon' for foreground render, '/dps ws' and '/dps j' for the plugin UI window, '/dps wsave', '/dps wload', and '/dps wreset' for game window placement, and '/dps debug' to expose the paused experimental texture lab for this session.",
+            HelpMessage = $"Open {PluginInfo.DisplayName}. Use '/dps roff' and '/dps ron' for background no-render, '/dps foff' and '/dps fon' for foreground render, '/dps ws' and '/dps j' for the plugin UI window, '/dps wsave', '/dps wload', and '/dps wreset' for game window position/size, and '/dps debug' to expose the paused experimental texture lab for this session.",
         });
 
         PluginInterface.UiBuilder.Draw += WindowSystem.Draw;
@@ -146,6 +146,13 @@ public sealed class Plugin : IDalamudPlugin
             changed = true;
         }
 
+        if (Configuration.Version < 9)
+        {
+            Configuration.WindowSizeAutoLoadEnabled = true;
+            Configuration.Version = 9;
+            changed = true;
+        }
+
         if (changed)
             Configuration.Save();
     }
@@ -189,7 +196,7 @@ public sealed class Plugin : IDalamudPlugin
         Configuration.WindowPlacement = placement;
         Configuration.Save();
         WindowPlacementService.SetStatus(status);
-        Log.Information("[DPS] Game window placement saved via {Source}: X={X}, Y={Y}, Monitor={Monitor}.", source, placement.X, placement.Y, placement.MonitorDeviceName ?? "unknown");
+        Log.Information("[DPS] Game window placement saved via {Source}: X={X}, Y={Y}, Width={Width}, Height={Height}, Monitor={Monitor}.", source, placement.X, placement.Y, placement.Width, placement.Height, placement.MonitorDeviceName ?? "unknown");
         return true;
     }
 
@@ -203,7 +210,7 @@ public sealed class Plugin : IDalamudPlugin
             return false;
         }
 
-        var loaded = WindowPlacementService.TryRestore(Configuration.WindowPlacement, out var result);
+        var loaded = WindowPlacementService.TryRestorePosition(Configuration.WindowPlacement, out var result);
         WindowPlacementService.SetStatus(result);
         if (loaded)
             Log.Information("[DPS] Game window placement loaded via {Source}: {Status}", source, result);
@@ -213,12 +220,56 @@ public sealed class Plugin : IDalamudPlugin
         return loaded;
     }
 
+    public bool LoadSavedWindowSize(string source)
+    {
+        if (Configuration.WindowPlacement == null)
+        {
+            const string status = "No saved game window size.";
+            WindowPlacementService.SetStatus(status);
+            Log.Warning("[DPS] Game window size load skipped via {Source}: {Status}", source, status);
+            return false;
+        }
+
+        var loaded = WindowPlacementService.TryRestoreSize(Configuration.WindowPlacement, out var result);
+        WindowPlacementService.SetStatus(result);
+        if (loaded)
+            Log.Information("[DPS] Game window size loaded via {Source}: {Status}", source, result);
+        else
+            Log.Warning("[DPS] Game window size load failed via {Source}: {Status}", source, result);
+
+        return loaded;
+    }
+
+    public bool MoveGameWindow(int x, int y, string source)
+    {
+        var moved = WindowPlacementService.TryMove(x, y, out var result);
+        WindowPlacementService.SetStatus(result);
+        if (!moved)
+            Log.Warning("[DPS] Game window move failed via {Source}: {Status}", source, result);
+
+        return moved;
+    }
+
+    public bool ResizeGameWindow(int width, int height, string source)
+    {
+        width = Math.Max(1, width);
+        height = Math.Max(1, height);
+
+        var resized = WindowPlacementService.TryResize(width, height, out var result);
+        WindowPlacementService.SetStatus(result);
+        if (!resized)
+            Log.Warning("[DPS] Game window resize failed via {Source}: {Status}", source, result);
+
+        return resized;
+    }
+
     public void ResetWindowPlacementTab(string source)
     {
         Configuration.WindowPlacementAutoLoadEnabled = false;
+        Configuration.WindowSizeAutoLoadEnabled = false;
         Configuration.WindowPlacement = null;
         Configuration.Save();
-        const string status = "Window XY tab reset. Auto-load disabled and saved placement cleared.";
+        const string status = "Window XY tab reset. Auto-load disabled and saved placement/size cleared.";
         WindowPlacementService.SetStatus(status);
         Log.Information("[DPS] Game window placement reset via {Source}.", source);
     }
@@ -234,6 +285,19 @@ public sealed class Plugin : IDalamudPlugin
             ? "Game window placement auto-load enabled."
             : "Game window placement auto-load disabled.");
         Log.Information("[DPS] Game window placement auto-load {State} via {Source}.", enabled ? "enabled" : "disabled", source);
+    }
+
+    public void SetWindowSizeAutoLoadEnabled(bool enabled, string source)
+    {
+        if (Configuration.WindowSizeAutoLoadEnabled == enabled)
+            return;
+
+        Configuration.WindowSizeAutoLoadEnabled = enabled;
+        Configuration.Save();
+        WindowPlacementService.SetStatus(enabled
+            ? "Game window size auto-load enabled."
+            : "Game window size auto-load disabled.");
+        Log.Information("[DPS] Game window size auto-load {State} via {Source}.", enabled ? "enabled" : "disabled", source);
     }
 
     public string BackgroundRecoveryStatus { get; private set; } = "Automatic recovery pulse disabled.";
@@ -746,7 +810,7 @@ public sealed class Plugin : IDalamudPlugin
         if (startupWindowPlacementRestoreCompleted)
             return;
 
-        if (!Configuration.WindowPlacementAutoLoadEnabled)
+        if (!Configuration.WindowPlacementAutoLoadEnabled && !Configuration.WindowSizeAutoLoadEnabled)
         {
             startupWindowPlacementRestoreCompleted = true;
             return;
@@ -755,7 +819,7 @@ public sealed class Plugin : IDalamudPlugin
         if (Configuration.WindowPlacement == null)
         {
             startupWindowPlacementRestoreCompleted = true;
-            WindowPlacementService.SetStatus("Auto-load enabled but no saved game window placement exists.");
+            WindowPlacementService.SetStatus("Auto-load enabled but no saved game window placement/size exists.");
             return;
         }
 
@@ -763,7 +827,25 @@ public sealed class Plugin : IDalamudPlugin
             return;
 
         startupWindowPlacementRestoreCompleted = true;
-        _ = LoadSavedWindowPlacement("client load");
+        var restoreStatuses = new List<string>();
+
+        if (Configuration.WindowPlacementAutoLoadEnabled)
+        {
+            _ = WindowPlacementService.TryRestorePosition(Configuration.WindowPlacement, out var positionStatus);
+            restoreStatuses.Add(positionStatus);
+        }
+
+        if (Configuration.WindowSizeAutoLoadEnabled)
+        {
+            _ = WindowPlacementService.TryRestoreSize(Configuration.WindowPlacement, out var sizeStatus);
+            restoreStatuses.Add(sizeStatus);
+        }
+
+        var status = restoreStatuses.Count == 0
+            ? "No game window startup restore actions enabled."
+            : $"Client load restore: {string.Join(" ", restoreStatuses)}";
+        WindowPlacementService.SetStatus(status);
+        Log.Information("[DPS] Game window startup restore via client load: {Status}", status);
     }
 
     private void ReportFrameworkHitch(double elapsedMs, string slowestSection, double slowestMs)
