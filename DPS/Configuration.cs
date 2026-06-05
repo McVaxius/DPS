@@ -13,7 +13,7 @@ public enum ForegroundNoRenderMode
 [Serializable]
 public class Configuration : IPluginConfiguration
 {
-    public int Version { get; set; } = 9;
+    public int Version { get; set; } = 10;
     public bool PluginEnabled { get; set; }
     public bool DtrBarEnabled { get; set; } = true;
     public int DtrBarMode { get; set; } = 1;
@@ -46,6 +46,9 @@ public class Configuration : IPluginConfiguration
     public int BackgroundRecoveryMinMinutes { get; set; } = 15;
     public int BackgroundRecoveryMaxMinutes { get; set; } = 20;
     public int BackgroundRecoveryPulseSeconds { get; set; } = 5;
+    public bool ForegroundDisplayRecoveryGuardEnabled { get; set; } = true;
+    public int ForegroundDisplayRecoveryPauseSeconds { get; set; } = 180;
+    public int ForegroundDisplayRecoveryStableSeconds { get; set; } = 30;
     public HotkeyBinding ForegroundToggleHotkey { get; set; } = new();
     public HotkeyBinding BackgroundToggleHotkey { get; set; } = new();
     public HotkeyBinding CrowdToggleHotkey { get; set; } = new();

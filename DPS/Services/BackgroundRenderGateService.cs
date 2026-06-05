@@ -35,6 +35,7 @@ public sealed unsafe class BackgroundRenderGateService : IDisposable
     private bool backgroundConfigured;
     private bool backgroundArmed;
     private bool foregroundArmed;
+    private bool foregroundDisplayRecoveryBypass;
     private bool onlyWhenMinimized;
     private string? initializationError;
     private RenderGateMode activeMode;
@@ -51,6 +52,7 @@ public sealed unsafe class BackgroundRenderGateService : IDisposable
     public bool IsBackgroundNoRenderActive => activeMode == RenderGateMode.Background;
     public bool IsForegroundNoRenderActive => activeMode == RenderGateMode.Foreground;
     public bool IsForegroundNoRenderArmed => foregroundArmed;
+    public bool ForegroundDisplayRecoveryBypassActive => foregroundDisplayRecoveryBypass;
     public bool InitializationAttempted => initializationAttempted;
     public bool InitializationFailed => initializationAttempted && !initialized;
     public string? InitializationError => initializationError;
@@ -93,6 +95,16 @@ public sealed unsafe class BackgroundRenderGateService : IDisposable
 
         DisableHooks();
         SetInactiveStatus();
+    }
+
+    public void SetForegroundDisplayRecoveryBypass(bool active)
+    {
+        if (foregroundDisplayRecoveryBypass == active)
+            return;
+
+        foregroundDisplayRecoveryBypass = active;
+        if (active && activeMode == RenderGateMode.Foreground)
+            SetNoRenderActive(RenderGateMode.None);
     }
 
     public void Dispose()
@@ -184,6 +196,13 @@ public sealed unsafe class BackgroundRenderGateService : IDisposable
 
             if (foregroundArmed)
             {
+                if (foregroundDisplayRecoveryBypass)
+                {
+                    SetNoRenderActive(RenderGateMode.None);
+                    deviceDx11PostTickHook!.Original(instance);
+                    return;
+                }
+
                 SetNoRenderActive(RenderGateMode.Foreground);
                 RenderSafetyFrameIfDue(instance);
                 return;
@@ -281,7 +300,9 @@ public sealed unsafe class BackgroundRenderGateService : IDisposable
     private string BuildConfiguredModeText()
     {
         if (foregroundArmed)
-            return "foreground-safe-frozen";
+            return foregroundDisplayRecoveryBypass
+                ? "foreground-safe-frozen-recovery-bypass"
+                : "foreground-safe-frozen";
 
         if (backgroundArmed)
             return "background";

@@ -205,6 +205,7 @@ public sealed class MainWindow : Window
         DrawForegroundNoRenderModeSelector();
         UiHelpers.ForegroundRenderStatus(plugin);
         UiHelpers.Wrapped(plugin.ForegroundRenderControlService.Status);
+        DrawForegroundDisplayRecoveryControls();
 
         if (cfg.BackgroundNoRenderEnabled && cfg.ForegroundNoRenderEnabled)
             UiHelpers.WarningStrip("Mutual exclusion failed: both render modes are enabled.", danger: true);
@@ -309,6 +310,41 @@ public sealed class MainWindow : Window
         if (ImGui.RadioButton("De-render with black screen", legacyMode))
             plugin.SetForegroundNoRenderMode(ForegroundNoRenderMode.LegacyBlackScreen, "main render tab");
         UiHelpers.Tooltip("Uses the legacy render-byte path and blanks foreground rendering.");
+    }
+
+    private void DrawForegroundDisplayRecoveryControls()
+    {
+        var cfg = plugin.Configuration;
+
+        UiHelpers.SectionHeader("Display Recovery");
+        var guardEnabled = cfg.ForegroundDisplayRecoveryGuardEnabled;
+        if (ImGui.Checkbox("Display recovery guard", ref guardEnabled))
+        {
+            cfg.ForegroundDisplayRecoveryGuardEnabled = guardEnabled;
+            SaveAndApply();
+        }
+
+        if (cfg.ForegroundDisplayRecoveryGuardEnabled)
+        {
+            var pauseSeconds = cfg.ForegroundDisplayRecoveryPauseSeconds;
+            if (ImGui.InputInt("Recovery pause seconds", ref pauseSeconds))
+            {
+                cfg.ForegroundDisplayRecoveryPauseSeconds = Math.Clamp(pauseSeconds, 15, 900);
+                SaveAndApply();
+            }
+
+            var stableSeconds = cfg.ForegroundDisplayRecoveryStableSeconds;
+            if (ImGui.InputInt("Stable seconds", ref stableSeconds))
+            {
+                cfg.ForegroundDisplayRecoveryStableSeconds = Math.Clamp(stableSeconds, 5, 300);
+                SaveAndApply();
+            }
+        }
+
+        UiHelpers.StatusPill("Recovery", plugin.DisplayRecoveryService.RecoveryActive, "ACTIVE", "IDLE");
+        ImGui.SameLine();
+        UiHelpers.StatusPill("Bypass", plugin.ForegroundRenderControlService.DisplayRecoveryBypassActive, "ON", "OFF");
+        UiHelpers.Wrapped(plugin.DisplayRecoveryService.Status);
     }
 
     private void DrawCrowdTab()
@@ -651,6 +687,23 @@ public sealed class MainWindow : Window
     {
         UiHelpers.SectionHeader("Foreground Render");
         UiHelpers.Wrapped(plugin.ForegroundRenderControlService.GetDiagnosticsLine());
+
+        UiHelpers.SectionHeader("Display Recovery");
+        UiHelpers.StatusPill("Guard", plugin.Configuration.ForegroundDisplayRecoveryGuardEnabled, "ON", "OFF");
+        ImGui.SameLine();
+        UiHelpers.StatusPill("Recovery", plugin.DisplayRecoveryService.RecoveryActive, "ACTIVE", "IDLE");
+        ImGui.SameLine();
+        UiHelpers.StatusPill("Bypass", plugin.ForegroundRenderControlService.DisplayRecoveryBypassActive, "ON", "OFF");
+        if (ImGui.BeginTable("##DpsDisplayRecoveryDiagnostics", 2, ImGuiTableFlags.SizingStretchProp))
+        {
+            DrawInfoRow("Trigger", plugin.DisplayRecoveryService.TriggerReason);
+            DrawInfoRow("Last change UTC", plugin.DisplayRecoveryService.LastChangeText);
+            DrawInfoRow("Rearm ETA", plugin.DisplayRecoveryService.RearmEtaText);
+            DrawInfoRow("Poll seconds", plugin.DisplayRecoveryService.PollInterval.ToString());
+            ImGui.EndTable();
+        }
+        UiHelpers.Wrapped(plugin.DisplayRecoveryService.Status);
+        UiHelpers.Wrapped(plugin.DisplayRecoveryService.CurrentSnapshotText);
 
         UiHelpers.SectionHeader("Background Hook");
         UiHelpers.StatusPill("Hook active", plugin.BackgroundRenderGateService.HooksActive, "YES", "NO");

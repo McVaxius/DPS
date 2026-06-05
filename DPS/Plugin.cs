@@ -38,6 +38,7 @@ public sealed class Plugin : IDalamudPlugin
     public BackgroundRenderGateService BackgroundRenderGateService { get; }
     public ForegroundRenderControlService ForegroundRenderControlService { get; }
     public WindowPlacementService WindowPlacementService { get; }
+    public DisplayRecoveryService DisplayRecoveryService { get; }
     public bool DebugModeEnabled { get; private set; }
 
     public WindowSystem WindowSystem { get; } = new(PluginInfo.InternalName);
@@ -65,6 +66,7 @@ public sealed class Plugin : IDalamudPlugin
         BackgroundRenderGateService = new BackgroundRenderGateService();
         ForegroundRenderControlService = new ForegroundRenderControlService(BackgroundRenderGateService);
         WindowPlacementService = new WindowPlacementService();
+        DisplayRecoveryService = new DisplayRecoveryService();
 
         mainWindow = new MainWindow(this);
         WindowSystem.AddWindow(mainWindow);
@@ -80,6 +82,7 @@ public sealed class Plugin : IDalamudPlugin
         Framework.Update += OnFrameworkUpdate;
 
         SetupDtrBar();
+        DisplayRecoveryService.LogStartupConfig(Configuration);
         ApplyConfiguration();
         UpdateDtrBar();
         Log.Information("[DPS] Plugin loaded.");
@@ -153,6 +156,15 @@ public sealed class Plugin : IDalamudPlugin
             changed = true;
         }
 
+        if (Configuration.Version < 10)
+        {
+            Configuration.ForegroundDisplayRecoveryGuardEnabled = true;
+            Configuration.ForegroundDisplayRecoveryPauseSeconds = 180;
+            Configuration.ForegroundDisplayRecoveryStableSeconds = 30;
+            Configuration.Version = 10;
+            changed = true;
+        }
+
         if (changed)
             Configuration.Save();
     }
@@ -160,6 +172,7 @@ public sealed class Plugin : IDalamudPlugin
     public void Dispose()
     {
         Framework.Update -= OnFrameworkUpdate;
+        ApplyForegroundDisplayRecoveryBypass(false);
         ForegroundRenderControlService.Dispose();
         BackgroundRenderGateService.Dispose();
         TextureRedirectService.Dispose();
@@ -312,6 +325,8 @@ public sealed class Plugin : IDalamudPlugin
 
     public void ApplyConfiguration()
     {
+        ApplyForegroundDisplayRecoveryBypass(DisplayRecoveryService.RefreshConfiguration(Configuration));
+
         try
         {
             BackgroundRenderGateService.RefreshState(Configuration);
@@ -352,6 +367,12 @@ public sealed class Plugin : IDalamudPlugin
         });
 
         RefreshBackgroundRecoveryStatus();
+    }
+
+    private void ApplyForegroundDisplayRecoveryBypass(bool bypassActive)
+    {
+        BackgroundRenderGateService.SetForegroundDisplayRecoveryBypass(bypassActive);
+        ForegroundRenderControlService.SetDisplayRecoveryBypass(bypassActive);
     }
 
     public void UpdateDtrBar()
@@ -773,6 +794,7 @@ public sealed class Plugin : IDalamudPlugin
 
         Measure("window-placement", TickStartupWindowPlacementRestore);
         Measure("hotkeys", TickHotkeys);
+        Measure("display-recovery", TickForegroundDisplayRecovery);
 
         Measure("foreground-render", () =>
         {
@@ -803,6 +825,19 @@ public sealed class Plugin : IDalamudPlugin
 
         updateStopwatch.Stop();
         ReportFrameworkHitch(updateStopwatch.Elapsed.TotalMilliseconds, slowestSection, slowestMs);
+    }
+
+    private void TickForegroundDisplayRecovery()
+    {
+        try
+        {
+            ApplyForegroundDisplayRecoveryBypass(DisplayRecoveryService.Tick(Configuration));
+        }
+        catch (Exception ex)
+        {
+            Log.Warning(ex, "[DPS] Foreground display recovery tick failed.");
+            ApplyForegroundDisplayRecoveryBypass(false);
+        }
     }
 
     private void TickStartupWindowPlacementRestore()

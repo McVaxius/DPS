@@ -13,6 +13,7 @@ public sealed unsafe class ForegroundRenderControlService : IDisposable
     private Configuration? configuration;
     private bool disabledByDps;
     private bool disposed;
+    private bool displayRecoveryBypassActive;
     private long nextUnavailableWarningTick;
     private long nextRewriteInformationTick;
 
@@ -23,10 +24,12 @@ public sealed unsafe class ForegroundRenderControlService : IDisposable
 
     public bool RenderDisabledByDps
         => !disposed
+        && !displayRecoveryBypassActive
         && (disabledByDps
             || (SafeModeRequested && renderGate.HooksActive && !renderGate.InitializationFailed));
 
     public string Status { get; private set; } = "Foreground no-render disabled.";
+    public bool DisplayRecoveryBypassActive => displayRecoveryBypassActive;
 
     private bool SafeModeRequested
         => configuration?.PluginEnabled == true
@@ -39,6 +42,13 @@ public sealed unsafe class ForegroundRenderControlService : IDisposable
             return;
 
         this.configuration = configuration;
+
+        if (displayRecoveryBypassActive)
+        {
+            RestoreRender("foreground display recovery refresh");
+            UpdateStatus();
+            return;
+        }
 
         if (ShouldUseLegacyRenderByte(configuration))
         {
@@ -62,6 +72,13 @@ public sealed unsafe class ForegroundRenderControlService : IDisposable
 
         this.configuration = configuration;
 
+        if (displayRecoveryBypassActive)
+        {
+            RestoreRender("foreground display recovery");
+            UpdateStatus();
+            return;
+        }
+
         if (ShouldUseLegacyRenderByte(configuration))
         {
             DisableRender("framework tick");
@@ -74,6 +91,15 @@ public sealed unsafe class ForegroundRenderControlService : IDisposable
             return;
         }
 
+        UpdateStatus();
+    }
+
+    public void SetDisplayRecoveryBypass(bool active)
+    {
+        if (displayRecoveryBypassActive == active)
+            return;
+
+        displayRecoveryBypassActive = active;
         UpdateStatus();
     }
 
@@ -109,6 +135,7 @@ public sealed unsafe class ForegroundRenderControlService : IDisposable
         if (disposed)
             return false;
 
+        var wasDisabledByDps = disabledByDps;
         var shouldWriteRenderByte = disabledByDps
                                  || configuration?.ForegroundNoRenderMode == ForegroundNoRenderMode.LegacyBlackScreen;
         if (!shouldWriteRenderByte)
@@ -131,8 +158,11 @@ public sealed unsafe class ForegroundRenderControlService : IDisposable
             ? "Foreground no-render disabled. Render byte restored to 0."
             : $"Foreground no-render restore requested, but render byte is still {FormatByte(after)}.";
 
-        Plugin.Log.Information("[DPS] Foreground render byte restore via {Source}: before={Before} requested=0 after={After}.",
-            source, FormatByte(before), FormatByte(after));
+        if (wasDisabledByDps || before != RenderOnByte || after != RenderOnByte)
+        {
+            Plugin.Log.Information("[DPS] Foreground render byte restore via {Source}: before={Before} requested=0 after={After}.",
+                source, FormatByte(before), FormatByte(after));
+        }
 
         return after == RenderOnByte;
     }
@@ -148,7 +178,7 @@ public sealed unsafe class ForegroundRenderControlService : IDisposable
             : $"; Error={diagnostics.Error}";
 
         return $"DPS DLL={diagnostics.DpsAssemblyPath}; Mode={diagnostics.ModeText}; Intent={diagnostics.IntentText}; " +
-               $"Gate={diagnostics.GateText}; ClientStructs DLL={diagnostics.ClientStructsAssemblyPath}; " +
+               $"Gate={diagnostics.GateText}; DisplayRecoveryBypass={diagnostics.DisplayRecoveryBypassActive}; ClientStructs DLL={diagnostics.ClientStructsAssemblyPath}; " +
                $"ClientStructs version={diagnostics.ClientStructsAssemblyVersion}; Manager={diagnostics.ManagerAddressText}; " +
                $"Flag={diagnostics.RenderFlagAddressText}; Byte={diagnostics.CurrentByteText}; Status={diagnostics.Status}{error}";
     }
@@ -268,6 +298,7 @@ public sealed unsafe class ForegroundRenderControlService : IDisposable
             renderGate.HooksActive,
             renderGate.IsForegroundNoRenderArmed,
             renderGate.IsForegroundNoRenderActive,
+            displayRecoveryBypassActive,
             byteModeUsed,
             (nint)(void*)manager,
             (nint)flagPointer,
@@ -287,6 +318,12 @@ public sealed unsafe class ForegroundRenderControlService : IDisposable
         if (!configuration.PluginEnabled)
         {
             Status = "Foreground no-render waiting for plugin enable.";
+            return;
+        }
+
+        if (displayRecoveryBypassActive)
+        {
+            Status = "Foreground no-render paused for display recovery. Normal rendering allowed.";
             return;
         }
 
@@ -382,6 +419,7 @@ public sealed record ForegroundRenderDiagnostics(
     bool HooksActive,
     bool GateArmed,
     bool GateActive,
+    bool DisplayRecoveryBypassActive,
     bool ByteModeUsed,
     nint ManagerAddress,
     nint RenderFlagAddress,
@@ -411,6 +449,9 @@ public sealed record ForegroundRenderDiagnostics(
         {
             if (Mode != ForegroundNoRenderMode.SafeFrozenFrame)
                 return "NOT USED";
+
+            if (DisplayRecoveryBypassActive)
+                return "BYPASS";
 
             if (HookInitializationFailed)
                 return "FAILED";
