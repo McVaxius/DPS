@@ -13,7 +13,7 @@ public enum ForegroundNoRenderMode
 [Serializable]
 public class Configuration : IPluginConfiguration
 {
-    public int Version { get; set; } = 10;
+    public int Version { get; set; } = 11;
     public bool PluginEnabled { get; set; }
     public bool DtrBarEnabled { get; set; } = true;
     public int DtrBarMode { get; set; } = 1;
@@ -53,6 +53,7 @@ public class Configuration : IPluginConfiguration
     public HotkeyBinding BackgroundToggleHotkey { get; set; } = new();
     public HotkeyBinding CrowdToggleHotkey { get; set; } = new();
     public HotkeyBinding AllOffHotkey { get; set; } = new();
+    public HotkeyBinding WindowPlacementAndSizeLoadHotkey { get; set; } = new();
     public bool WindowPlacementAutoLoadEnabled { get; set; }
     public bool WindowSizeAutoLoadEnabled { get; set; } = true;
     public SavedWindowPlacement? WindowPlacement { get; set; }

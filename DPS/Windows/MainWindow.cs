@@ -23,6 +23,7 @@ public sealed class MainWindow : Window
         Background,
         Crowd,
         AllOff,
+        WindowPlacementAndSizeLoad,
     }
 
     private readonly Plugin plugin;
@@ -395,6 +396,7 @@ public sealed class MainWindow : Window
             DrawHotkeyRow("Background", HotkeyTarget.Background, plugin.Configuration.BackgroundToggleHotkey);
             DrawHotkeyRow("Crowd", HotkeyTarget.Crowd, plugin.Configuration.CrowdToggleHotkey);
             DrawHotkeyRow("All Off", HotkeyTarget.AllOff, plugin.Configuration.AllOffHotkey);
+            DrawHotkeyRow("Window + Size Load", HotkeyTarget.WindowPlacementAndSizeLoad, plugin.Configuration.WindowPlacementAndSizeLoadHotkey);
 
             ImGui.EndTable();
         }
@@ -549,6 +551,7 @@ public sealed class MainWindow : Window
             HotkeyTarget.Background => plugin.Configuration.BackgroundToggleHotkey,
             HotkeyTarget.Crowd => plugin.Configuration.CrowdToggleHotkey,
             HotkeyTarget.AllOff => plugin.Configuration.AllOffHotkey,
+            HotkeyTarget.WindowPlacementAndSizeLoad => plugin.Configuration.WindowPlacementAndSizeLoadHotkey,
             _ => plugin.Configuration.AllOffHotkey,
         };
 
@@ -559,6 +562,7 @@ public sealed class MainWindow : Window
             HotkeyTarget.Background => "Background",
             HotkeyTarget.Crowd => "Crowd",
             HotkeyTarget.AllOff => "All Off",
+            HotkeyTarget.WindowPlacementAndSizeLoad => "Window + Size Load",
             _ => "Hotkey",
         };
 
@@ -637,6 +641,9 @@ public sealed class MainWindow : Window
         UiHelpers.SameLineIfFits(142f);
         if (UiHelpers.CompactButton("Load Saved Size", 134f, "Resize the game client to the saved size."))
             plugin.LoadSavedWindowSize("main window xy tab");
+        UiHelpers.SameLineIfFits(220f);
+        if (UiHelpers.CompactButton("Load Saved Window + Size", 210f, "Move the game client to the saved position/display, then apply the saved size."))
+            plugin.LoadSavedWindowPlacementAndSize("main window xy tab");
         UiHelpers.SameLineIfFits(132f);
         if (UiHelpers.CompactButton("Reset This Tab", 122f, "Clear saved game window placement/size and disable auto-load."))
             plugin.ResetWindowPlacementTab("main window xy tab");
@@ -756,6 +763,7 @@ public sealed class MainWindow : Window
         ImGui.TextUnformatted("/dps j       randomize plugin UI window in viewport");
         ImGui.TextUnformatted("/dps wsave   save game window X/Y + size + monitor");
         ImGui.TextUnformatted("/dps wload   load saved game window X/Y + monitor");
+        ImGui.TextUnformatted("/dps wloadall load saved game window X/Y + monitor + size");
         ImGui.TextUnformatted("/dps wreset  reset saved game window position/size");
         ImGui.TextUnformatted("/dps debug   show texture lab");
         ImGui.TextUnformatted("/dps debug off");

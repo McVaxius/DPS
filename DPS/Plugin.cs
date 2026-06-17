@@ -54,6 +54,7 @@ public sealed class Plugin : IDalamudPlugin
     private bool backgroundHotkeyDown;
     private bool crowdHotkeyDown;
     private bool allOffHotkeyDown;
+    private bool windowPlacementAndSizeLoadHotkeyDown;
     private bool startupWindowPlacementRestoreCompleted;
 
     public Plugin()
@@ -73,7 +74,7 @@ public sealed class Plugin : IDalamudPlugin
 
         CommandManager.AddHandler(PluginInfo.Command, new CommandInfo(OnCommand)
         {
-            HelpMessage = $"Open {PluginInfo.DisplayName}. Use '/dps roff' and '/dps ron' for background no-render, '/dps foff' and '/dps fon' for foreground render, '/dps ws' and '/dps j' for the plugin UI window, '/dps wsave', '/dps wload', and '/dps wreset' for game window position/size, and '/dps debug' to expose the paused experimental texture lab for this session.",
+            HelpMessage = $"Open {PluginInfo.DisplayName}. Use '/dps roff' and '/dps ron' for background no-render, '/dps foff' and '/dps fon' for foreground render, '/dps ws' and '/dps j' for the plugin UI window, '/dps wsave', '/dps wload', '/dps wloadall', and '/dps wreset' for game window position/size, and '/dps debug' to expose the paused experimental texture lab for this session.",
         });
 
         PluginInterface.UiBuilder.Draw += WindowSystem.Draw;
@@ -165,6 +166,13 @@ public sealed class Plugin : IDalamudPlugin
             changed = true;
         }
 
+        if (Configuration.Version < 11)
+        {
+            Configuration.WindowPlacementAndSizeLoadHotkey ??= new HotkeyBinding();
+            Configuration.Version = 11;
+            changed = true;
+        }
+
         if (changed)
             Configuration.Save();
     }
@@ -249,6 +257,27 @@ public sealed class Plugin : IDalamudPlugin
             Log.Information("[DPS] Game window size loaded via {Source}: {Status}", source, result);
         else
             Log.Warning("[DPS] Game window size load failed via {Source}: {Status}", source, result);
+
+        return loaded;
+    }
+
+    public bool LoadSavedWindowPlacementAndSize(string source)
+    {
+        var placement = Configuration.WindowPlacement;
+        if (placement == null)
+        {
+            const string status = "No saved game window placement/size.";
+            WindowPlacementService.SetStatus(status);
+            Log.Warning("[DPS] Game window placement + size load skipped via {Source}: {Status}", source, status);
+            return false;
+        }
+
+        var loaded = WindowPlacementService.TryRestorePositionAndSize(placement, out var result);
+        WindowPlacementService.SetStatus(result);
+        if (loaded)
+            Log.Information("[DPS] Game window placement + size loaded via {Source}: {Status}", source, result);
+        else
+            Log.Warning("[DPS] Game window placement + size load failed via {Source}: {Status}", source, result);
 
         return loaded;
     }
@@ -749,6 +778,12 @@ public sealed class Plugin : IDalamudPlugin
             return;
         }
 
+        if (trimmedArguments.Equals("wloadall", StringComparison.OrdinalIgnoreCase))
+        {
+            LoadSavedWindowPlacementAndSize("slash command");
+            return;
+        }
+
         if (trimmedArguments.Equals("wreset", StringComparison.OrdinalIgnoreCase))
         {
             ResetWindowPlacementTab("slash command");
@@ -917,6 +952,7 @@ public sealed class Plugin : IDalamudPlugin
         TickHotkey(Configuration.BackgroundToggleHotkey, ref backgroundHotkeyDown, ToggleBackgroundNoRenderHotkey, inputCaptured);
         TickHotkey(Configuration.CrowdToggleHotkey, ref crowdHotkeyDown, ToggleCrowdSuppressionHotkey, inputCaptured);
         TickHotkey(Configuration.AllOffHotkey, ref allOffHotkeyDown, () => AllOff("all off hotkey"), inputCaptured);
+        TickHotkey(Configuration.WindowPlacementAndSizeLoadHotkey, ref windowPlacementAndSizeLoadHotkeyDown, () => LoadSavedWindowPlacementAndSize("window + size load hotkey"), inputCaptured);
     }
 
     private void TickHotkey(HotkeyBinding binding, ref bool wasDown, Action action, bool inputCaptured)

@@ -191,6 +191,24 @@ public sealed class WindowPlacementService
         return true;
     }
 
+    public bool TryRestorePositionAndSize(SavedWindowPlacement placement, out string status)
+    {
+        if (!TryRestorePosition(placement, out var positionStatus))
+        {
+            status = $"Window + size load failed before size restore: {positionStatus}";
+            return false;
+        }
+
+        if (!TryRestoreSize(placement, out var sizeStatus))
+        {
+            status = $"Loaded saved window position, but size restore failed: {sizeStatus}";
+            return false;
+        }
+
+        status = $"Loaded saved window position and size. {positionStatus} {sizeStatus}";
+        return true;
+    }
+
     public static string FormatMonitor(string? deviceName)
         => string.IsNullOrWhiteSpace(deviceName) ? "unknown monitor" : deviceName;
 
