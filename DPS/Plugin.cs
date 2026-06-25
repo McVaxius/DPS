@@ -173,6 +173,13 @@ public sealed class Plugin : IDalamudPlugin
             changed = true;
         }
 
+        if (Configuration.Version < 12)
+        {
+            Configuration.WindowSizeAutoLoadEnabled = false;
+            Configuration.Version = 12;
+            changed = true;
+        }
+
         if (changed)
             Configuration.Save();
     }
@@ -883,6 +890,9 @@ public sealed class Plugin : IDalamudPlugin
         if (!Configuration.WindowPlacementAutoLoadEnabled && !Configuration.WindowSizeAutoLoadEnabled)
         {
             startupWindowPlacementRestoreCompleted = true;
+            const string skipStatus = "Client load restore skipped: saved window position and size auto-load are disabled.";
+            WindowPlacementService.SetStatus(skipStatus);
+            Log.Information("[DPS] Game window startup restore via client load: {Status}", skipStatus);
             return;
         }
 
