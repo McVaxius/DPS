@@ -18,9 +18,49 @@ namespace DPS;
 
 public sealed class Plugin : IDalamudPlugin
 {
+    private static readonly TimeSpan StartupAutoApplyDelay = TimeSpan.FromSeconds(10);
+    private static readonly ConditionFlag[] StartupUnsafeConditionFlags =
+    {
+        ConditionFlag.Occupied,
+        ConditionFlag.Occupied30,
+        ConditionFlag.Occupied33,
+        ConditionFlag.Occupied38,
+        ConditionFlag.Occupied39,
+        ConditionFlag.OccupiedInCutSceneEvent,
+        ConditionFlag.OccupiedInEvent,
+        ConditionFlag.OccupiedInQuestEvent,
+        ConditionFlag.OccupiedSummoningBell,
+        ConditionFlag.WatchingCutscene,
+        ConditionFlag.WatchingCutscene78,
+        ConditionFlag.InThatPosition,
+        ConditionFlag.TradeOpen,
+        ConditionFlag.Crafting,
+        ConditionFlag.PreparingToCraft,
+        ConditionFlag.Unconscious,
+        ConditionFlag.MeldingMateria,
+        ConditionFlag.Gathering,
+        ConditionFlag.OperatingSiegeMachine,
+        ConditionFlag.CarryingItem,
+        ConditionFlag.CarryingObject,
+        ConditionFlag.BeingMoved,
+        ConditionFlag.RidingPillion,
+        ConditionFlag.Mounting,
+        ConditionFlag.Mounting71,
+        ConditionFlag.ParticipatingInCustomMatch,
+        ConditionFlag.PlayingLordOfVerminion,
+        ConditionFlag.ChocoboRacing,
+        ConditionFlag.PlayingMiniGame,
+        ConditionFlag.Performing,
+        ConditionFlag.Fishing,
+        ConditionFlag.Transformed,
+        ConditionFlag.UsingHousingFunctions,
+        ConditionFlag.LoggingOut,
+    };
+
     [PluginService] internal static IDalamudPluginInterface PluginInterface { get; private set; } = null!;
     [PluginService] internal static ICommandManager CommandManager { get; private set; } = null!;
     [PluginService] internal static IClientState ClientState { get; private set; } = null!;
+    [PluginService] internal static IPlayerState PlayerState { get; private set; } = null!;
     [PluginService] internal static IObjectTable ObjectTable { get; private set; } = null!;
     [PluginService] internal static IFramework Framework { get; private set; } = null!;
     [PluginService] internal static ITargetManager TargetManager { get; private set; } = null!;
@@ -40,6 +80,7 @@ public sealed class Plugin : IDalamudPlugin
     public WindowPlacementService WindowPlacementService { get; }
     public DisplayRecoveryService DisplayRecoveryService { get; }
     public bool DebugModeEnabled { get; private set; }
+    public string StartupAutoApplyStatus { get; private set; } = "Startup auto-apply pending: waiting for safe client state.";
 
     public WindowSystem WindowSystem { get; } = new(PluginInfo.InternalName);
     private readonly MainWindow mainWindow;
@@ -56,6 +97,8 @@ public sealed class Plugin : IDalamudPlugin
     private bool allOffHotkeyDown;
     private bool windowPlacementAndSizeLoadHotkeyDown;
     private bool startupWindowPlacementRestoreCompleted;
+    private DateTime? startupSafeStateFirstSeenUtc;
+    private bool startupAutoApplyCompleted;
 
     public Plugin()
     {
@@ -84,7 +127,9 @@ public sealed class Plugin : IDalamudPlugin
 
         SetupDtrBar();
         DisplayRecoveryService.LogStartupConfig(Configuration);
-        ApplyConfiguration();
+        Log.Information(
+            "[DPS] Startup auto-apply pending; saved render/crowd/window effects will apply after {DelaySeconds:0}s of continuous safe client state.",
+            StartupAutoApplyDelay.TotalSeconds);
         UpdateDtrBar();
         Log.Information("[DPS] Plugin loaded.");
     }
@@ -834,6 +879,17 @@ public sealed class Plugin : IDalamudPlugin
             }
         }
 
+        Measure("startup-auto-apply", TickStartupAutoApply);
+
+        if (!startupAutoApplyCompleted)
+        {
+            Measure("dtr", UpdateDtrBar);
+
+            updateStopwatch.Stop();
+            ReportFrameworkHitch(updateStopwatch.Elapsed.TotalMilliseconds, slowestSection, slowestMs);
+            return;
+        }
+
         Measure("window-placement", TickStartupWindowPlacementRestore);
         Measure("hotkeys", TickHotkeys);
         Measure("display-recovery", TickForegroundDisplayRecovery);
@@ -867,6 +923,126 @@ public sealed class Plugin : IDalamudPlugin
 
         updateStopwatch.Stop();
         ReportFrameworkHitch(updateStopwatch.Elapsed.TotalMilliseconds, slowestSection, slowestMs);
+    }
+
+    private void TickStartupAutoApply()
+    {
+        if (startupAutoApplyCompleted)
+            return;
+
+        var now = DateTime.UtcNow;
+        if (!IsStartupSafeState(out var unsafeReason))
+        {
+            ResetStartupSafeCountdown(unsafeReason);
+            return;
+        }
+
+        if (startupSafeStateFirstSeenUtc == null)
+        {
+            startupSafeStateFirstSeenUtc = now;
+            StartupAutoApplyStatus = $"Startup auto-apply pending: safe countdown started ({FormatDuration(StartupAutoApplyDelay)} remaining).";
+            Log.Information(
+                "[DPS] Startup auto-apply safe countdown started; applying saved effects after {DelaySeconds:0}s.",
+                StartupAutoApplyDelay.TotalSeconds);
+            return;
+        }
+
+        var elapsed = now - startupSafeStateFirstSeenUtc.Value;
+        if (elapsed < StartupAutoApplyDelay)
+        {
+            StartupAutoApplyStatus = $"Startup auto-apply pending: safe for {FormatDuration(elapsed)}, {FormatDuration(StartupAutoApplyDelay - elapsed)} remaining.";
+            return;
+        }
+
+        try
+        {
+            ApplyConfiguration();
+            startupAutoApplyCompleted = true;
+            StartupAutoApplyStatus = $"Startup auto-apply completed after {FormatDuration(elapsed)} of safe client state.";
+            Log.Information("[DPS] Startup auto-apply completed; saved render/crowd/window effects applied.");
+        }
+        catch (Exception ex)
+        {
+            startupSafeStateFirstSeenUtc = null;
+            StartupAutoApplyStatus = $"Startup auto-apply failed and will retry after a new safe countdown: {ex.Message}";
+            Log.Warning(ex, "[DPS] Startup auto-apply failed; safe countdown reset.");
+        }
+    }
+
+    private void ResetStartupSafeCountdown(string unsafeReason)
+    {
+        var hadCountdown = startupSafeStateFirstSeenUtc != null;
+        startupSafeStateFirstSeenUtc = null;
+        StartupAutoApplyStatus = $"Startup auto-apply pending: {unsafeReason}.";
+
+        if (hadCountdown)
+            Log.Information("[DPS] Startup auto-apply safe countdown reset: {Reason}", unsafeReason);
+    }
+
+    private bool IsStartupSafeState(out string unsafeReason)
+    {
+        unsafeReason = string.Empty;
+
+        if (!ClientState.IsLoggedIn)
+        {
+            unsafeReason = "waiting for login";
+            return false;
+        }
+
+        var localPlayer = ObjectTable.LocalPlayer;
+        if (localPlayer == null)
+        {
+            unsafeReason = "waiting for local player";
+            return false;
+        }
+
+        if (!PlayerState.IsLoaded)
+        {
+            unsafeReason = "waiting for local player state";
+            return false;
+        }
+
+        if (PlayerState.ContentId == 0)
+        {
+            unsafeReason = "waiting for local content ID";
+            return false;
+        }
+
+        if (!localPlayer.IsTargetable)
+        {
+            unsafeReason = "waiting for targetable local player";
+            return false;
+        }
+
+        if (Condition[ConditionFlag.BetweenAreas] || Condition[ConditionFlag.BetweenAreas51])
+        {
+            unsafeReason = "waiting for area transition to finish";
+            return false;
+        }
+
+        if (TryGetActiveStartupUnsafeCondition(out var activeFlag))
+        {
+            unsafeReason = $"waiting for condition {activeFlag} to clear";
+            return false;
+        }
+
+        unsafeReason = "safe";
+        return true;
+    }
+
+    private static bool TryGetActiveStartupUnsafeCondition(out ConditionFlag activeFlag)
+    {
+        foreach (var flag in StartupUnsafeConditionFlags)
+        {
+            if (Condition[flag])
+            {
+                activeFlag = flag;
+                return true;
+            }
+        }
+
+        activeFlag = default;
+        return false;
     }
 
     private void TickForegroundDisplayRecovery()
