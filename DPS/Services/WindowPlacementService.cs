@@ -191,6 +191,41 @@ public sealed class WindowPlacementService
         return true;
     }
 
+    public bool TryRestoreSizeWithReadback(SavedWindowPlacement placement, out string status)
+    {
+        if (placement.Width <= 0 || placement.Height <= 0)
+        {
+            status = "Saved game window size is unavailable.";
+            return false;
+        }
+
+        if (!TryResolveWindowHandle(out var windowHandle, out status))
+            return false;
+
+        if (!SetWindowPos(windowHandle, nint.Zero, 0, 0, placement.Width, placement.Height, SwpNoMove | SwpNoZOrder | SwpNoActivate))
+        {
+            status = LastWin32Error("SetWindowPos");
+            return false;
+        }
+
+        if (!TryReadWindowRect(windowHandle, out var rect, out var readStatus))
+        {
+            status = $"Requested game window size {placement.Width}x{placement.Height}, but readback failed: {readStatus}";
+            return false;
+        }
+
+        var actualWidth = Math.Max(0, rect.Right - rect.Left);
+        var actualHeight = Math.Max(0, rect.Bottom - rect.Top);
+        if (actualWidth != placement.Width || actualHeight != placement.Height)
+        {
+            status = $"Requested game window size {placement.Width}x{placement.Height}, but readback is {actualWidth}x{actualHeight}.";
+            return false;
+        }
+
+        status = $"Loaded game window size {placement.Width}x{placement.Height}; readback verified.";
+        return true;
+    }
+
     public bool TryRestorePositionAndSize(SavedWindowPlacement placement, out string status)
     {
         if (!TryRestorePosition(placement, out var positionStatus))

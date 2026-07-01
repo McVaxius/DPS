@@ -692,9 +692,6 @@ public sealed class MainWindow : Window
 
     private void DrawDiagnosticsTab()
     {
-        UiHelpers.SectionHeader("Startup");
-        UiHelpers.Wrapped(plugin.StartupAutoApplyStatus);
-
         UiHelpers.SectionHeader("Foreground Render");
         UiHelpers.Wrapped(plugin.ForegroundRenderControlService.GetDiagnosticsLine());
 

@@ -11,6 +11,7 @@ using Dalamud.Plugin;
 using Dalamud.Plugin.Services;
 using DPS.Services;
 using DPS.Windows;
+using FFXIVClientStructs.FFXIV.Component.GUI;
 using System.Diagnostics;
 using System.Linq;
 
@@ -18,49 +19,19 @@ namespace DPS;
 
 public sealed class Plugin : IDalamudPlugin
 {
-    private static readonly TimeSpan StartupAutoApplyDelay = TimeSpan.FromSeconds(10);
-    private static readonly ConditionFlag[] StartupUnsafeConditionFlags =
+    private static readonly TimeSpan StartupWindowSizeRestoreRetryCap = TimeSpan.FromMinutes(5);
+    private static readonly TimeSpan[] StartupWindowSizeRestoreRetryDelays =
     {
-        ConditionFlag.Occupied,
-        ConditionFlag.Occupied30,
-        ConditionFlag.Occupied33,
-        ConditionFlag.Occupied38,
-        ConditionFlag.Occupied39,
-        ConditionFlag.OccupiedInCutSceneEvent,
-        ConditionFlag.OccupiedInEvent,
-        ConditionFlag.OccupiedInQuestEvent,
-        ConditionFlag.OccupiedSummoningBell,
-        ConditionFlag.WatchingCutscene,
-        ConditionFlag.WatchingCutscene78,
-        ConditionFlag.InThatPosition,
-        ConditionFlag.TradeOpen,
-        ConditionFlag.Crafting,
-        ConditionFlag.PreparingToCraft,
-        ConditionFlag.Unconscious,
-        ConditionFlag.MeldingMateria,
-        ConditionFlag.Gathering,
-        ConditionFlag.OperatingSiegeMachine,
-        ConditionFlag.CarryingItem,
-        ConditionFlag.CarryingObject,
-        ConditionFlag.BeingMoved,
-        ConditionFlag.RidingPillion,
-        ConditionFlag.Mounting,
-        ConditionFlag.Mounting71,
-        ConditionFlag.ParticipatingInCustomMatch,
-        ConditionFlag.PlayingLordOfVerminion,
-        ConditionFlag.ChocoboRacing,
-        ConditionFlag.PlayingMiniGame,
-        ConditionFlag.Performing,
-        ConditionFlag.Fishing,
-        ConditionFlag.Transformed,
-        ConditionFlag.UsingHousingFunctions,
-        ConditionFlag.LoggingOut,
+        TimeSpan.FromSeconds(2),
+        TimeSpan.FromSeconds(5),
+        TimeSpan.FromSeconds(10),
+        TimeSpan.FromSeconds(20),
+        TimeSpan.FromSeconds(30),
     };
 
     [PluginService] internal static IDalamudPluginInterface PluginInterface { get; private set; } = null!;
     [PluginService] internal static ICommandManager CommandManager { get; private set; } = null!;
     [PluginService] internal static IClientState ClientState { get; private set; } = null!;
-    [PluginService] internal static IPlayerState PlayerState { get; private set; } = null!;
     [PluginService] internal static IObjectTable ObjectTable { get; private set; } = null!;
     [PluginService] internal static IFramework Framework { get; private set; } = null!;
     [PluginService] internal static ITargetManager TargetManager { get; private set; } = null!;
@@ -70,6 +41,8 @@ public sealed class Plugin : IDalamudPlugin
     [PluginService] internal static IPluginLog Log { get; private set; } = null!;
     [PluginService] internal static IGameInteropProvider GameInteropProvider { get; private set; } = null!;
     [PluginService] internal static ISigScanner SigScanner { get; private set; } = null!;
+    [PluginService] internal static IGameGui GameGui { get; private set; } = null!;
+    [PluginService] internal static IPlayerState PlayerState { get; private set; } = null!;
 
     public static Plugin PluginInstance { get; private set; } = null!;
     public Configuration Configuration { get; }
@@ -80,7 +53,6 @@ public sealed class Plugin : IDalamudPlugin
     public WindowPlacementService WindowPlacementService { get; }
     public DisplayRecoveryService DisplayRecoveryService { get; }
     public bool DebugModeEnabled { get; private set; }
-    public string StartupAutoApplyStatus { get; private set; } = "Startup auto-apply pending: waiting for safe client state.";
 
     public WindowSystem WindowSystem { get; } = new(PluginInfo.InternalName);
     private readonly MainWindow mainWindow;
@@ -96,9 +68,14 @@ public sealed class Plugin : IDalamudPlugin
     private bool crowdHotkeyDown;
     private bool allOffHotkeyDown;
     private bool windowPlacementAndSizeLoadHotkeyDown;
-    private bool startupWindowPlacementRestoreCompleted;
-    private DateTime? startupSafeStateFirstSeenUtc;
+    private StartupWindowRestoreState startupWindowPositionRestoreState;
+    private StartupWindowRestoreState startupWindowSizeRestoreState;
+    private DateTime? startupWindowSizeRestoreStartedUtc;
+    private DateTime nextStartupWindowSizeRestoreAttemptUtc = DateTime.MinValue;
+    private int startupWindowSizeRestoreFailedAttempts;
+    private string startupWindowSizeRestoreLastFailure = string.Empty;
     private bool startupAutoApplyCompleted;
+    private DateTime nextStartupPreloadWarningUtc = DateTime.MinValue;
 
     public Plugin()
     {
@@ -127,9 +104,6 @@ public sealed class Plugin : IDalamudPlugin
 
         SetupDtrBar();
         DisplayRecoveryService.LogStartupConfig(Configuration);
-        Log.Information(
-            "[DPS] Startup auto-apply pending; saved render/crowd/window effects will apply after {DelaySeconds:0}s of continuous safe client state.",
-            StartupAutoApplyDelay.TotalSeconds);
         UpdateDtrBar();
         Log.Information("[DPS] Plugin loaded.");
     }
@@ -405,6 +379,12 @@ public sealed class Plugin : IDalamudPlugin
     }
 
     public void ApplyConfiguration()
+    {
+        ApplyConfigurationCore();
+        startupAutoApplyCompleted = true;
+    }
+
+    private void ApplyConfigurationCore()
     {
         ApplyForegroundDisplayRecoveryBypass(DisplayRecoveryService.RefreshConfiguration(Configuration));
 
@@ -879,170 +859,44 @@ public sealed class Plugin : IDalamudPlugin
             }
         }
 
-        Measure("startup-auto-apply", TickStartupAutoApply);
-
-        if (!startupAutoApplyCompleted)
-        {
-            Measure("dtr", UpdateDtrBar);
-
-            updateStopwatch.Stop();
-            ReportFrameworkHitch(updateStopwatch.Elapsed.TotalMilliseconds, slowestSection, slowestMs);
-            return;
-        }
-
         Measure("window-placement", TickStartupWindowPlacementRestore);
+        Measure("startup-auto-apply", TickStartupAutoApply);
         Measure("hotkeys", TickHotkeys);
-        Measure("display-recovery", TickForegroundDisplayRecovery);
+        if (startupAutoApplyCompleted)
+            Measure("display-recovery", TickForegroundDisplayRecovery);
 
-        Measure("foreground-render", () =>
+        if (startupAutoApplyCompleted)
         {
-            try
+            Measure("foreground-render", () =>
             {
-                ForegroundRenderControlService.Tick(Configuration);
-            }
-            catch (Exception ex)
-            {
-                Log.Warning(ex, "[DPS] Foreground no-render tick failed.");
-            }
-        });
+                try
+                {
+                    ForegroundRenderControlService.Tick(Configuration);
+                }
+                catch (Exception ex)
+                {
+                    Log.Warning(ex, "[DPS] Foreground no-render tick failed.");
+                }
+            });
 
-        Measure("actor-suppression", () =>
-        {
-            try
+            Measure("actor-suppression", () =>
             {
-                ActorSuppressionService.Update(Configuration);
-            }
-            catch (Exception ex)
-            {
-                Log.Warning(ex, "[DPS] Actor suppression update failed during framework tick.");
-            }
-        });
+                try
+                {
+                    ActorSuppressionService.Update(Configuration);
+                }
+                catch (Exception ex)
+                {
+                    Log.Warning(ex, "[DPS] Actor suppression update failed during framework tick.");
+                }
+            });
 
-        Measure("background-recovery", TickBackgroundRecoveryLoop);
+            Measure("background-recovery", TickBackgroundRecoveryLoop);
+        }
         Measure("dtr", UpdateDtrBar);
 
         updateStopwatch.Stop();
         ReportFrameworkHitch(updateStopwatch.Elapsed.TotalMilliseconds, slowestSection, slowestMs);
-    }
-
-    private void TickStartupAutoApply()
-    {
-        if (startupAutoApplyCompleted)
-            return;
-
-        var now = DateTime.UtcNow;
-        if (!IsStartupSafeState(out var unsafeReason))
-        {
-            ResetStartupSafeCountdown(unsafeReason);
-            return;
-        }
-
-        if (startupSafeStateFirstSeenUtc == null)
-        {
-            startupSafeStateFirstSeenUtc = now;
-            StartupAutoApplyStatus = $"Startup auto-apply pending: safe countdown started ({FormatDuration(StartupAutoApplyDelay)} remaining).";
-            Log.Information(
-                "[DPS] Startup auto-apply safe countdown started; applying saved effects after {DelaySeconds:0}s.",
-                StartupAutoApplyDelay.TotalSeconds);
-            return;
-        }
-
-        var elapsed = now - startupSafeStateFirstSeenUtc.Value;
-        if (elapsed < StartupAutoApplyDelay)
-        {
-            StartupAutoApplyStatus = $"Startup auto-apply pending: safe for {FormatDuration(elapsed)}, {FormatDuration(StartupAutoApplyDelay - elapsed)} remaining.";
-            return;
-        }
-
-        try
-        {
-            ApplyConfiguration();
-            startupAutoApplyCompleted = true;
-            StartupAutoApplyStatus = $"Startup auto-apply completed after {FormatDuration(elapsed)} of safe client state.";
-            Log.Information("[DPS] Startup auto-apply completed; saved render/crowd/window effects applied.");
-        }
-        catch (Exception ex)
-        {
-            startupSafeStateFirstSeenUtc = null;
-            StartupAutoApplyStatus = $"Startup auto-apply failed and will retry after a new safe countdown: {ex.Message}";
-            Log.Warning(ex, "[DPS] Startup auto-apply failed; safe countdown reset.");
-        }
-    }
-
-    private void ResetStartupSafeCountdown(string unsafeReason)
-    {
-        var hadCountdown = startupSafeStateFirstSeenUtc != null;
-        startupSafeStateFirstSeenUtc = null;
-        StartupAutoApplyStatus = $"Startup auto-apply pending: {unsafeReason}.";
-
-        if (hadCountdown)
-            Log.Information("[DPS] Startup auto-apply safe countdown reset: {Reason}", unsafeReason);
-    }
-
-    private bool IsStartupSafeState(out string unsafeReason)
-    {
-        unsafeReason = string.Empty;
-
-        if (!ClientState.IsLoggedIn)
-        {
-            unsafeReason = "waiting for login";
-            return false;
-        }
-
-        var localPlayer = ObjectTable.LocalPlayer;
-        if (localPlayer == null)
-        {
-            unsafeReason = "waiting for local player";
-            return false;
-        }
-
-        if (!PlayerState.IsLoaded)
-        {
-            unsafeReason = "waiting for local player state";
-            return false;
-        }
-
-        if (PlayerState.ContentId == 0)
-        {
-            unsafeReason = "waiting for local content ID";
-            return false;
-        }
-
-        if (!localPlayer.IsTargetable)
-        {
-            unsafeReason = "waiting for targetable local player";
-            return false;
-        }
-
-        if (Condition[ConditionFlag.BetweenAreas] || Condition[ConditionFlag.BetweenAreas51])
-        {
-            unsafeReason = "waiting for area transition to finish";
-            return false;
-        }
-
-        if (TryGetActiveStartupUnsafeCondition(out var activeFlag))
-        {
-            unsafeReason = $"waiting for condition {activeFlag} to clear";
-            return false;
-        }
-
-        unsafeReason = "safe";
-        return true;
-    }
-
-    private static bool TryGetActiveStartupUnsafeCondition(out ConditionFlag activeFlag)
-    {
-        foreach (var flag in StartupUnsafeConditionFlags)
-        {
-            if (Condition[flag])
-            {
-                activeFlag = flag;
-                return true;
-            }
-        }
-
-        activeFlag = default;
-        return false;
     }
 
     private void TickForegroundDisplayRecovery()
@@ -1058,51 +912,243 @@ public sealed class Plugin : IDalamudPlugin
         }
     }
 
-    private void TickStartupWindowPlacementRestore()
+    private void TickStartupAutoApply()
     {
-        if (startupWindowPlacementRestoreCompleted)
+        if (startupAutoApplyCompleted)
             return;
 
-        if (!Configuration.WindowPlacementAutoLoadEnabled && !Configuration.WindowSizeAutoLoadEnabled)
+        if (!IsStartupPreloadReady())
+            return;
+
+        ApplyConfigurationCore();
+        startupAutoApplyCompleted = true;
+        Log.Information("[DPS] Startup saved render/crowd effects applied after preload readiness.");
+    }
+
+    private void TickStartupWindowPlacementRestore()
+    {
+        if (IsStartupWindowRestoreFinished())
+            return;
+
+        if (!Configuration.WindowPlacementAutoLoadEnabled)
+            startupWindowPositionRestoreState = StartupWindowRestoreState.Completed;
+
+        if (!Configuration.WindowSizeAutoLoadEnabled)
+            startupWindowSizeRestoreState = StartupWindowRestoreState.Completed;
+
+        if (IsStartupWindowRestoreFinished())
         {
-            startupWindowPlacementRestoreCompleted = true;
             const string skipStatus = "Client load restore skipped: saved window position and size auto-load are disabled.";
             WindowPlacementService.SetStatus(skipStatus);
             Log.Information("[DPS] Game window startup restore via client load: {Status}", skipStatus);
             return;
         }
 
-        if (Configuration.WindowPlacement == null)
+        var placement = Configuration.WindowPlacement;
+        if (placement == null)
         {
-            startupWindowPlacementRestoreCompleted = true;
-            WindowPlacementService.SetStatus("Auto-load enabled but no saved game window placement/size exists.");
+            if (Configuration.WindowPlacementAutoLoadEnabled)
+                startupWindowPositionRestoreState = StartupWindowRestoreState.Failed;
+
+            if (Configuration.WindowSizeAutoLoadEnabled)
+                startupWindowSizeRestoreState = StartupWindowRestoreState.Completed;
+
+            const string noSavedStatus = "Auto-load enabled but no saved game window placement/size exists.";
+            WindowPlacementService.SetStatus(noSavedStatus);
+            Log.Information("[DPS] Game window startup restore via client load: {Status}", noSavedStatus);
             return;
         }
 
-        if (!WindowPlacementService.TryResolveWindowHandle(out _, out _))
+        var restoreStatuses = new List<string>();
+        if (Configuration.WindowSizeAutoLoadEnabled
+            && startupWindowSizeRestoreState == StartupWindowRestoreState.Pending
+            && !HasSavedWindowSize(placement)
+            && startupWindowPositionRestoreState != StartupWindowRestoreState.Pending)
+        {
+            startupWindowSizeRestoreState = StartupWindowRestoreState.Completed;
+            restoreStatuses.Add("Saved game window size is unavailable; size auto-load skipped.");
+        }
+
+        var now = DateTime.UtcNow;
+        TryCompleteStartupWindowSizeRetryCap(now, restoreStatuses);
+
+        if (!IsStartupWindowRestoreFinished() && !IsStartupPreloadReady())
             return;
 
-        startupWindowPlacementRestoreCompleted = true;
-        var restoreStatuses = new List<string>();
+        if (!IsStartupWindowRestoreFinished() && !WindowPlacementService.TryResolveWindowHandle(out _, out _))
+            return;
 
-        if (Configuration.WindowPlacementAutoLoadEnabled)
+        if (Configuration.WindowPlacementAutoLoadEnabled
+            && startupWindowPositionRestoreState == StartupWindowRestoreState.Pending)
         {
-            _ = WindowPlacementService.TryRestorePosition(Configuration.WindowPlacement, out var positionStatus);
+            var restored = WindowPlacementService.TryRestorePosition(placement, out var positionStatus);
+            startupWindowPositionRestoreState = restored
+                ? StartupWindowRestoreState.Completed
+                : StartupWindowRestoreState.Failed;
             restoreStatuses.Add(positionStatus);
         }
 
-        if (Configuration.WindowSizeAutoLoadEnabled)
+        if (Configuration.WindowSizeAutoLoadEnabled
+            && startupWindowSizeRestoreState == StartupWindowRestoreState.Pending
+            && !HasSavedWindowSize(placement))
         {
-            _ = WindowPlacementService.TryRestoreSize(Configuration.WindowPlacement, out var sizeStatus);
-            restoreStatuses.Add(sizeStatus);
+            startupWindowSizeRestoreState = StartupWindowRestoreState.Completed;
+            restoreStatuses.Add("Saved game window size is unavailable; size auto-load skipped.");
         }
 
-        var status = restoreStatuses.Count == 0
-            ? "No game window startup restore actions enabled."
-            : $"Client load restore: {string.Join(" ", restoreStatuses)}";
+        if (Configuration.WindowSizeAutoLoadEnabled
+            && startupWindowSizeRestoreState == StartupWindowRestoreState.Pending)
+        {
+            TickStartupWindowSizeRestore(placement, now, restoreStatuses);
+        }
+
+        if (restoreStatuses.Count == 0)
+            return;
+
+        var status = $"Client load restore: {string.Join(" ", restoreStatuses)}";
         WindowPlacementService.SetStatus(status);
         Log.Information("[DPS] Game window startup restore via client load: {Status}", status);
     }
+
+    private bool IsStartupWindowRestoreFinished()
+        => startupWindowPositionRestoreState != StartupWindowRestoreState.Pending
+        && startupWindowSizeRestoreState != StartupWindowRestoreState.Pending;
+
+    private void TickStartupWindowSizeRestore(SavedWindowPlacement placement, DateTime now, List<string> restoreStatuses)
+    {
+        if (startupWindowSizeRestoreStartedUtc == null)
+            startupWindowSizeRestoreStartedUtc = now;
+
+        TryCompleteStartupWindowSizeRetryCap(now, restoreStatuses);
+        if (startupWindowSizeRestoreState != StartupWindowRestoreState.Pending)
+            return;
+
+        if (now < nextStartupWindowSizeRestoreAttemptUtc)
+            return;
+
+        if (WindowPlacementService.TryRestoreSizeWithReadback(placement, out var sizeStatus))
+        {
+            startupWindowSizeRestoreState = StartupWindowRestoreState.Completed;
+            startupWindowSizeRestoreLastFailure = string.Empty;
+            restoreStatuses.Add(sizeStatus);
+            return;
+        }
+
+        startupWindowSizeRestoreFailedAttempts++;
+        startupWindowSizeRestoreLastFailure = sizeStatus;
+
+        var retryDelay = GetStartupWindowSizeRestoreRetryDelay(startupWindowSizeRestoreFailedAttempts);
+        var retryUtc = now + retryDelay;
+        var capUtc = startupWindowSizeRestoreStartedUtc.Value + StartupWindowSizeRestoreRetryCap;
+        if (retryUtc <= capUtc)
+        {
+            nextStartupWindowSizeRestoreAttemptUtc = retryUtc;
+            restoreStatuses.Add($"{sizeStatus} Retrying saved size in {FormatDuration(retryDelay)}.");
+            return;
+        }
+
+        nextStartupWindowSizeRestoreAttemptUtc = capUtc;
+        restoreStatuses.Add($"{sizeStatus} No further size retry is scheduled; retry cap will be reached in {FormatDuration(capUtc - now)}.");
+    }
+
+    private void TryCompleteStartupWindowSizeRetryCap(DateTime now, List<string> restoreStatuses)
+    {
+        if (startupWindowSizeRestoreState != StartupWindowRestoreState.Pending || startupWindowSizeRestoreStartedUtc == null)
+            return;
+
+        if (now - startupWindowSizeRestoreStartedUtc.Value < StartupWindowSizeRestoreRetryCap)
+            return;
+
+        startupWindowSizeRestoreState = StartupWindowRestoreState.Failed;
+        var lastFailure = string.IsNullOrWhiteSpace(startupWindowSizeRestoreLastFailure)
+            ? "no size attempt completed"
+            : startupWindowSizeRestoreLastFailure;
+        restoreStatuses.Add($"Saved game window size restore failed after {FormatDuration(StartupWindowSizeRestoreRetryCap)}; retry cap reached. Last result: {lastFailure}");
+    }
+
+    private static TimeSpan GetStartupWindowSizeRestoreRetryDelay(int failedAttempts)
+    {
+        var index = Math.Clamp(failedAttempts - 1, 0, StartupWindowSizeRestoreRetryDelays.Length - 1);
+        return StartupWindowSizeRestoreRetryDelays[index];
+    }
+
+    private static bool HasSavedWindowSize(SavedWindowPlacement placement)
+        => placement.Width > 0 && placement.Height > 0;
+
+    private unsafe bool IsStartupPreloadReady()
+    {
+        try
+        {
+            return IsTitleMenuPreloadReady() || IsInWorldPreloadReady();
+        }
+        catch (Exception ex)
+        {
+            var now = DateTime.UtcNow;
+            if (now >= nextStartupPreloadWarningUtc)
+            {
+                nextStartupPreloadWarningUtc = now.AddSeconds(5);
+                Log.Warning(ex, "[DPS] Startup preload readiness check failed.");
+            }
+
+            return false;
+        }
+    }
+
+    private unsafe bool IsTitleMenuPreloadReady()
+    {
+        if (ClientState.IsLoggedIn || Condition.Any())
+            return false;
+
+        if (!TryGetAddon("_TitleMenu", out var title) || !IsAddonReady(title))
+            return false;
+
+        var readyNode = title->GetNodeById(7);
+        var fadeNode = title->GetNodeById(3);
+
+        return readyNode != null
+            && readyNode->IsVisible()
+            && fadeNode != null
+            && fadeNode->Color.A == 0xFF
+            && !TryGetAddon("TitleDCWorldMap", out _)
+            && !TryGetAddon("TitleConnect", out _);
+    }
+
+    private bool IsInWorldPreloadReady()
+    {
+        var localPlayer = ObjectTable.LocalPlayer;
+        return ClientState.IsLoggedIn
+            && localPlayer != null
+            && localPlayer.IsTargetable
+            && PlayerState.ContentId != 0
+            && !HasLoadingOrOccupiedConditions();
+    }
+
+    private static bool HasLoadingOrOccupiedConditions()
+        => Condition.Any(
+            ConditionFlag.BetweenAreas,
+            ConditionFlag.BetweenAreas51,
+            ConditionFlag.LoggingOut,
+            ConditionFlag.Occupied,
+            ConditionFlag.Occupied30,
+            ConditionFlag.Occupied33,
+            ConditionFlag.Occupied38,
+            ConditionFlag.Occupied39,
+            ConditionFlag.OccupiedInCutSceneEvent,
+            ConditionFlag.OccupiedInEvent,
+            ConditionFlag.OccupiedInQuestEvent,
+            ConditionFlag.OccupiedSummoningBell,
+            ConditionFlag.WatchingCutscene,
+            ConditionFlag.WatchingCutscene78);
+
+    private static unsafe bool TryGetAddon(string name, out AtkUnitBase* addon)
+    {
+        var pointer = GameGui.GetAddonByName(name, 1);
+        addon = pointer.IsNull ? null : (AtkUnitBase*)pointer.Address;
+        return addon != null;
+    }
+
+    private static unsafe bool IsAddonReady(AtkUnitBase* addon)
+        => addon != null && addon->IsVisible && addon->IsReady;
 
     private void ReportFrameworkHitch(double elapsedMs, string slowestSection, double slowestMs)
     {
@@ -1387,5 +1433,12 @@ public sealed class Plugin : IDalamudPlugin
             return $"{Math.Ceiling(duration.TotalMinutes):0}m";
 
         return $"{Math.Ceiling(duration.TotalSeconds):0}s";
+    }
+
+    private enum StartupWindowRestoreState
+    {
+        Pending,
+        Completed,
+        Failed,
     }
 }
