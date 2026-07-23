@@ -26,12 +26,35 @@ public sealed class MainWindow : Window
         WindowPlacementAndSizeLoad,
     }
 
+    private enum WindowPositionSetupStage
+    {
+        DetectWindow,
+        EditPosition,
+        AwaitReadback,
+        ReviewPosition,
+    }
+
+    private const string AllOffHotkeySetupPopup = "All Off Hotkey Setup##DpsAllOffHotkeySetup";
+    private const string WindowPositionSetupPopup = "Window Position Setup##DpsWindowPositionSetup";
+
     private readonly Plugin plugin;
     private PendingPlacement pendingPlacement;
     private HotkeyTarget? hotkeyCaptureTarget;
     private bool selectHotkeysTab;
+    private bool allOffHotkeySetupOpen;
+    private bool allOffHotkeySetupRequested;
+    private bool allOffHotkeySetupListening;
+    private readonly HotkeyBinding allOffHotkeySetupDraft = new();
+    private bool windowPositionSetupOpen;
+    private bool windowPositionSetupRequested;
+    private WindowPositionSetupStage windowPositionSetupStage;
+    private WindowPlacementSnapshot? windowPositionSetupOriginal;
+    private WindowPlacementSnapshot? windowPositionSetupCurrent;
+    private int windowPositionSetupDraftX;
+    private int windowPositionSetupDraftY;
+    private bool windowPositionSetupAutoLoad;
 
-    public bool IsCapturingHotkey => hotkeyCaptureTarget != null;
+    public bool IsCapturingHotkey => hotkeyCaptureTarget != null || allOffHotkeySetupOpen;
 
     public MainWindow(Plugin plugin)
         : base($"{PluginInfo.DisplayName}##DPSMain")
@@ -115,6 +138,9 @@ public sealed class MainWindow : Window
 
             ImGui.EndTabBar();
         }
+
+        DrawAllOffHotkeySetupWizard();
+        DrawWindowPositionSetupWizard();
     }
 
     private void ApplyPendingPlacement()
@@ -382,6 +408,11 @@ public sealed class MainWindow : Window
     {
         ProcessHotkeyCapture();
 
+        UiHelpers.SectionHeader("Guided Setup");
+        UiHelpers.Wrapped("Set a safety hotkey that turns every DPS mode off, restores rendering, and shows hidden crowd actors again.");
+        if (UiHelpers.CompactButton("Set Up All Off Hotkey", 184f, "Open the guided All Off hotkey setup."))
+            OpenAllOffHotkeySetupWizard();
+
         UiHelpers.SectionHeader("Hotkeys");
         if (ImGui.BeginTable("##DpsHotkeyTable", 5, ImGuiTableFlags.BordersInnerH | ImGuiTableFlags.RowBg | ImGuiTableFlags.SizingStretchProp))
         {
@@ -406,6 +437,113 @@ public sealed class MainWindow : Window
             ImGui.Spacing();
             UiHelpers.StatusPill("Capture", $"{HotkeyTargetLabel(target)} listening", UiHelpers.Info);
         }
+    }
+
+    private void OpenAllOffHotkeySetupWizard()
+    {
+        hotkeyCaptureTarget = null;
+        allOffHotkeySetupDraft.Clear();
+        allOffHotkeySetupListening = true;
+        allOffHotkeySetupOpen = true;
+        allOffHotkeySetupRequested = true;
+    }
+
+    private void DrawAllOffHotkeySetupWizard()
+    {
+        if (allOffHotkeySetupRequested)
+        {
+            ImGui.OpenPopup(AllOffHotkeySetupPopup);
+            allOffHotkeySetupRequested = false;
+        }
+
+        if (!allOffHotkeySetupOpen || !ImGui.BeginPopupModal(AllOffHotkeySetupPopup, ImGuiWindowFlags.AlwaysAutoResize))
+            return;
+
+        if (Plugin.IsVirtualKeyPressed((int)VirtualKey.ESCAPE))
+        {
+            CloseAllOffHotkeySetupWizard();
+            ImGui.EndPopup();
+            return;
+        }
+
+        ImGui.PushTextWrapPos(ImGui.GetFontSize() * 34f);
+        ImGui.TextUnformatted("All Off is the safety action: it disables foreground and background no-render modes, turns crowd suppression off, restores normal rendering, and makes hidden actors visible again.");
+        ImGui.PopTextWrapPos();
+        ImGui.Spacing();
+
+        UiHelpers.StatusPill("Current", UiHelpers.HotkeyStatusText(plugin.Configuration.AllOffHotkey), UiHelpers.Muted);
+        UiHelpers.StatusPill(
+            "Draft",
+            allOffHotkeySetupDraft.HasChord ? UiHelpers.HotkeyChordLabel(allOffHotkeySetupDraft) : "Unbound",
+            allOffHotkeySetupDraft.HasChord ? UiHelpers.Info : UiHelpers.Muted);
+
+        if (allOffHotkeySetupListening)
+        {
+            UiHelpers.WarningStrip("Press one non-modifier key, optionally while holding Ctrl, Alt, and/or Shift. Escape cancels setup; Backspace or Delete clears only the draft.");
+            if (TryReadCapturedHotkey(out var binding, out var clear, out var cancel))
+            {
+                if (cancel)
+                {
+                    CloseAllOffHotkeySetupWizard();
+                    ImGui.EndPopup();
+                    return;
+                }
+
+                if (clear)
+                    allOffHotkeySetupDraft.Clear();
+                else
+                    allOffHotkeySetupDraft.SetFrom(binding);
+
+                allOffHotkeySetupListening = false;
+            }
+        }
+        else if (ImGui.Button(allOffHotkeySetupDraft.HasChord ? "Capture Again" : "Capture Hotkey"))
+        {
+            allOffHotkeySetupListening = true;
+        }
+
+        var conflicts = GetHotkeyConflictLabels(HotkeyTarget.AllOff, allOffHotkeySetupDraft);
+        if (!string.IsNullOrEmpty(conflicts))
+            UiHelpers.WarningStrip($"This chord is currently used by {conflicts}. Confirming will clear those conflicting bindings.");
+
+        ImGui.Spacing();
+        if (allOffHotkeySetupDraft.HasChord && ImGui.Button("Confirm All Off Hotkey"))
+        {
+            AssignHotkey(HotkeyTarget.AllOff, allOffHotkeySetupDraft);
+            SaveAndApply();
+            CloseAllOffHotkeySetupWizard();
+        }
+
+        if (allOffHotkeySetupDraft.HasChord)
+            ImGui.SameLine();
+        if (ImGui.Button("Cancel Setup"))
+            CloseAllOffHotkeySetupWizard();
+
+        ImGui.EndPopup();
+    }
+
+    private string GetHotkeyConflictLabels(HotkeyTarget owner, HotkeyBinding binding)
+    {
+        if (!binding.HasChord)
+            return string.Empty;
+
+        var labels = new List<string>();
+        foreach (var target in Enum.GetValues<HotkeyTarget>())
+        {
+            if (target != owner && GetHotkeyBinding(target).SameChord(binding))
+                labels.Add(HotkeyTargetLabel(target));
+        }
+
+        return string.Join(", ", labels);
+    }
+
+    private void CloseAllOffHotkeySetupWizard()
+    {
+        allOffHotkeySetupOpen = false;
+        allOffHotkeySetupRequested = false;
+        allOffHotkeySetupListening = false;
+        allOffHotkeySetupDraft.Clear();
+        ImGui.CloseCurrentPopup();
     }
 
     private void DrawHotkeyRow(string label, HotkeyTarget target, HotkeyBinding binding)
@@ -571,6 +709,11 @@ public sealed class MainWindow : Window
         var cfg = plugin.Configuration;
         var hasCurrent = plugin.WindowPlacementService.TryReadCurrentPlacement(out var current, out var currentStatus);
 
+        UiHelpers.SectionHeader("Guided Setup");
+        UiHelpers.Wrapped("Move the FFXIV window to an exact X/Y position, verify the result, and choose whether to save it for position/display auto-load. This setup never resizes the window.");
+        if (UiHelpers.CompactButton("Set Up Window Position", 184f, "Open the guided X/Y window position setup."))
+            OpenWindowPositionSetupWizard();
+
         UiHelpers.SectionHeader("Current Game Window");
         if (hasCurrent)
         {
@@ -650,6 +793,207 @@ public sealed class MainWindow : Window
 
         UiHelpers.SectionHeader("Last Action");
         UiHelpers.Wrapped(plugin.WindowPlacementService.Status);
+    }
+
+    private void OpenWindowPositionSetupWizard()
+    {
+        windowPositionSetupStage = WindowPositionSetupStage.DetectWindow;
+        windowPositionSetupOriginal = null;
+        windowPositionSetupCurrent = null;
+        windowPositionSetupDraftX = 0;
+        windowPositionSetupDraftY = 0;
+        windowPositionSetupAutoLoad = plugin.Configuration.WindowPlacementAutoLoadEnabled;
+        windowPositionSetupOpen = true;
+        windowPositionSetupRequested = true;
+        TryDetectWindowForPositionSetup();
+    }
+
+    private void DrawWindowPositionSetupWizard()
+    {
+        if (windowPositionSetupRequested)
+        {
+            ImGui.OpenPopup(WindowPositionSetupPopup);
+            windowPositionSetupRequested = false;
+        }
+
+        if (!windowPositionSetupOpen || !ImGui.BeginPopupModal(WindowPositionSetupPopup, ImGuiWindowFlags.AlwaysAutoResize))
+            return;
+
+        ImGui.PushTextWrapPos(ImGui.GetFontSize() * 38f);
+        ImGui.TextUnformatted("This setup changes only the FFXIV window position. Negative coordinates are valid on monitors arranged left of or above the primary display. Window size and size auto-load are left unchanged.");
+        ImGui.PopTextWrapPos();
+        ImGui.Spacing();
+
+        if (windowPositionSetupStage == WindowPositionSetupStage.DetectWindow)
+        {
+            UiHelpers.WarningStrip(plugin.WindowPlacementService.Status);
+            if (ImGui.Button("Retry Window Detection"))
+                TryDetectWindowForPositionSetup();
+            ImGui.SameLine();
+            if (ImGui.Button("Cancel Setup"))
+                CloseWindowPositionSetupWizard();
+
+            ImGui.EndPopup();
+            return;
+        }
+
+        if (windowPositionSetupOriginal != null)
+        {
+            UiHelpers.SectionHeader("Original Position");
+            DrawWindowPositionSetupSnapshot("##DpsWindowPositionSetupOriginal", windowPositionSetupOriginal);
+        }
+
+        if (windowPositionSetupCurrent != null)
+        {
+            UiHelpers.SectionHeader(windowPositionSetupStage == WindowPositionSetupStage.EditPosition ? "Detected Window" : "Readback");
+            DrawWindowPositionSetupSnapshot("##DpsWindowPositionSetupCurrent", windowPositionSetupCurrent);
+        }
+
+        if (windowPositionSetupStage == WindowPositionSetupStage.EditPosition)
+        {
+            UiHelpers.SectionHeader("Draft Position");
+            ImGui.SetNextItemWidth(140f);
+            ImGui.InputInt("X##DpsWindowPositionSetupX", ref windowPositionSetupDraftX, 0, 0);
+            ImGui.SetNextItemWidth(140f);
+            ImGui.InputInt("Y##DpsWindowPositionSetupY", ref windowPositionSetupDraftY, 0, 0);
+
+            if (ImGui.Button("Apply Position"))
+                ApplyWindowPositionSetupDraft();
+            ImGui.SameLine();
+            if (ImGui.Button("Cancel Setup"))
+                CloseWindowPositionSetupWizard();
+        }
+        else if (windowPositionSetupStage == WindowPositionSetupStage.AwaitReadback)
+        {
+            UiHelpers.WarningStrip(plugin.WindowPlacementService.Status);
+            if (ImGui.Button("Retry Position Readback"))
+                TryReadBackWindowPositionSetup();
+            ImGui.SameLine();
+            if (ImGui.Button("Cancel and Restore Original"))
+                RestoreOriginalWindowPositionAndClose();
+        }
+        else
+        {
+            UiHelpers.SectionHeader("Finish");
+            ImGui.Checkbox("Enable position/display auto-load", ref windowPositionSetupAutoLoad);
+            ImGui.TextDisabled($"Window size auto-load remains {(plugin.Configuration.WindowSizeAutoLoadEnabled ? "enabled" : "disabled")}.");
+
+            if (ImGui.Button("Cancel and Restore Original"))
+                RestoreOriginalWindowPositionAndClose();
+            ImGui.SameLine();
+            if (ImGui.Button("Close and Keep Current Position"))
+                SaveWindowPositionSetupAndClose();
+        }
+
+        UiHelpers.SectionHeader("Last Action");
+        UiHelpers.Wrapped(plugin.WindowPlacementService.Status);
+
+        ImGui.EndPopup();
+    }
+
+    private bool TryDetectWindowForPositionSetup()
+    {
+        if (!TryReadWindowPositionSetupSnapshot(out var snapshot))
+        {
+            windowPositionSetupStage = WindowPositionSetupStage.DetectWindow;
+            return false;
+        }
+
+        windowPositionSetupOriginal = snapshot;
+        windowPositionSetupCurrent = snapshot;
+        windowPositionSetupDraftX = snapshot.X;
+        windowPositionSetupDraftY = snapshot.Y;
+        windowPositionSetupStage = WindowPositionSetupStage.EditPosition;
+        return true;
+    }
+
+    private void ApplyWindowPositionSetupDraft()
+    {
+        if (!plugin.MoveGameWindow(windowPositionSetupDraftX, windowPositionSetupDraftY, "window position setup"))
+            return;
+
+        windowPositionSetupStage = WindowPositionSetupStage.AwaitReadback;
+        TryReadBackWindowPositionSetup();
+    }
+
+    private bool TryReadBackWindowPositionSetup()
+    {
+        if (!TryReadWindowPositionSetupSnapshot(out var snapshot))
+        {
+            windowPositionSetupStage = WindowPositionSetupStage.AwaitReadback;
+            return false;
+        }
+
+        windowPositionSetupCurrent = snapshot;
+        windowPositionSetupStage = WindowPositionSetupStage.ReviewPosition;
+        plugin.WindowPlacementService.SetStatus($"Window position readback: X/Y {snapshot.X}, {snapshot.Y} on {WindowPlacementService.FormatMonitor(snapshot.MonitorDeviceName)}.");
+        return true;
+    }
+
+    private bool TryReadWindowPositionSetupSnapshot(out WindowPlacementSnapshot snapshot)
+    {
+        if (plugin.WindowPlacementService.TryReadCurrentPlacement(out snapshot, out var status))
+        {
+            plugin.WindowPlacementService.SetStatus(status);
+            return true;
+        }
+
+        plugin.WindowPlacementService.SetStatus(status);
+        return false;
+    }
+
+    private void RestoreOriginalWindowPositionAndClose()
+    {
+        var original = windowPositionSetupOriginal;
+        if (original == null)
+            return;
+
+        if (!plugin.MoveGameWindow(original.X, original.Y, "window position setup cancel restore"))
+            return;
+
+        if (!TryReadWindowPositionSetupSnapshot(out var restored))
+            return;
+
+        windowPositionSetupCurrent = restored;
+        if (restored.X != original.X || restored.Y != original.Y)
+        {
+            plugin.WindowPlacementService.SetStatus($"Original position restore requested X/Y {original.X}, {original.Y}, but readback is {restored.X}, {restored.Y}.");
+            return;
+        }
+
+        plugin.WindowPlacementService.SetStatus($"Original window position restored at X/Y {restored.X}, {restored.Y}.");
+        CloseWindowPositionSetupWizard();
+    }
+
+    private void SaveWindowPositionSetupAndClose()
+    {
+        if (!plugin.SaveCurrentWindowPlacement("window position setup finish"))
+            return;
+
+        plugin.SetWindowPlacementAutoLoadEnabled(windowPositionSetupAutoLoad, "window position setup finish");
+        CloseWindowPositionSetupWizard();
+    }
+
+    private static void DrawWindowPositionSetupSnapshot(string tableId, WindowPlacementSnapshot snapshot)
+    {
+        if (!ImGui.BeginTable(tableId, 2, ImGuiTableFlags.SizingStretchProp))
+            return;
+
+        DrawInfoRow("Window", "FINAL FANTASY XIV");
+        DrawInfoRow("Monitor", WindowPlacementService.FormatMonitor(snapshot.MonitorDeviceName));
+        DrawInfoRow("Monitor bounds", WindowPlacementService.FormatBounds(snapshot.MonitorLeft, snapshot.MonitorTop, snapshot.MonitorRight, snapshot.MonitorBottom));
+        DrawInfoRow("X", snapshot.X.ToString());
+        DrawInfoRow("Y", snapshot.Y.ToString());
+        ImGui.EndTable();
+    }
+
+    private void CloseWindowPositionSetupWizard()
+    {
+        windowPositionSetupOpen = false;
+        windowPositionSetupRequested = false;
+        windowPositionSetupOriginal = null;
+        windowPositionSetupCurrent = null;
+        ImGui.CloseCurrentPopup();
     }
 
     private void DrawWindowScalarEditor(string label, ref int value, Func<int, bool> applyValue, bool positiveOnly)
