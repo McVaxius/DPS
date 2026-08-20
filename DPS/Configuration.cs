@@ -70,6 +70,7 @@ public sealed class SavedWindowPlacement
     public int Width { get; set; }
     public int Height { get; set; }
     public string? MonitorDeviceName { get; set; }
+    public string? MonitorDevicePath { get; set; }
     public int MonitorLeft { get; set; }
     public int MonitorTop { get; set; }
     public int MonitorRight { get; set; }

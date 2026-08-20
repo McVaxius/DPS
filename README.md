@@ -29,6 +29,7 @@ The existing hotkey table remains available for foreground, background, crowd, A
 - Foreground and background no-render behavior is experimental. Results and performance impact vary by system.
 - Display recovery can pause unsafe foreground state when the display topology changes.
 - The window-position wizard never resizes the game window and never changes the size auto-load setting.
+- Under **Window XY**, choose a monitor directly from the saved-window dropdown to move the live window and preserve that physical target even if Windows renumbers `DISPLAY` devices.
 - Window placement auto-load uses the existing delayed startup safety gate; use **Window XY > Reset This Tab** or `/dps wreset` to clear saved placement and disable both placement and size auto-load.
 
 ## Commands

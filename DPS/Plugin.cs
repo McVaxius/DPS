@@ -247,6 +247,44 @@ public sealed class Plugin : IDalamudPlugin
         return true;
     }
 
+    internal bool SelectWindowPlacementMonitor(WindowPlacementMonitor monitor, string source)
+    {
+        var placement = Configuration.WindowPlacement;
+        if (placement == null)
+        {
+            const string status = "No saved game window placement.";
+            WindowPlacementService.SetStatus(status);
+            Log.Warning("[DPS] Monitor selection skipped via {Source}: {Status}", source, status);
+            return false;
+        }
+
+        var moved = WindowPlacementService.TryMoveSavedPlacementToMonitor(
+            placement,
+            monitor.MonitorDevicePath,
+            out var connectedTarget,
+            out var translatedX,
+            out var translatedY,
+            out var result);
+        WindowPlacementService.SetStatus(result);
+        if (!moved || connectedTarget == null)
+        {
+            Log.Warning("[DPS] Monitor selection failed via {Source}: {Status}", source, result);
+            return false;
+        }
+
+        placement.X = translatedX;
+        placement.Y = translatedY;
+        placement.MonitorDevicePath = connectedTarget.MonitorDevicePath;
+        placement.MonitorDeviceName = connectedTarget.GdiDeviceName;
+        placement.MonitorLeft = connectedTarget.Left;
+        placement.MonitorTop = connectedTarget.Top;
+        placement.MonitorRight = connectedTarget.Right;
+        placement.MonitorBottom = connectedTarget.Bottom;
+        Configuration.Save();
+        Log.Information("[DPS] Monitor selected via {Source}: X={X}, Y={Y}, Monitor={Monitor}.", source, translatedX, translatedY, connectedTarget.GdiDeviceName);
+        return true;
+    }
+
     public bool LoadSavedWindowPlacement(string source)
     {
         if (Configuration.WindowPlacement == null)

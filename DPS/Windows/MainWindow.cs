@@ -814,6 +814,7 @@ public sealed class MainWindow : Window
             if (ImGui.SmallButton("Save##DpsSavedMonitorDeviceName"))
             {
                 saved.MonitorDeviceName = savedMonitorDeviceNameDraft;
+                saved.MonitorDevicePath = null;
                 plugin.Configuration.Save();
                 savedMonitorDeviceNameEditing = false;
                 savedMonitorDeviceNameDraft = string.Empty;
@@ -829,18 +830,23 @@ public sealed class MainWindow : Window
             return;
         }
 
+        var availableMonitors = WindowPlacementService.EnumerateAvailableMonitors();
+        var selectedMonitor = !string.IsNullOrWhiteSpace(saved.MonitorDevicePath)
+            ? availableMonitors.FirstOrDefault(monitor =>
+                string.Equals(saved.MonitorDevicePath, monitor.MonitorDevicePath, StringComparison.OrdinalIgnoreCase))
+            : availableMonitors.FirstOrDefault(monitor =>
+                string.Equals(saved.MonitorDeviceName, monitor.GdiDeviceName, StringComparison.OrdinalIgnoreCase));
+
         ImGui.SetNextItemWidth(Math.Max(120f, ImGui.GetContentRegionAvail().X - 48f));
-        if (ImGui.BeginCombo("##DpsSavedMonitorDeviceName", WindowPlacementService.FormatMonitor(saved.MonitorDeviceName)))
+        if (ImGui.BeginCombo("##DpsSavedMonitorDeviceName", selectedMonitor?.DisplayLabel ?? WindowPlacementService.FormatMonitor(saved.MonitorDeviceName)))
         {
-            foreach (var monitor in DisplayRecoveryService.EnumerateMonitors())
+            foreach (var monitor in availableMonitors)
             {
-                var selected = string.Equals(saved.MonitorDeviceName, monitor.DeviceName, StringComparison.OrdinalIgnoreCase);
-                var label = $"{monitor.DeviceName} ({WindowPlacementService.FormatBounds(monitor.Left, monitor.Top, monitor.Right, monitor.Bottom)})";
-                if (ImGui.Selectable(label, selected))
-                {
-                    saved.MonitorDeviceName = monitor.DeviceName;
-                    plugin.Configuration.Save();
-                }
+                var selected = !string.IsNullOrWhiteSpace(saved.MonitorDevicePath)
+                    ? string.Equals(saved.MonitorDevicePath, monitor.MonitorDevicePath, StringComparison.OrdinalIgnoreCase)
+                    : string.Equals(saved.MonitorDeviceName, monitor.GdiDeviceName, StringComparison.OrdinalIgnoreCase);
+                if (ImGui.Selectable(monitor.DisplayLabel, selected))
+                    plugin.SelectWindowPlacementMonitor(monitor, "main window xy monitor picker");
 
                 if (selected)
                     ImGui.SetItemDefaultFocus();
