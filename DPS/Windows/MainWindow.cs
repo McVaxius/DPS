@@ -53,6 +53,8 @@ public sealed class MainWindow : Window
     private int windowPositionSetupDraftX;
     private int windowPositionSetupDraftY;
     private bool windowPositionSetupAutoLoad;
+    private bool savedMonitorDeviceNameEditing;
+    private string savedMonitorDeviceNameDraft = string.Empty;
 
     public bool IsCapturingHotkey => hotkeyCaptureTarget != null || allOffHotkeySetupOpen;
 
@@ -753,6 +755,8 @@ public sealed class MainWindow : Window
         var saved = cfg.WindowPlacement;
         if (saved == null)
         {
+            savedMonitorDeviceNameEditing = false;
+            savedMonitorDeviceNameDraft = string.Empty;
             ImGui.TextDisabled("No saved game window placement/size.");
         }
         else if (ImGui.BeginTable("##DpsSavedGameWindowPlacement", 2, ImGuiTableFlags.SizingStretchProp))
@@ -761,7 +765,7 @@ public sealed class MainWindow : Window
             DrawInfoRow("Y", saved.Y.ToString());
             DrawInfoRow("Width", FormatSavedWindowDimension(saved.Width));
             DrawInfoRow("Height", FormatSavedWindowDimension(saved.Height));
-            DrawInfoRow("Monitor", WindowPlacementService.FormatMonitor(saved.MonitorDeviceName));
+            DrawSavedMonitorEditor(saved);
             DrawInfoRow("Monitor bounds", WindowPlacementService.FormatBounds(saved.MonitorLeft, saved.MonitorTop, saved.MonitorRight, saved.MonitorBottom));
             DrawInfoRow("Saved UTC", saved.SavedUtc == default ? "unknown" : saved.SavedUtc.ToString("u"));
             ImGui.EndTable();
@@ -793,6 +797,64 @@ public sealed class MainWindow : Window
 
         UiHelpers.SectionHeader("Last Action");
         UiHelpers.Wrapped(plugin.WindowPlacementService.Status);
+    }
+
+    private void DrawSavedMonitorEditor(SavedWindowPlacement saved)
+    {
+        ImGui.TableNextRow();
+        ImGui.TableSetColumnIndex(0);
+        ImGui.TextUnformatted("Monitor");
+        ImGui.TableSetColumnIndex(1);
+
+        if (savedMonitorDeviceNameEditing)
+        {
+            ImGui.SetNextItemWidth(Math.Max(120f, ImGui.GetContentRegionAvail().X - 104f));
+            ImGui.InputText("##DpsSavedMonitorDeviceName", ref savedMonitorDeviceNameDraft, 32);
+            ImGui.SameLine();
+            if (ImGui.SmallButton("Save##DpsSavedMonitorDeviceName"))
+            {
+                saved.MonitorDeviceName = savedMonitorDeviceNameDraft;
+                plugin.Configuration.Save();
+                savedMonitorDeviceNameEditing = false;
+                savedMonitorDeviceNameDraft = string.Empty;
+            }
+
+            ImGui.SameLine();
+            if (ImGui.SmallButton("Cancel##DpsSavedMonitorDeviceName"))
+            {
+                savedMonitorDeviceNameEditing = false;
+                savedMonitorDeviceNameDraft = string.Empty;
+            }
+
+            return;
+        }
+
+        ImGui.SetNextItemWidth(Math.Max(120f, ImGui.GetContentRegionAvail().X - 48f));
+        if (ImGui.BeginCombo("##DpsSavedMonitorDeviceName", WindowPlacementService.FormatMonitor(saved.MonitorDeviceName)))
+        {
+            foreach (var monitor in DisplayRecoveryService.EnumerateMonitors())
+            {
+                var selected = string.Equals(saved.MonitorDeviceName, monitor.DeviceName, StringComparison.OrdinalIgnoreCase);
+                var label = $"{monitor.DeviceName} ({WindowPlacementService.FormatBounds(monitor.Left, monitor.Top, monitor.Right, monitor.Bottom)})";
+                if (ImGui.Selectable(label, selected))
+                {
+                    saved.MonitorDeviceName = monitor.DeviceName;
+                    plugin.Configuration.Save();
+                }
+
+                if (selected)
+                    ImGui.SetItemDefaultFocus();
+            }
+
+            ImGui.EndCombo();
+        }
+
+        ImGui.SameLine();
+        if (ImGui.SmallButton("Edit##DpsSavedMonitorDeviceName"))
+        {
+            savedMonitorDeviceNameDraft = saved.MonitorDeviceName ?? string.Empty;
+            savedMonitorDeviceNameEditing = true;
+        }
     }
 
     private void OpenWindowPositionSetupWizard()
