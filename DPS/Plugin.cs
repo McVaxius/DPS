@@ -425,6 +425,7 @@ public sealed class Plugin : IDalamudPlugin
     private void ApplyConfigurationCore()
     {
         ApplyForegroundDisplayRecoveryBypass(DisplayRecoveryService.RefreshConfiguration(Configuration));
+        DisableAutoRetainerRenderSuppression();
 
         try
         {
@@ -472,6 +473,29 @@ public sealed class Plugin : IDalamudPlugin
     {
         BackgroundRenderGateService.SetForegroundDisplayRecoveryBypass(bypassActive);
         ForegroundRenderControlService.SetDisplayRecoveryBypass(bypassActive);
+    }
+
+    private void DisableAutoRetainerRenderSuppression()
+    {
+        if (!Configuration.PluginEnabled || !Configuration.ForegroundNoRenderEnabled)
+            return;
+
+        try
+        {
+            var multiDisableRender = PluginInterface.GetIpcSubscriber<bool>("AutoRetainer.GetConfig.MultiDisableRender");
+            if (!multiDisableRender.InvokeFunc())
+                return;
+
+            CommandManager.ProcessCommand("/autoretainer set MultiDisableRender false");
+            if (multiDisableRender.InvokeFunc())
+                Log.Warning("[DPS] AutoRetainer rejected disabling MultiDisableRender.");
+            else
+                Log.Information("[DPS] Disabled AutoRetainer MultiDisableRender to prevent foreground no-render conflicts.");
+        }
+        catch
+        {
+            // AutoRetainer is optional; unavailable IPC is a harmless no-op.
+        }
     }
 
     public void UpdateDtrBar()
@@ -941,7 +965,11 @@ public sealed class Plugin : IDalamudPlugin
     {
         try
         {
-            ApplyForegroundDisplayRecoveryBypass(DisplayRecoveryService.Tick(Configuration));
+            var recoveryWasActive = DisplayRecoveryService.RecoveryActive;
+            var recoveryIsActive = DisplayRecoveryService.Tick(Configuration);
+            ApplyForegroundDisplayRecoveryBypass(recoveryIsActive);
+            if (!recoveryWasActive && recoveryIsActive)
+                DisableAutoRetainerRenderSuppression();
         }
         catch (Exception ex)
         {
