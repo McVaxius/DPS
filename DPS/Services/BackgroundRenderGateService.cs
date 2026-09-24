@@ -36,6 +36,10 @@ public sealed unsafe class BackgroundRenderGateService : IDisposable
     private bool backgroundArmed;
     private bool foregroundArmed;
     private bool foregroundDisplayRecoveryBypass;
+    private bool backgroundRecoveryBypass;
+    private bool renderDuringAreaTransitions;
+    private bool renderWhileLoggedOut;
+    private bool periodicFramesEnabled;
     private bool onlyWhenMinimized;
     private string? initializationError;
     private RenderGateMode activeMode;
@@ -59,13 +63,20 @@ public sealed unsafe class BackgroundRenderGateService : IDisposable
     public string Status { get; private set; } = "Background no-render idle.";
     public int SafetyFrameIntervalMs => safetyFrameIntervalMs;
     public int BackgroundThrottleSleepMs => backgroundThrottleSleepMs;
-    public double SafetyFramesPerMinute => safetyFrameIntervalMs <= 0 ? 0d : 60_000d / safetyFrameIntervalMs;
+    public double SafetyFramesPerMinute => !periodicFramesEnabled || safetyFrameIntervalMs <= 0 ? 0d : 60_000d / safetyFrameIntervalMs;
     public bool TransitionBypassActive { get; private set; }
+    public bool LoggedOutBypassActive { get; private set; }
+    public bool BackgroundRecoveryBypassActive => backgroundRecoveryBypass;
     public double MaxRenderHookDelayMs => maxRenderHookDelayMs;
     public string ActiveGateMode => activeMode.ToString();
 
     public void RefreshState(Configuration configuration)
     {
+        if (periodicFramesEnabled != configuration.PeriodicRenderFramesEnabled)
+            nextSafetyRenderTick = 0;
+        periodicFramesEnabled = configuration.PeriodicRenderFramesEnabled;
+        renderDuringAreaTransitions = configuration.RenderDuringAreaTransitions;
+        renderWhileLoggedOut = configuration.RenderWhileLoggedOut;
         safetyFrameIntervalMs = Math.Clamp(configuration.BackgroundSafetyFrameIntervalSeconds, 1, 60) * 1_000;
         backgroundThrottleSleepMs = Math.Clamp(configuration.BackgroundThrottleSleepMs, 0, 500);
         onlyWhenMinimized = configuration.BackgroundNoRenderOnlyWhenMinimized;
@@ -77,6 +88,8 @@ public sealed unsafe class BackgroundRenderGateService : IDisposable
                        && configuration.ForegroundNoRenderMode == ForegroundNoRenderMode.SafeFrozenFrame;
 
         var anyRenderGateArmed = backgroundArmed || foregroundArmed;
+        TransitionBypassActive = anyRenderGateArmed && renderDuringAreaTransitions && IsAreaTransitionActive();
+        LoggedOutBypassActive = anyRenderGateArmed && renderWhileLoggedOut && !Plugin.ClientState.IsLoggedIn;
 
         if (activeMode == RenderGateMode.Foreground && !foregroundArmed)
             SetNoRenderActive(RenderGateMode.None);
@@ -104,6 +117,13 @@ public sealed unsafe class BackgroundRenderGateService : IDisposable
 
         foregroundDisplayRecoveryBypass = active;
         if (active && activeMode == RenderGateMode.Foreground)
+            SetNoRenderActive(RenderGateMode.None);
+    }
+
+    public void SetBackgroundRecoveryBypass(bool active)
+    {
+        backgroundRecoveryBypass = active;
+        if (active && activeMode == RenderGateMode.Background)
             SetNoRenderActive(RenderGateMode.None);
     }
 
@@ -168,6 +188,9 @@ public sealed unsafe class BackgroundRenderGateService : IDisposable
 
         activeMode = RenderGateMode.None;
         nextSafetyRenderTick = 0;
+        TransitionBypassActive = false;
+        LoggedOutBypassActive = false;
+        backgroundRecoveryBypass = false;
     }
 
     private void DeviceDx11PostTickDetour(nint instance)
@@ -178,9 +201,10 @@ public sealed unsafe class BackgroundRenderGateService : IDisposable
         try
         {
             var framework = Framework.Instance();
-            transitionBypass = IsAreaTransitionActive();
+            transitionBypass = renderDuringAreaTransitions && IsAreaTransitionActive();
             TransitionBypassActive = transitionBypass;
-            if ((!backgroundArmed && !foregroundArmed) || framework == null || !Plugin.ClientState.IsLoggedIn)
+            LoggedOutBypassActive = renderWhileLoggedOut && !Plugin.ClientState.IsLoggedIn;
+            if ((!backgroundArmed && !foregroundArmed) || framework == null || LoggedOutBypassActive)
             {
                 SetNoRenderActive(RenderGateMode.None);
                 deviceDx11PostTickHook!.Original(instance);
@@ -208,7 +232,7 @@ public sealed unsafe class BackgroundRenderGateService : IDisposable
                 return;
             }
 
-            if (!ShouldSuppressRender(framework))
+            if (backgroundRecoveryBypass || !ShouldSuppressRender(framework))
             {
                 SetNoRenderActive(RenderGateMode.None);
                 deviceDx11PostTickHook!.Original(instance);
@@ -248,6 +272,9 @@ public sealed unsafe class BackgroundRenderGateService : IDisposable
 
     private bool RenderSafetyFrameIfDue(nint instance)
     {
+        if (!periodicFramesEnabled)
+            return false;
+
         var currentTick = Environment.TickCount64;
         if (nextSafetyRenderTick - currentTick >= 0)
             return false;
@@ -353,6 +380,16 @@ public sealed unsafe class BackgroundRenderGateService : IDisposable
         if (!backgroundArmed)
         {
             SetInactiveStatus();
+            return;
+        }
+
+        if (backgroundRecoveryBypass || TransitionBypassActive || LoggedOutBypassActive)
+        {
+            Status = backgroundRecoveryBypass
+                ? "Background no-render paused for the enabled recovery pulse."
+                : TransitionBypassActive
+                    ? "Background no-render paused by the enabled area-transition exception."
+                    : "Background no-render paused by the enabled logged-out exception.";
             return;
         }
 

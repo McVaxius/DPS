@@ -4,6 +4,22 @@ using System.Runtime.InteropServices;
 
 namespace DPS.Services;
 
+[Flags]
+public enum DisplayRecoveryCause
+{
+    None = 0,
+    NoMonitors = 1 << 0,
+    NoCurrentMonitor = 1 << 1,
+    MissingWindow = 1 << 2,
+    HiddenWindow = 1 << 3,
+    MinimizedWindow = 1 << 4,
+    InvalidWindowSize = 1 << 5,
+    MonitorTopologyChanged = 1 << 6,
+    CurrentMonitorChanged = 1 << 7,
+    WindowMoved = 1 << 8,
+    WindowResized = 1 << 9,
+}
+
 public sealed class DisplayRecoveryService
 {
     private const int PollIntervalSeconds = 15;
@@ -13,10 +29,13 @@ public sealed class DisplayRecoveryService
     private DisplayTopologySnapshot? baselineSnapshot;
     private DateTime nextPollUtc = DateTime.MinValue;
     private DateTime nextPersistentBadStateLogUtc = DateTime.MinValue;
-    private DateTime? recoveryPauseUntilUtc;
+    private readonly Dictionary<DisplayRecoveryCause, DateTime> lastTriggerUtc = new();
+    private DisplayRecoveryCause enabledCauses;
+    private DisplayRecoveryCause currentInvalidCauses;
     private bool startupConfigLogged;
     private bool recoveryActive;
     private int currentStableSeconds = 30;
+    private int currentPauseSeconds = 180;
 
     public DisplayTopologySnapshot? CurrentSnapshot { get; private set; }
     public DateTime? LastChangeUtc { get; private set; }
@@ -35,11 +54,11 @@ public sealed class DisplayRecoveryService
             if (!recoveryActive)
                 return "not scheduled";
 
-            if (CurrentSnapshot?.IsInvalid == true)
-                return "waiting for valid display state";
+            if (currentInvalidCauses != DisplayRecoveryCause.None)
+                return $"waiting for enabled conditions to clear: {currentInvalidCauses}";
 
             var now = DateTime.UtcNow;
-            var rearmUtc = GetRearmUtc(now, currentStableSeconds);
+            var rearmUtc = GetRearmUtc();
             if (rearmUtc == null)
                 return "pending";
 
@@ -57,8 +76,9 @@ public sealed class DisplayRecoveryService
 
         startupConfigLogged = true;
         Plugin.Log.Information(
-            "[DPS] Foreground display recovery guard config: enabled={Enabled}; pollSeconds={PollSeconds}; pauseSeconds={PauseSeconds}; stableSeconds={StableSeconds}.",
+            "[DPS] Foreground display recovery guard config: enabled={Enabled}; causes={Causes}; pollSeconds={PollSeconds}; pauseSeconds={PauseSeconds}; stableSeconds={StableSeconds}.",
             configuration.ForegroundDisplayRecoveryGuardEnabled,
+            GetEnabledCauses(configuration),
             PollIntervalSeconds,
             ClampPauseSeconds(configuration.ForegroundDisplayRecoveryPauseSeconds),
             ClampStableSeconds(configuration.ForegroundDisplayRecoveryStableSeconds));
@@ -66,21 +86,21 @@ public sealed class DisplayRecoveryService
 
     public bool RefreshConfiguration(Configuration configuration)
     {
-        currentStableSeconds = ClampStableSeconds(configuration.ForegroundDisplayRecoveryStableSeconds);
+        UpdateOptions(configuration);
         if (!ShouldWatch(configuration))
         {
             ResetInactive(GetInactiveStatus(configuration));
             return false;
         }
 
-        UpdateRecoveryStatus(configuration, DateTime.UtcNow);
+        UpdateRecoveryStatus(DateTime.UtcNow);
         return recoveryActive;
     }
 
     public bool Tick(Configuration configuration)
     {
         var now = DateTime.UtcNow;
-        currentStableSeconds = ClampStableSeconds(configuration.ForegroundDisplayRecoveryStableSeconds);
+        UpdateOptions(configuration);
         if (!ShouldWatch(configuration))
         {
             ResetInactive(GetInactiveStatus(configuration));
@@ -93,8 +113,36 @@ public sealed class DisplayRecoveryService
             Poll(configuration, now);
         }
 
-        UpdateRecoveryStatus(configuration, now);
+        UpdateRecoveryStatus(now);
         return recoveryActive;
+    }
+
+    private void UpdateOptions(Configuration configuration)
+    {
+        currentStableSeconds = ClampStableSeconds(configuration.ForegroundDisplayRecoveryStableSeconds);
+        currentPauseSeconds = ClampPauseSeconds(configuration.ForegroundDisplayRecoveryPauseSeconds);
+        enabledCauses = GetEnabledCauses(configuration);
+        // Remove each disabled cause's timer, including any extension it contributed.
+        foreach (var cause in lastTriggerUtc.Keys.ToArray())
+        {
+            if ((enabledCauses & cause) == 0)
+                lastTriggerUtc.Remove(cause);
+        }
+
+        currentInvalidCauses = CurrentSnapshot == null
+            ? DisplayRecoveryCause.None
+            : GetInvalidCauses(CurrentSnapshot) & enabledCauses;
+        if (recoveryActive && lastTriggerUtc.Count == 0)
+        {
+            recoveryActive = false;
+            LastChangeUtc = null;
+            TriggerReason = "none";
+        }
+        else if (lastTriggerUtc.Count > 0)
+        {
+            LastChangeUtc = lastTriggerUtc.Values.Max();
+            TriggerReason = ActiveCauses().ToString();
+        }
     }
 
     private void Poll(Configuration configuration, DateTime now)
@@ -102,74 +150,62 @@ public sealed class DisplayRecoveryService
         var snapshot = DisplayTopologySnapshot.Capture();
         CurrentSnapshot = snapshot;
 
-        if (baselineSnapshot == null)
-        {
-            baselineSnapshot = snapshot;
-            if (snapshot.IsInvalid)
-                StartOrExtendRecovery(configuration, now, $"initial invalid display state: {snapshot.InvalidReason}", snapshot, extending: false);
-            return;
-        }
+        currentInvalidCauses = GetInvalidCauses(snapshot) & enabledCauses;
+        var triggers = baselineSnapshot == null
+            ? currentInvalidCauses
+            : GetChangedCauses(baselineSnapshot, snapshot) & enabledCauses;
+        // A newly enabled persistent condition also needs its own timer.
+        triggers |= currentInvalidCauses & ~ActiveCauses();
+        baselineSnapshot = snapshot;
 
-        if (!string.Equals(snapshot.Signature, baselineSnapshot.Signature, StringComparison.Ordinal))
-        {
-            var reason = BuildChangeReason(baselineSnapshot, snapshot);
-            Plugin.Log.Information(
-                "[DPS] Display topology changed during foreground no-render: {Reason}; previous={Previous}; current={Current}.",
-                reason,
-                baselineSnapshot.ToDisplayText(),
-                snapshot.ToDisplayText());
+        if (triggers != DisplayRecoveryCause.None)
+            StartOrExtendRecovery(configuration, now, triggers, snapshot, recoveryActive);
 
-            baselineSnapshot = snapshot;
-            StartOrExtendRecovery(configuration, now, reason, snapshot, recoveryActive);
-            return;
-        }
-
-        if (snapshot.IsInvalid)
-        {
-            if (!recoveryActive)
-                StartOrExtendRecovery(configuration, now, $"invalid display state: {snapshot.InvalidReason}", snapshot, extending: false);
-
+        if (currentInvalidCauses != DisplayRecoveryCause.None)
             LogPersistentBadStateThrottled(now, snapshot);
-        }
     }
 
     private void StartOrExtendRecovery(
         Configuration configuration,
         DateTime now,
-        string reason,
+        DisplayRecoveryCause causes,
         DisplayTopologySnapshot snapshot,
         bool extending)
     {
         recoveryActive = true;
+        foreach (var cause in Enum.GetValues<DisplayRecoveryCause>())
+        {
+            if (cause != DisplayRecoveryCause.None && (causes & cause) != 0)
+                lastTriggerUtc[cause] = now;
+        }
         LastChangeUtc = now;
-        TriggerReason = reason;
-        recoveryPauseUntilUtc = now.AddSeconds(ClampPauseSeconds(configuration.ForegroundDisplayRecoveryPauseSeconds));
+        TriggerReason = ActiveCauses().ToString();
         nextPersistentBadStateLogUtc = now.AddSeconds(PersistentBadStateLogSeconds);
 
         Plugin.Log.Information(
             "[DPS] Foreground display recovery {Action}: reason={Reason}; pauseSeconds={PauseSeconds}; stableSeconds={StableSeconds}; snapshot={Snapshot}.",
             extending ? "extended" : "started",
-            reason,
+            causes,
             ClampPauseSeconds(configuration.ForegroundDisplayRecoveryPauseSeconds),
             ClampStableSeconds(configuration.ForegroundDisplayRecoveryStableSeconds),
             snapshot.ToDisplayText());
     }
 
-    private void UpdateRecoveryStatus(Configuration configuration, DateTime now)
+    private void UpdateRecoveryStatus(DateTime now)
     {
         if (!recoveryActive)
         {
-            Status = "Display recovery guard watching foreground no-render.";
+            Status = $"Display recovery watching enabled foreground exceptions: {enabledCauses}.";
             return;
         }
 
-        if (CurrentSnapshot?.IsInvalid == true)
+        if (currentInvalidCauses != DisplayRecoveryCause.None)
         {
-            Status = $"Display recovery active; waiting for valid display state: {CurrentSnapshot.InvalidReason}.";
+            Status = $"Display recovery active; waiting for enabled conditions to clear: {currentInvalidCauses}.";
             return;
         }
 
-        var rearmUtc = GetRearmUtc(now, ClampStableSeconds(configuration.ForegroundDisplayRecoveryStableSeconds));
+        var rearmUtc = GetRearmUtc();
         if (rearmUtc == null)
         {
             Status = "Display recovery active; rearm pending.";
@@ -183,7 +219,7 @@ public sealed class DisplayRecoveryService
         }
 
         recoveryActive = false;
-        recoveryPauseUntilUtc = null;
+        lastTriggerUtc.Clear();
         Status = "Display recovery complete; foreground no-render re-armed.";
         Plugin.Log.Information(
             "[DPS] Foreground display recovery ended; foreground no-render re-armed. reason={Reason}; snapshot={Snapshot}.",
@@ -191,22 +227,13 @@ public sealed class DisplayRecoveryService
             CurrentSnapshot?.ToDisplayText() ?? "none");
     }
 
-    private DateTime? GetRearmUtc(DateTime now, int? foregroundStableSeconds)
-    {
-        if (!recoveryActive)
-            return null;
+    private DateTime? GetRearmUtc()
+        => recoveryActive && LastChangeUtc != null
+            ? LastChangeUtc.Value.AddSeconds(Math.Max(currentPauseSeconds, currentStableSeconds))
+            : null;
 
-        var rearmUtc = recoveryPauseUntilUtc ?? now;
-        if (LastChangeUtc != null)
-        {
-            var stableSeconds = foregroundStableSeconds ?? 0;
-            var stableUtc = LastChangeUtc.Value.AddSeconds(stableSeconds);
-            if (stableUtc > rearmUtc)
-                rearmUtc = stableUtc;
-        }
-
-        return rearmUtc;
-    }
+    private DisplayRecoveryCause ActiveCauses()
+        => lastTriggerUtc.Keys.Aggregate(DisplayRecoveryCause.None, (causes, cause) => causes | cause);
 
     private void LogPersistentBadStateThrottled(DateTime now, DisplayTopologySnapshot snapshot)
     {
@@ -215,8 +242,8 @@ public sealed class DisplayRecoveryService
 
         nextPersistentBadStateLogUtc = now.AddSeconds(PersistentBadStateLogSeconds);
         Plugin.Log.Warning(
-            "[DPS] Foreground display recovery still waiting on valid display state: reason={Reason}; snapshot={Snapshot}.",
-            snapshot.InvalidReason,
+            "[DPS] Foreground display recovery waiting on enabled conditions: causes={Causes}; snapshot={Snapshot}.",
+            currentInvalidCauses,
             snapshot.ToDisplayText());
     }
 
@@ -231,7 +258,8 @@ public sealed class DisplayRecoveryService
         }
 
         recoveryActive = false;
-        recoveryPauseUntilUtc = null;
+        lastTriggerUtc.Clear();
+        currentInvalidCauses = DisplayRecoveryCause.None;
         baselineSnapshot = null;
         CurrentSnapshot = null;
         LastChangeUtc = null;
@@ -243,6 +271,7 @@ public sealed class DisplayRecoveryService
 
     private static bool ShouldWatch(Configuration configuration)
         => configuration.ForegroundDisplayRecoveryGuardEnabled
+        && GetEnabledCauses(configuration) != DisplayRecoveryCause.None
         && configuration.PluginEnabled
         && configuration.ForegroundNoRenderEnabled;
 
@@ -250,6 +279,9 @@ public sealed class DisplayRecoveryService
     {
         if (!configuration.ForegroundDisplayRecoveryGuardEnabled)
             return "Display recovery guard disabled.";
+
+        if (GetEnabledCauses(configuration) == DisplayRecoveryCause.None)
+            return "Display recovery has no enabled exceptions.";
 
         if (!configuration.PluginEnabled)
             return "Display recovery waiting for plugin enable.";
@@ -260,20 +292,70 @@ public sealed class DisplayRecoveryService
         return "Display recovery guard idle.";
     }
 
-    private static string BuildChangeReason(DisplayTopologySnapshot previous, DisplayTopologySnapshot current)
+    public static DisplayRecoveryCause GetEnabledCauses(Configuration configuration)
     {
-        var reasons = new List<string>();
-        if (previous.MonitorSignature != current.MonitorSignature)
-            reasons.Add("monitors changed");
-        if (previous.WindowSignature != current.WindowSignature)
-            reasons.Add("window changed");
-        if (previous.CurrentMonitorDeviceName != current.CurrentMonitorDeviceName)
-            reasons.Add("current monitor changed");
-        if (previous.IsInvalid != current.IsInvalid)
-            reasons.Add(current.IsInvalid ? "state became invalid" : "state became valid");
+        if (!configuration.ForegroundDisplayRecoveryGuardEnabled)
+            return DisplayRecoveryCause.None;
 
-        return reasons.Count == 0 ? "display snapshot changed" : string.Join(", ", reasons);
+        var causes = DisplayRecoveryCause.None;
+        if (configuration.DisplayRecoveryNoMonitors) causes |= DisplayRecoveryCause.NoMonitors;
+        if (configuration.DisplayRecoveryNoCurrentMonitor) causes |= DisplayRecoveryCause.NoCurrentMonitor;
+        if (configuration.DisplayRecoveryMissingWindow) causes |= DisplayRecoveryCause.MissingWindow;
+        if (configuration.DisplayRecoveryHiddenWindow) causes |= DisplayRecoveryCause.HiddenWindow;
+        if (configuration.DisplayRecoveryMinimizedWindow) causes |= DisplayRecoveryCause.MinimizedWindow;
+        if (configuration.DisplayRecoveryInvalidWindowSize) causes |= DisplayRecoveryCause.InvalidWindowSize;
+        if (configuration.DisplayRecoveryMonitorTopologyChanges) causes |= DisplayRecoveryCause.MonitorTopologyChanged;
+        if (configuration.DisplayRecoveryCurrentMonitorChanges) causes |= DisplayRecoveryCause.CurrentMonitorChanged;
+        if (configuration.DisplayRecoveryWindowMovement) causes |= DisplayRecoveryCause.WindowMoved;
+        if (configuration.DisplayRecoveryWindowResizing) causes |= DisplayRecoveryCause.WindowResized;
+        return causes;
     }
+
+    private static DisplayRecoveryCause GetInvalidCauses(DisplayTopologySnapshot snapshot)
+    {
+        var causes = DisplayRecoveryCause.None;
+        if (snapshot.Monitors.Count == 0) causes |= DisplayRecoveryCause.NoMonitors;
+        if (!HasCurrentMonitor(snapshot)) causes |= DisplayRecoveryCause.NoCurrentMonitor;
+        if (!snapshot.Window.Exists)
+            return causes | DisplayRecoveryCause.MissingWindow;
+
+        if (!snapshot.Window.Visible) causes |= DisplayRecoveryCause.HiddenWindow;
+        if (snapshot.Window.Minimized) causes |= DisplayRecoveryCause.MinimizedWindow;
+        if (snapshot.Window.Width <= 0 || snapshot.Window.Height <= 0) causes |= DisplayRecoveryCause.InvalidWindowSize;
+        return causes;
+    }
+
+    private static DisplayRecoveryCause GetChangedCauses(DisplayTopologySnapshot previous, DisplayTopologySnapshot current)
+    {
+        var causes = GetInvalidCauses(previous) ^ GetInvalidCauses(current);
+        if (!previous.Window.Exists || !current.Window.Exists)
+            causes &= ~(DisplayRecoveryCause.HiddenWindow | DisplayRecoveryCause.MinimizedWindow | DisplayRecoveryCause.InvalidWindowSize);
+        // Loss/return of all monitors or the current monitor has its own opt-in.
+        if (previous.Monitors.Count > 0 && current.Monitors.Count > 0
+            && HasCurrentMonitor(previous) && HasCurrentMonitor(current)
+            && previous.MonitorSignature != current.MonitorSignature)
+            causes |= DisplayRecoveryCause.MonitorTopologyChanged;
+        if (previous.Monitors.Count > 0 && current.Monitors.Count > 0
+            && HasCurrentMonitor(previous) && HasCurrentMonitor(current)
+            && previous.CurrentMonitorDeviceName != current.CurrentMonitorDeviceName)
+            causes |= DisplayRecoveryCause.CurrentMonitorChanged;
+
+        // Missing/hidden/minimized/empty windows are separate conditions, not moves or resizes.
+        if (HasOrdinaryWindow(previous.Window) && HasOrdinaryWindow(current.Window))
+        {
+            if (previous.Window.X != current.Window.X || previous.Window.Y != current.Window.Y)
+                causes |= DisplayRecoveryCause.WindowMoved;
+            if (previous.Window.Width != current.Window.Width || previous.Window.Height != current.Window.Height)
+                causes |= DisplayRecoveryCause.WindowResized;
+        }
+        return causes;
+    }
+
+    private static bool HasCurrentMonitor(DisplayTopologySnapshot snapshot)
+        => !string.Equals(snapshot.CurrentMonitorDeviceName, "none", StringComparison.OrdinalIgnoreCase);
+
+    private static bool HasOrdinaryWindow(DisplayWindowSnapshot window)
+        => window.Exists && window.Visible && !window.Minimized && window.Width > 0 && window.Height > 0;
 
     private static int ClampPauseSeconds(int value)
         => Math.Clamp(value, 15, 900);
@@ -574,6 +656,7 @@ public sealed record DisplayMonitorSnapshot(string DeviceName, int Left, int Top
 public sealed record DisplayWindowSnapshot(bool Exists, bool Visible, bool Minimized, int X, int Y, int Width, int Height)
 {
     public static readonly DisplayWindowSnapshot Missing = new(false, false, false, 0, 0, 0, 0);
-    public string Signature => $"{Exists}:{Visible}:{Minimized}:{X},{Y},{Width},{Height}";
+    // Ordinary moves/resizes stay out of this snapshot key; recovery compares geometry only with explicit opt-ins.
+    public string Signature => $"{Exists}:{Visible}:{Minimized}";
     public string ToDisplayText() => Exists ? $"{X},{Y} {Width}x{Height}; visible={Visible}; minimized={Minimized}" : "missing";
 }

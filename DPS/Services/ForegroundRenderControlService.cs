@@ -26,7 +26,8 @@ public sealed unsafe class ForegroundRenderControlService : IDisposable
         => !disposed
         && !displayRecoveryBypassActive
         && (disabledByDps
-            || (SafeModeRequested && renderGate.HooksActive && !renderGate.InitializationFailed));
+            || (SafeModeRequested && renderGate.HooksActive && !renderGate.InitializationFailed
+                && !renderGate.TransitionBypassActive && !renderGate.LoggedOutBypassActive));
 
     public string Status { get; private set; } = "Foreground no-render disabled.";
     public bool DisplayRecoveryBypassActive => displayRecoveryBypassActive;
@@ -344,6 +345,14 @@ public sealed unsafe class ForegroundRenderControlService : IDisposable
         if (renderGate.InitializationFailed)
         {
             Status = $"Foreground no-render unavailable: {renderGate.InitializationError ?? "render gate hook initialization failed"}";
+            return;
+        }
+
+        if (renderGate.TransitionBypassActive || renderGate.LoggedOutBypassActive)
+        {
+            Status = renderGate.TransitionBypassActive
+                ? "Foreground no-render paused by the enabled area-transition exception."
+                : "Foreground no-render paused by the enabled logged-out exception.";
             return;
         }
 

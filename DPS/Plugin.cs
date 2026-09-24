@@ -56,6 +56,7 @@ public sealed class Plugin : IDalamudPlugin
 
     public WindowSystem WindowSystem { get; } = new(PluginInfo.InternalName);
     private readonly MainWindow mainWindow;
+    private readonly AdvancedWindow advancedWindow;
     private readonly Random backgroundRecoveryRandom = new();
     private IDtrBarEntry? dtrEntry;
     private DateTime? nextBackgroundRecoveryUtc;
@@ -90,7 +91,9 @@ public sealed class Plugin : IDalamudPlugin
         DisplayRecoveryService = new DisplayRecoveryService();
 
         mainWindow = new MainWindow(this);
+        advancedWindow = new AdvancedWindow(this);
         WindowSystem.AddWindow(mainWindow);
+        WindowSystem.AddWindow(advancedWindow);
 
         CommandManager.AddHandler(PluginInfo.Command, new CommandInfo(OnCommand)
         {
@@ -199,6 +202,28 @@ public sealed class Plugin : IDalamudPlugin
             changed = true;
         }
 
+        if (Configuration.Version < 13)
+        {
+            Configuration.ForegroundDisplayRecoveryGuardEnabled = false;
+            Configuration.BackgroundRecoveryLoopEnabled = false;
+            Configuration.RenderDuringAreaTransitions = false;
+            Configuration.RenderWhileLoggedOut = false;
+            Configuration.PeriodicRenderFramesEnabled = false;
+            Configuration.AutoRetainerRenderConflictResolutionEnabled = false;
+            Configuration.DisplayRecoveryNoMonitors = false;
+            Configuration.DisplayRecoveryNoCurrentMonitor = false;
+            Configuration.DisplayRecoveryMissingWindow = false;
+            Configuration.DisplayRecoveryHiddenWindow = false;
+            Configuration.DisplayRecoveryMinimizedWindow = false;
+            Configuration.DisplayRecoveryInvalidWindowSize = false;
+            Configuration.DisplayRecoveryMonitorTopologyChanges = false;
+            Configuration.DisplayRecoveryCurrentMonitorChanges = false;
+            Configuration.DisplayRecoveryWindowMovement = false;
+            Configuration.DisplayRecoveryWindowResizing = false;
+            Configuration.Version = 13;
+            changed = true;
+        }
+
         if (changed)
             Configuration.Save();
     }
@@ -206,6 +231,7 @@ public sealed class Plugin : IDalamudPlugin
     public void Dispose()
     {
         Framework.Update -= OnFrameworkUpdate;
+        ResetBackgroundRecoveryState("Automatic recovery pulse cancelled on unload.");
         ApplyForegroundDisplayRecoveryBypass(false);
         ForegroundRenderControlService.Dispose();
         BackgroundRenderGateService.Dispose();
@@ -220,6 +246,7 @@ public sealed class Plugin : IDalamudPlugin
     }
 
     public void ToggleMainUi() => mainWindow.Toggle();
+    public void OpenAdvancedUi() => advancedWindow.IsOpen = true;
     public void ToggleConfigUi() => mainWindow.OpenHotkeysTab();
     public void ResetWindowPositions()
     {
@@ -424,6 +451,7 @@ public sealed class Plugin : IDalamudPlugin
 
     private void ApplyConfigurationCore()
     {
+        RefreshBackgroundRecoveryStatus();
         ApplyForegroundDisplayRecoveryBypass(DisplayRecoveryService.RefreshConfiguration(Configuration));
         DisableAutoRetainerRenderSuppression();
 
@@ -465,8 +493,6 @@ public sealed class Plugin : IDalamudPlugin
                 Log.Warning(ex, "[DPS] Actor suppression update failed during apply.");
             }
         });
-
-        RefreshBackgroundRecoveryStatus();
     }
 
     private void ApplyForegroundDisplayRecoveryBypass(bool bypassActive)
@@ -477,7 +503,8 @@ public sealed class Plugin : IDalamudPlugin
 
     private void DisableAutoRetainerRenderSuppression()
     {
-        if (!Configuration.PluginEnabled || !Configuration.ForegroundNoRenderEnabled)
+        if (!Configuration.AutoRetainerRenderConflictResolutionEnabled
+            || !Configuration.PluginEnabled || !Configuration.ForegroundNoRenderEnabled)
             return;
 
         try
@@ -1335,12 +1362,10 @@ public sealed class Plugin : IDalamudPlugin
 
     private void TickBackgroundRecoveryLoop()
     {
-        if (!Configuration.BackgroundRecoveryLoopEnabled)
-        {
-            if (nextBackgroundRecoveryUtc != null || backgroundRecoveryResumeUtc != null || BackgroundRecoveryStatus != "Automatic recovery pulse disabled.")
-                ResetBackgroundRecoveryState("Automatic recovery pulse disabled.");
+        RefreshBackgroundRecoveryStatus();
+        if (!Configuration.BackgroundRecoveryLoopEnabled
+            || !Configuration.PluginEnabled || !Configuration.BackgroundNoRenderEnabled)
             return;
-        }
 
         var now = DateTime.UtcNow;
         if (backgroundRecoveryResumeUtc is { } resumeUtc)
@@ -1357,25 +1382,7 @@ public sealed class Plugin : IDalamudPlugin
             return;
         }
 
-        if (!Configuration.BackgroundNoRenderEnabled)
-        {
-            ResetBackgroundRecoveryState("Automatic recovery pulse waiting for background no-render.");
-            return;
-        }
-
-        if (!Configuration.PluginEnabled)
-        {
-            ResetBackgroundRecoveryState("Automatic recovery pulse waiting for plugin enable.");
-            return;
-        }
-
-        if (nextBackgroundRecoveryUtc == null)
-        {
-            ScheduleNextBackgroundRecovery();
-            return;
-        }
-
-        if (now >= nextBackgroundRecoveryUtc.Value)
+        if (nextBackgroundRecoveryUtc is { } recoveryUtc && now >= recoveryUtc)
         {
             if (BackgroundRenderGateService.IsBackgroundNoRenderActive)
             {
@@ -1389,26 +1396,14 @@ public sealed class Plugin : IDalamudPlugin
             return;
         }
 
-        BackgroundRecoveryStatus = $"Automatic recovery pulse queued in {FormatDuration(nextBackgroundRecoveryUtc.Value - now)}.";
     }
 
     private void StartBackgroundRecoveryPulse()
     {
         var pulseSeconds = Math.Clamp(Configuration.BackgroundRecoveryPulseSeconds, 1, 30);
         backgroundRecoveryResumeUtc = DateTime.UtcNow.AddSeconds(pulseSeconds);
-        Configuration.BackgroundNoRenderEnabled = false;
-
-        if (Configuration.CleanDisableExperimentalRenderHack)
-        {
-            Configuration.ForegroundNoRenderEnabled = false;
-            ForegroundRenderControlService.RestoreRender("automatic background recovery pulse");
-            Configuration.PluginEnabled = false;
-            ActorSuppressionService.ShowAll();
-        }
-
-        Configuration.Save();
-        ApplyConfiguration();
-        UpdateDtrBar();
+        nextBackgroundRecoveryUtc = null;
+        BackgroundRenderGateService.SetBackgroundRecoveryBypass(true);
         BackgroundRecoveryStatus = $"Automatic recovery pulse active for {pulseSeconds}s.";
         Log.Information("[DPS] Automatic background recovery pulse started for {PulseSeconds}s.", pulseSeconds);
     }
@@ -1416,11 +1411,7 @@ public sealed class Plugin : IDalamudPlugin
     private void FinishBackgroundRecoveryPulse()
     {
         backgroundRecoveryResumeUtc = null;
-        Configuration.PluginEnabled = true;
-        Configuration.BackgroundNoRenderEnabled = true;
-        Configuration.Save();
-        ApplyConfiguration();
-        UpdateDtrBar();
+        BackgroundRenderGateService.SetBackgroundRecoveryBypass(false);
         ScheduleNextBackgroundRecovery();
         Log.Information("[DPS] Automatic background recovery pulse ended; background no-render re-armed.");
     }
@@ -1433,37 +1424,31 @@ public sealed class Plugin : IDalamudPlugin
         if (backgroundRecoveryResumeUtc != null || nextBackgroundRecoveryUtc != null)
             Log.Information("[DPS] Automatic background recovery pulse cancelled via {Source}.", source);
 
-        RefreshBackgroundRecoveryStatus(resetSchedule: true);
+        ResetBackgroundRecoveryState("Automatic recovery pulse cancelled.");
     }
 
-    private void RefreshBackgroundRecoveryStatus(bool resetSchedule = false)
+    private void RefreshBackgroundRecoveryStatus()
     {
-        if (resetSchedule)
-        {
-            nextBackgroundRecoveryUtc = null;
-            backgroundRecoveryResumeUtc = null;
-        }
-
         if (!Configuration.BackgroundRecoveryLoopEnabled)
         {
-            BackgroundRecoveryStatus = "Automatic recovery pulse disabled.";
+            ResetBackgroundRecoveryState("Automatic recovery pulse disabled.");
             return;
         }
-
-        if (backgroundRecoveryResumeUtc != null)
-            return;
 
         if (!Configuration.BackgroundNoRenderEnabled)
         {
-            BackgroundRecoveryStatus = "Automatic recovery pulse waiting for background no-render.";
+            ResetBackgroundRecoveryState("Automatic recovery pulse waiting for background no-render.");
             return;
         }
 
         if (!Configuration.PluginEnabled)
         {
-            BackgroundRecoveryStatus = "Automatic recovery pulse waiting for plugin enable.";
+            ResetBackgroundRecoveryState("Automatic recovery pulse waiting for plugin enable.");
             return;
         }
+
+        if (backgroundRecoveryResumeUtc != null)
+            return;
 
         if (nextBackgroundRecoveryUtc == null)
         {
@@ -1478,6 +1463,7 @@ public sealed class Plugin : IDalamudPlugin
     {
         nextBackgroundRecoveryUtc = null;
         backgroundRecoveryResumeUtc = null;
+        BackgroundRenderGateService.SetBackgroundRecoveryBypass(false);
         BackgroundRecoveryStatus = status;
     }
 

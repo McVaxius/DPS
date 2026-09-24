@@ -1,0 +1,11 @@
+Unreleased - 2026-09-24
+
+- Added an Advanced button at the top of the main window. Automatic rendering exceptions, recovery timing, and advanced background throttle controls now live in a separate window and save/apply immediately.
+- Made every automatic rendering exception opt-in. Configuration schema 13 disables existing recovery enables once during upgrade while preserving timing values and unrelated settings.
+- Added individual foreground display-recovery options for no monitors, no current monitor, missing/hidden/minimized windows, invalid window dimensions, monitor topology changes, current-monitor changes, window movement, and resizing.
+- Disabled display conditions cannot start or extend recovery. Monitor loss cannot bypass its disabled option through monitor-change detection. Ordinary movement and resizing remain excluded by default.
+- Added separate options for rendering during area transitions, rendering while logged out, and periodic frames in frozen-frame and background modes. Legacy black-screen mode does not gain periodic frames.
+- Background recovery pulses now temporarily allow rendering without changing saved mode settings. Disabling an active exception cancels its pause or pulse, and pending pulse timers cannot undo manual restore or Stop actions.
+- Made automatic changes to AutoRetainer's rendering setting opt-in.
+- Timing fields appear only when their corresponding recovery feature is enabled. Updated mode labels and diagnostics to show the selected exceptions.
+- Preserved ordinary background focus/minimize eligibility, manual restore commands, All Off, Stop, and unload cleanup.

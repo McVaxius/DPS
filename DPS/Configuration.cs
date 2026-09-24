@@ -13,7 +13,7 @@ public enum ForegroundNoRenderMode
 [Serializable]
 public class Configuration : IPluginConfiguration
 {
-    public int Version { get; set; } = 12;
+    public int Version { get; set; } = 13;
     public bool PluginEnabled { get; set; }
     public bool DtrBarEnabled { get; set; } = true;
     public int DtrBarMode { get; set; } = 1;
@@ -40,13 +40,27 @@ public class Configuration : IPluginConfiguration
     public ForegroundNoRenderMode ForegroundNoRenderMode { get; set; } = ForegroundNoRenderMode.LegacyBlackScreen;
     public bool BackgroundNoRenderOnlyWhenMinimized { get; set; }
     public bool CleanDisableExperimentalRenderHack { get; set; } = true;
+    public bool RenderDuringAreaTransitions { get; set; }
+    public bool RenderWhileLoggedOut { get; set; }
+    public bool PeriodicRenderFramesEnabled { get; set; }
+    public bool AutoRetainerRenderConflictResolutionEnabled { get; set; }
     public int BackgroundSafetyFrameIntervalSeconds { get; set; } = 5;
     public int BackgroundThrottleSleepMs { get; set; }
     public bool BackgroundRecoveryLoopEnabled { get; set; }
     public int BackgroundRecoveryMinMinutes { get; set; } = 15;
     public int BackgroundRecoveryMaxMinutes { get; set; } = 20;
     public int BackgroundRecoveryPulseSeconds { get; set; } = 5;
-    public bool ForegroundDisplayRecoveryGuardEnabled { get; set; } = true;
+    public bool ForegroundDisplayRecoveryGuardEnabled { get; set; }
+    public bool DisplayRecoveryNoMonitors { get; set; }
+    public bool DisplayRecoveryNoCurrentMonitor { get; set; }
+    public bool DisplayRecoveryMissingWindow { get; set; }
+    public bool DisplayRecoveryHiddenWindow { get; set; }
+    public bool DisplayRecoveryMinimizedWindow { get; set; }
+    public bool DisplayRecoveryInvalidWindowSize { get; set; }
+    public bool DisplayRecoveryMonitorTopologyChanges { get; set; }
+    public bool DisplayRecoveryCurrentMonitorChanges { get; set; }
+    public bool DisplayRecoveryWindowMovement { get; set; }
+    public bool DisplayRecoveryWindowResizing { get; set; }
     public int ForegroundDisplayRecoveryPauseSeconds { get; set; } = 180;
     public int ForegroundDisplayRecoveryStableSeconds { get; set; } = 30;
     public HotkeyBinding ForegroundToggleHotkey { get; set; } = new();
