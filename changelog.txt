@@ -1,4 +1,11 @@
-Unreleased - 2026-09-24
+Unreleased - 2026-09-29
+
+- Hide the non-default foreground frozen-frame option unless the main-window Advanced options checkbox is selected. Existing mode settings and render behavior are preserved.
+- Added a Resolution tab with an explicit choice of XA Slave command IPC or first-party Custom Resolution reflection and an optional toggle binding in the existing hotkey table. XA Slave retains separate scale controls and toggles track successful DPS requests for the session.
+- Missing resolution providers can be installed through Dalamud's existing installer. XA Slave's repository is added or enabled only when its install button is clicked; first-party Custom Resolution uses the official repository.
+- Embedded Custom Resolution's native Display, Gameplay, and Common settings with its own Save and apply behavior, using the verified V1.Display and V1.Game fields from version 1.1.6.0.
+- The first Custom Resolution enable applies the embedded Account 1 preset once and records completion only after saving succeeds. Later enables and provider switches preserve user edits.
+- Custom Resolution's DPS toggle now sets gameplay to 1.0x when off while retaining native scaling, then restores the session's chosen gameplay scale when on. A new session starting at 1.0x uses 0.05x on the next enable; display settings stay untouched after the initial preset.
 
 - Added an Advanced button at the top of the main window. Automatic rendering exceptions, recovery timing, and advanced background throttle controls now live in a separate window and save/apply immediately.
 - Made every automatic rendering exception opt-in. Configuration schema 13 disables existing recovery enables once during upgrade while preserving timing values and unrelated settings.

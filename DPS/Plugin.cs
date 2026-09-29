@@ -52,6 +52,7 @@ public sealed class Plugin : IDalamudPlugin
     public ForegroundRenderControlService ForegroundRenderControlService { get; }
     public WindowPlacementService WindowPlacementService { get; }
     public DisplayRecoveryService DisplayRecoveryService { get; }
+    public ResolutionScalingService ResolutionScalingService { get; }
     public bool DebugModeEnabled { get; private set; }
 
     public WindowSystem WindowSystem { get; } = new(PluginInfo.InternalName);
@@ -69,6 +70,7 @@ public sealed class Plugin : IDalamudPlugin
     private bool crowdHotkeyDown;
     private bool allOffHotkeyDown;
     private bool windowPlacementAndSizeLoadHotkeyDown;
+    private bool resolutionToggleHotkeyDown;
     private StartupWindowRestoreState startupWindowPositionRestoreState;
     private StartupWindowRestoreState startupWindowSizeRestoreState;
     private DateTime? startupWindowSizeRestoreStartedUtc;
@@ -89,6 +91,7 @@ public sealed class Plugin : IDalamudPlugin
         ForegroundRenderControlService = new ForegroundRenderControlService(BackgroundRenderGateService);
         WindowPlacementService = new WindowPlacementService();
         DisplayRecoveryService = new DisplayRecoveryService();
+        ResolutionScalingService = new ResolutionScalingService(Configuration);
 
         mainWindow = new MainWindow(this);
         advancedWindow = new AdvancedWindow(this);
@@ -1278,6 +1281,7 @@ public sealed class Plugin : IDalamudPlugin
         TickHotkey(Configuration.CrowdToggleHotkey, ref crowdHotkeyDown, ToggleCrowdSuppressionHotkey, inputCaptured);
         TickHotkey(Configuration.AllOffHotkey, ref allOffHotkeyDown, () => AllOff("all off hotkey"), inputCaptured);
         TickHotkey(Configuration.WindowPlacementAndSizeLoadHotkey, ref windowPlacementAndSizeLoadHotkeyDown, () => LoadSavedWindowPlacementAndSize("window + size load hotkey"), inputCaptured);
+        TickHotkey(Configuration.ResolutionToggleHotkey, ref resolutionToggleHotkeyDown, ResolutionScalingService.Toggle, inputCaptured);
     }
 
     private void TickHotkey(HotkeyBinding binding, ref bool wasDown, Action action, bool inputCaptured)

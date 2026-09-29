@@ -24,6 +24,7 @@ public sealed class MainWindow : Window
         Crowd,
         AllOff,
         WindowPlacementAndSizeLoad,
+        Resolution,
     }
 
     private enum WindowPositionSetupStage
@@ -41,6 +42,7 @@ public sealed class MainWindow : Window
     private PendingPlacement pendingPlacement;
     private HotkeyTarget? hotkeyCaptureTarget;
     private bool selectHotkeysTab;
+    private bool showAdvancedOptions;
     private bool allOffHotkeySetupOpen;
     private bool allOffHotkeySetupRequested;
     private bool allOffHotkeySetupListening;
@@ -103,6 +105,12 @@ public sealed class MainWindow : Window
             if (ImGui.BeginTabItem("Crowd"))
             {
                 DrawCrowdTab();
+                ImGui.EndTabItem();
+            }
+
+            if (ImGui.BeginTabItem("Resolution"))
+            {
+                DrawResolutionTab();
                 ImGui.EndTabItem();
             }
 
@@ -213,6 +221,8 @@ public sealed class MainWindow : Window
         UiHelpers.SameLineIfFits(84f);
         if (UiHelpers.CompactButton("Hotkeys", 76f, "Open hotkey bindings."))
             OpenHotkeysTab();
+        UiHelpers.SameLineIfFits(140f);
+        ImGui.Checkbox("Advanced options", ref showAdvancedOptions);
         UiHelpers.SameLineIfFits(94f);
         if (UiHelpers.CompactButton("Advanced", 86f, "Open automatic rendering exceptions, recovery, and throttle controls."))
             plugin.OpenAdvancedUi();
@@ -282,10 +292,13 @@ public sealed class MainWindow : Window
     private void DrawForegroundNoRenderModeSelector()
     {
         var cfg = plugin.Configuration;
-        var safeMode = cfg.ForegroundNoRenderMode == ForegroundNoRenderMode.SafeFrozenFrame;
-        if (ImGui.RadioButton("De-render with frozen frame", safeMode))
-            plugin.SetForegroundNoRenderMode(ForegroundNoRenderMode.SafeFrozenFrame, "main render tab");
-        UiHelpers.Tooltip("Uses the render gate path and leaves the last rendered frame visible.");
+        if (showAdvancedOptions)
+        {
+            var safeMode = cfg.ForegroundNoRenderMode == ForegroundNoRenderMode.SafeFrozenFrame;
+            if (ImGui.RadioButton("De-render with frozen frame", safeMode))
+                plugin.SetForegroundNoRenderMode(ForegroundNoRenderMode.SafeFrozenFrame, "main render tab");
+            UiHelpers.Tooltip("Uses the render gate path and leaves the last rendered frame visible.");
+        }
 
         var legacyMode = cfg.ForegroundNoRenderMode == ForegroundNoRenderMode.LegacyBlackScreen;
         if (ImGui.RadioButton("De-render with black screen", legacyMode))
@@ -323,6 +336,100 @@ public sealed class MainWindow : Window
             plugin.SetPluginEnabled(false, "crowd tab", showAllOnDisable: true);
     }
 
+    private void DrawResolutionTab()
+    {
+        var cfg = plugin.Configuration;
+        var resolution = plugin.ResolutionScalingService;
+
+        ImGui.BeginDisabled(resolution.Installing);
+        if (ImGui.RadioButton("XA Slave (IPC)", cfg.ResolutionProvider == ResolutionProvider.XASlave))
+        {
+            cfg.ResolutionProvider = ResolutionProvider.XASlave;
+            cfg.Save();
+        }
+        ImGui.SameLine();
+        if (ImGui.RadioButton("Custom Resolution (first-party)", cfg.ResolutionProvider == ResolutionProvider.CustomResolution))
+        {
+            cfg.ResolutionProvider = ResolutionProvider.CustomResolution;
+            cfg.Save();
+        }
+        ImGui.EndDisabled();
+
+        if (!resolution.HasProvider)
+        {
+            UiHelpers.Wrapped("Choose a resolution plugin above to manage gameplay scaling.");
+            return;
+        }
+
+        var installed = resolution.FindInstallation();
+        UiHelpers.StatusPill(resolution.ProviderName, installed == null ? "NOT INSTALLED" : resolution.Ready ? "READY" : "NOT LOADED / INCOMPATIBLE",
+            resolution.Ready ? UiHelpers.Good : UiHelpers.Muted);
+        ImGui.BeginDisabled(resolution.Installing);
+        if (installed == null)
+        {
+            var label = cfg.ResolutionProvider == ResolutionProvider.XASlave && !resolution.SlaveRepositoryEnabled()
+                ? "Add repo + install XA Slave"
+                : $"Install {resolution.ProviderName}";
+            if (ImGui.Button(label))
+                _ = resolution.InstallAsync();
+        }
+        else if (!resolution.Ready && ImGui.Button("Open Plugin Installer"))
+        {
+            Plugin.CommandManager.ProcessCommand("/xlplugins");
+        }
+        ImGui.EndDisabled();
+
+        if (resolution.Installing)
+            ImGui.TextUnformatted("Installing...");
+        if (!string.IsNullOrEmpty(resolution.Status))
+            UiHelpers.Wrapped(resolution.Status);
+
+        if (cfg.ResolutionProvider == ResolutionProvider.XASlave)
+        {
+            UiHelpers.SectionHeader("XA Slave gameplay scaling");
+            var scale = cfg.ResolutionScale;
+            if (ImGui.SliderFloat("Scale", ref scale, 0.01f, 1f, "%.2fx"))
+            {
+                cfg.ResolutionScale = Math.Clamp(float.IsFinite(scale) ? scale : 0.25f, 0.01f, 1f);
+                cfg.Save();
+            }
+        }
+        else
+        {
+            UiHelpers.SectionHeader("DPS gameplay toggle");
+            UiHelpers.Wrapped("Off sets gameplay to 1.0x. On restores your last saved gameplay scale; display settings are preserved.");
+            if (!cfg.CustomResolutionDefaultsApplied)
+                UiHelpers.Wrapped("The first enable applies the DPS preset: display disabled, gameplay 0.05x, Point upscaling, and native hotkeys unbound. Customize the native settings below afterward.");
+        }
+
+        ImGui.BeginDisabled(!resolution.Ready || resolution.Installing);
+        if (ImGui.Button(cfg.ResolutionProvider == ResolutionProvider.XASlave ? "Enable / apply scale" : "Enable gameplay scaling"))
+            resolution.Apply(true);
+        ImGui.SameLine();
+        if (ImGui.Button(cfg.ResolutionProvider == ResolutionProvider.XASlave ? "Disable scaling" : "Set gameplay to 1.0x"))
+            resolution.Apply(false);
+        ImGui.EndDisabled();
+
+        UiHelpers.HotkeyStatus("Toggle hotkey", cfg.ResolutionToggleHotkey);
+        if (ImGui.Button("Hotkey settings"))
+            OpenHotkeysTab();
+        if (cfg.ResolutionProvider == ResolutionProvider.XASlave)
+            UiHelpers.Wrapped($"XA Slave toggle follows the last successful DPS request this session ({(resolution.SlaveRequestEnabled ? "enabled" : "disabled")}). After changing scaling in XA Slave, use these enable/disable buttons to set the toggle state.");
+        else if (resolution.Ready && !resolution.Installing)
+        {
+            UiHelpers.SectionHeader("Custom Resolution settings");
+            ImGui.PushID("CustomResolutionSettings");
+            try
+            {
+                resolution.DrawCustomSettings();
+            }
+            finally
+            {
+                ImGui.PopID();
+            }
+        }
+    }
+
     private void DrawHotkeysTab()
     {
         ProcessHotkeyCapture();
@@ -347,6 +454,7 @@ public sealed class MainWindow : Window
             DrawHotkeyRow("Crowd", HotkeyTarget.Crowd, plugin.Configuration.CrowdToggleHotkey);
             DrawHotkeyRow("All Off", HotkeyTarget.AllOff, plugin.Configuration.AllOffHotkey);
             DrawHotkeyRow("Window + Size Load", HotkeyTarget.WindowPlacementAndSizeLoad, plugin.Configuration.WindowPlacementAndSizeLoadHotkey);
+            DrawHotkeyRow("Resolution", HotkeyTarget.Resolution, plugin.Configuration.ResolutionToggleHotkey);
 
             ImGui.EndTable();
         }
@@ -609,6 +717,7 @@ public sealed class MainWindow : Window
             HotkeyTarget.Crowd => plugin.Configuration.CrowdToggleHotkey,
             HotkeyTarget.AllOff => plugin.Configuration.AllOffHotkey,
             HotkeyTarget.WindowPlacementAndSizeLoad => plugin.Configuration.WindowPlacementAndSizeLoadHotkey,
+            HotkeyTarget.Resolution => plugin.Configuration.ResolutionToggleHotkey,
             _ => plugin.Configuration.AllOffHotkey,
         };
 
@@ -620,6 +729,7 @@ public sealed class MainWindow : Window
             HotkeyTarget.Crowd => "Crowd",
             HotkeyTarget.AllOff => "All Off",
             HotkeyTarget.WindowPlacementAndSizeLoad => "Window + Size Load",
+            HotkeyTarget.Resolution => "Resolution",
             _ => "Hotkey",
         };
 

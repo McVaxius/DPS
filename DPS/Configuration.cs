@@ -10,6 +10,13 @@ public enum ForegroundNoRenderMode
     LegacyBlackScreen = 1,
 }
 
+public enum ResolutionProvider
+{
+    None,
+    XASlave,
+    CustomResolution,
+}
+
 [Serializable]
 public class Configuration : IPluginConfiguration
 {
@@ -68,6 +75,10 @@ public class Configuration : IPluginConfiguration
     public HotkeyBinding CrowdToggleHotkey { get; set; } = new();
     public HotkeyBinding AllOffHotkey { get; set; } = new();
     public HotkeyBinding WindowPlacementAndSizeLoadHotkey { get; set; } = new();
+    public ResolutionProvider ResolutionProvider { get; set; }
+    public float ResolutionScale { get; set; } = 0.25f;
+    public HotkeyBinding ResolutionToggleHotkey { get; set; } = new();
+    public bool CustomResolutionDefaultsApplied { get; set; }
     public bool WindowPlacementAutoLoadEnabled { get; set; }
     public bool WindowSizeAutoLoadEnabled { get; set; }
     public SavedWindowPlacement? WindowPlacement { get; set; }
