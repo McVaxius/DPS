@@ -706,8 +706,8 @@ public sealed class Plugin : IDalamudPlugin
 
         var previousMode = Configuration.ForegroundNoRenderMode;
         var foregroundWasEnabled = Configuration.ForegroundNoRenderEnabled;
-        var legacyByteWasActive = previousMode == ForegroundNoRenderMode.LegacyBlackScreen
-                               && ForegroundRenderControlService.RenderDisabledByDps;
+        var legacyByteMayNeedRestore = previousMode == ForegroundNoRenderMode.LegacyBlackScreen
+                                    && (foregroundWasEnabled || ForegroundRenderControlService.RenderDisabledByDps);
         if (foregroundWasEnabled || ForegroundRenderControlService.RenderDisabledByDps || BackgroundRenderGateService.IsForegroundNoRenderActive)
         {
             Configuration.ForegroundNoRenderEnabled = false;
@@ -724,7 +724,7 @@ public sealed class Plugin : IDalamudPlugin
             var restored = ForegroundRenderControlService.RestoreRender($"foreground mode switch via {source}");
             Configuration.ForegroundNoRenderEnabled = foregroundWasEnabled;
 
-            if (!restored && legacyByteWasActive)
+            if (!restored && legacyByteMayNeedRestore)
             {
                 ApplyConfiguration();
                 UpdateDtrBar();

@@ -45,6 +45,7 @@ public class Configuration : IPluginConfiguration
     public bool BackgroundNoRenderEnabled { get; set; }
     public bool ForegroundNoRenderEnabled { get; set; }
     public ForegroundNoRenderMode ForegroundNoRenderMode { get; set; } = ForegroundNoRenderMode.LegacyBlackScreen;
+    public bool ContinuousBlackScreenEnforcementEnabled { get; set; } = true;
     public bool BackgroundNoRenderOnlyWhenMinimized { get; set; }
     public bool CleanDisableExperimentalRenderHack { get; set; } = true;
     public bool RenderDuringAreaTransitions { get; set; }

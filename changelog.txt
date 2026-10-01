@@ -1,5 +1,7 @@
-Unreleased - 2026-09-29
+Unreleased - 2026-10-01
 
+- Added a saved "Continuously enforce black-screen mode" compatibility option at the top of the Render tab, enabled by default for new and existing configurations, with a wrapped red warning for users experiencing crashes or instability. The crash cause remains unconfirmed.
+- Disabling continuous enforcement stops per-frame black-screen flag rewrites while retaining suppression on enable/apply and after display recovery. Native flag resets update render status without clearing saved intent. The foreground toggle, All Off, mode switching, and unload cleanup still restore rendering.
 - Hide the non-default foreground frozen-frame option unless the main-window Advanced options checkbox is selected. Existing mode settings and render behavior are preserved.
 - Added a Resolution tab with an explicit choice of XA Slave command IPC or first-party Custom Resolution reflection and an optional toggle binding in the existing hotkey table. XA Slave retains separate scale controls and toggles track successful DPS requests for the session.
 - Missing resolution providers can be installed through Dalamud's existing installer. XA Slave's repository is added or enabled only when its install button is clicked; first-party Custom Resolution uses the official repository.

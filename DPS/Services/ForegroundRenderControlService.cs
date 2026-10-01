@@ -11,9 +11,12 @@ public sealed unsafe class ForegroundRenderControlService : IDisposable
 
     private readonly BackgroundRenderGateService renderGate;
     private Configuration? configuration;
+    // Keep cleanup ownership even when the native flag is reset externally.
     private bool disabledByDps;
+    private byte? observedRenderByte;
     private bool disposed;
     private bool displayRecoveryBypassActive;
+    private bool resumeAfterDisplayRecovery;
     private long nextUnavailableWarningTick;
     private long nextRewriteInformationTick;
 
@@ -25,7 +28,7 @@ public sealed unsafe class ForegroundRenderControlService : IDisposable
     public bool RenderDisabledByDps
         => !disposed
         && !displayRecoveryBypassActive
-        && (disabledByDps
+        && ((disabledByDps && observedRenderByte == RenderOffByte)
             || (SafeModeRequested && renderGate.HooksActive && !renderGate.InitializationFailed
                 && !renderGate.TransitionBypassActive && !renderGate.LoggedOutBypassActive));
 
@@ -43,6 +46,7 @@ public sealed unsafe class ForegroundRenderControlService : IDisposable
             return;
 
         this.configuration = configuration;
+        resumeAfterDisplayRecovery = false;
 
         if (displayRecoveryBypassActive)
         {
@@ -72,6 +76,8 @@ public sealed unsafe class ForegroundRenderControlService : IDisposable
             return;
 
         this.configuration = configuration;
+        var resumeLegacySuppression = resumeAfterDisplayRecovery;
+        resumeAfterDisplayRecovery = false;
 
         if (displayRecoveryBypassActive)
         {
@@ -82,7 +88,10 @@ public sealed unsafe class ForegroundRenderControlService : IDisposable
 
         if (ShouldUseLegacyRenderByte(configuration))
         {
-            DisableRender("framework tick");
+            if (configuration.ContinuousBlackScreenEnforcementEnabled || resumeLegacySuppression)
+                DisableRender(resumeLegacySuppression ? "foreground display recovery resume" : "framework tick");
+            else
+                ObserveRenderByte();
             return;
         }
 
@@ -101,6 +110,7 @@ public sealed unsafe class ForegroundRenderControlService : IDisposable
             return;
 
         displayRecoveryBypassActive = active;
+        resumeAfterDisplayRecovery = !active;
         UpdateStatus();
     }
 
@@ -120,6 +130,7 @@ public sealed unsafe class ForegroundRenderControlService : IDisposable
         }
 
         disabledByDps = after == RenderOffByte;
+        observedRenderByte = after;
 
         Status = after == RenderOffByte
             ? "Foreground no-render ACTIVE. Render byte is 1."
@@ -154,6 +165,7 @@ public sealed unsafe class ForegroundRenderControlService : IDisposable
 
         if (after == RenderOnByte)
             disabledByDps = false;
+        observedRenderByte = after;
 
         Status = after == RenderOnByte
             ? "Foreground no-render disabled. Render byte restored to 0."
@@ -200,6 +212,27 @@ public sealed unsafe class ForegroundRenderControlService : IDisposable
         => configuration.PluginEnabled
         && configuration.ForegroundNoRenderEnabled
         && configuration.ForegroundNoRenderMode == ForegroundNoRenderMode.LegacyBlackScreen;
+
+    private void ObserveRenderByte()
+    {
+        observedRenderByte = null;
+        if (TryGetRenderFlagPointer(out _, out var flagPointer, out var error))
+        {
+            try
+            {
+                observedRenderByte = *flagPointer;
+                UpdateStatus();
+                return;
+            }
+            catch (Exception ex)
+            {
+                error = $"render flag read failed: {ex.GetType().Name}: {ex.Message}";
+            }
+        }
+
+        Status = $"Foreground no-render unavailable: {error}";
+        WarnUnavailableThrottled($"Could not observe foreground render: {error}");
+    }
 
     private static bool TryWriteRenderByte(byte value, out byte? before, out byte? after, out string error)
     {
@@ -330,9 +363,11 @@ public sealed unsafe class ForegroundRenderControlService : IDisposable
 
         if (configuration.ForegroundNoRenderMode == ForegroundNoRenderMode.LegacyBlackScreen)
         {
-            Status = disabledByDps
+            Status = disabledByDps && observedRenderByte == RenderOffByte
                 ? "Foreground no-render ACTIVE. Render byte is 1."
-                : "Foreground no-render armed. Legacy render byte mode ready.";
+                : !configuration.ContinuousBlackScreenEnforcementEnabled
+                    ? $"Foreground no-render requested, but render byte is {FormatByte(observedRenderByte)}. Continuous enforcement is off."
+                    : "Foreground no-render armed. Legacy render byte mode ready.";
             return;
         }
 

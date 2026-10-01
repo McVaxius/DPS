@@ -241,6 +241,12 @@ public sealed class MainWindow : Window
     {
         var cfg = plugin.Configuration;
 
+        DrawToggle("Continuously enforce black-screen mode", cfg.ContinuousBlackScreenEnforcementEnabled,
+            value => cfg.ContinuousBlackScreenEnforcementEnabled = value);
+        ImGui.PushStyleColor(ImGuiCol.Text, UiHelpers.Bad);
+        UiHelpers.Wrapped("Running many clients or low on system resources? If you experience crashes or instability, consider disabling continuous enforcement. Rendering may resume automatically when it is off.");
+        ImGui.PopStyleColor();
+
         UiHelpers.SectionHeader("Foreground");
         UiHelpers.HotkeyStatus("Hotkey", cfg.ForegroundToggleHotkey);
         UiHelpers.ForegroundRenderOffCheckbox(plugin, "main render tab");
