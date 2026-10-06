@@ -1,3 +1,21 @@
+Unreleased - AethertekUI interface
+
+- Render the approved filled status rows with semantic dots and a compact status strip. Keep controls on one line, reflow complete controls, and preserve readable fields and native IDs across translations and scales.
+- Show the current assembly version in both native title bars while retaining their original window identities.
+- Clip translated native field labels over presentation cards and replace their English layout widths, retaining input, slider and combo IDs, edits and popup selection.
+- Exclude punctuation-only wrappers from global service-message matching so raw names and diagnostic text remain intact; retain their explicit UI formatters.
+- Fill the two blank Spanish labels for colour and visibility; verify nonempty values in each packaged language catalogue.
+- Adopted the approved regular and compact DPS layouts with responsive foreground/background cards, managed typography and consumer-owned potato artwork. Existing commands, rendering, crowd suppression, recovery, hotkeys and game-window setup retain their behavior.
+- Added shared English, German, French, Spanish, Italian, Russian, Japanese, Korean and Simplified Chinese resources across DPS windows, tooltips, diagnostics and guided popups. Native ImGui labels and IDs remain stable while translated text uses measured widths.
+- Added theme presets and custom RGB selection plus the C compact-mode checkbox through the existing configuration save path. Configuration schema remains 13 and existing settings are preserved.
+- Managed font handles merge symbol and CJK coverage, check readiness and required glyphs, and are disposed on unload. Typed UI numbers and dates use the selected locale; service captures, command tokens, paths and addresses retain their raw values and logs remain unchanged.
+- Keep font-status windows closed when no DPS window is open, and defer drawing if the atlas changes during glyph verification. Wrapped text respects card padding and the inherited wrapping boundary; window scalar inputs clear measured translated labels at the selected scale.
+- Referenced the shared local AethertekUI library. The existing launcher Debug build, direct Release build, and packaged library/resources/assets were verified locally; game visual acceptance remains pending. No tests or clients were run.
+
+2026-10-02 - Build and release repair
+
+- Build only DPS.csproj in local launchers and Actions with SDK 10.0.201. Match Release/x64 restore and build settings, pass the downloaded Dalamud path, stop on restore failure and restrict build permissions to read-only.
+
 Unreleased - 2026-10-01
 
 - Added a saved "Continuously enforce black-screen mode" compatibility option at the top of the Render tab, enabled by default for new and existing configurations, with a wrapped red warning for users experiencing crashes or instability. The crash cause remains unconfirmed.

@@ -1,0 +1,568 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms</value></resheader>
+  <data name="K000" xml:space="preserve"><value> 左上の位置をモニターの範囲内に調整しました。</value></data>
+  <data name="K001" xml:space="preserve"><value>%.2fx</value></data>
+  <data name="K002" xml:space="preserve"><value>(動的または利用不可)</value></data>
+  <data name="K003" xml:space="preserve"><value>(未使用)</value></data>
+  <data name="K004" xml:space="preserve"><value>/dps</value></data>
+  <data name="K005" xml:space="preserve"><value>/dps debug   テクスチャラボを表示</value></data>
+  <data name="K006" xml:space="preserve"><value>/dps debug off</value></data>
+  <data name="K007" xml:space="preserve"><value>/dps foff    前面の描画を無効化</value></data>
+  <data name="K008" xml:space="preserve"><value>/dps fon     前面の描画を有効化</value></data>
+  <data name="K009" xml:space="preserve"><value>/dps j       プラグインのウィンドウを表示範囲内のランダムな位置に移動</value></data>
+  <data name="K010" xml:space="preserve"><value>/dps roff    バックグラウンド描画の停止を準備</value></data>
+  <data name="K011" xml:space="preserve"><value>/dps ron     バックグラウンド描画を復元</value></data>
+  <data name="K012" xml:space="preserve"><value>/dps wload   保存済みのゲームウィンドウのX/Y位置とモニターを読み込み</value></data>
+  <data name="K013" xml:space="preserve"><value>/dps wloadall 保存済みのX/Y位置・モニター・サイズを読み込み</value></data>
+  <data name="K014" xml:space="preserve"><value>/dps wreset  保存済みのゲームウィンドウの位置とサイズをリセット</value></data>
+  <data name="K015" xml:space="preserve"><value>/dps ws      プラグインのウィンドウを1,1に移動</value></data>
+  <data name="K016" xml:space="preserve"><value>/dps wsave   ゲームウィンドウのX/Y位置・サイズ・モニターを保存</value></data>
+  <data name="K017" xml:space="preserve"><value>/xlplugins</value></data>
+  <data name="K018" xml:space="preserve"><value>0を推奨します。描画フック内の待機はエリア移動時の引っかかりを招く場合があります。</value></data>
+  <data name="K019" xml:space="preserve"><value>使用中</value></data>
+  <data name="K020" xml:space="preserve"><value>待機中</value></data>
+  <data name="K021" xml:space="preserve"><value>概要</value></data>
+  <data name="K022" xml:space="preserve"><value>操作</value></data>
+  <data name="K023" xml:space="preserve"><value>リポジトリを追加してXA Slaveをインストール</value></data>
+  <data name="K024" xml:space="preserve"><value>詳細設定</value></data>
+  <data name="K025" xml:space="preserve"><value>詳細オプション</value></data>
+  <data name="K026" xml:space="preserve"><value>UI以外を強制適用</value></data>
+  <data name="K027" xml:space="preserve"><value>すべて停止</value></data>
+  <data name="K028" xml:space="preserve"><value>すべて無効化するホットキーの設定</value></data>
+  <data name="K029" xml:space="preserve"><value>「すべて無効化」は安全操作です。前面とバックグラウンドの描画停止や群衆の非表示を解除し、通常の描画と非表示のキャラクターを復元します。</value></data>
+  <data name="K030" xml:space="preserve"><value>非表示のキャラクターをすべて復元しました。</value></data>
+  <data name="K031" xml:space="preserve"><value>定期的なフレーム描画を許可</value></data>
+  <data name="K032" xml:space="preserve"><value>前面の描画停止時にDPSがAutoRetainerのMultiDisableRender設定を無効化できます。このオプションを無効にするとAutoRetainerの現在の設定を保持します。</value></data>
+  <data name="K033" xml:space="preserve"><value>Alt</value></data>
+  <data name="K034" xml:space="preserve"><value>前面の両モードに適用します。選択した条件だけが描画停止を一時解除できます。</value></data>
+  <data name="K035" xml:space="preserve"><value>位置を適用</value></data>
+  <data name="K036" xml:space="preserve"><value>自動読み込みが有効ですが、ゲームウィンドウの位置とサイズは保存されていません。</value></data>
+  <data name="K037" xml:space="preserve"><value>AutoRetainer</value></data>
+  <data name="K038" xml:space="preserve"><value>AutoRetainerの競合自動解消：{0}。</value></data>
+  <data name="K039" xml:space="preserve"><value>バックグラウンドの自動復元パルス</value></data>
+  <data name="K040" xml:space="preserve"><value>自動復旧パルス: あと {0} 動作します。</value></data>
+  <data name="K041" xml:space="preserve"><value>自動復旧パルス: {0} 秒間動作します。</value></data>
+  <data name="K042" xml:space="preserve"><value>自動復旧パルス: アンロード時にキャンセルしました。</value></data>
+  <data name="K043" xml:space="preserve"><value>自動復旧パルス: キャンセル済み。</value></data>
+  <data name="K044" xml:space="preserve"><value>自動復旧パルス: 無効。</value></data>
+  <data name="K045" xml:space="preserve"><value>自動復旧パルス: 実行待ちです。次のバックグラウンド描画停止の動作周期で実行します。</value></data>
+  <data name="K046" xml:space="preserve"><value>自動復旧パルス: 約 {0} 分後に実行予定。</value></data>
+  <data name="K047" xml:space="preserve"><value>自動復旧パルス: {0} 後に実行予定。</value></data>
+  <data name="K048" xml:space="preserve"><value>自動復旧パルス: バックグラウンドの描画停止を待機中。</value></data>
+  <data name="K049" xml:space="preserve"><value>自動復旧パルス: プラグインの有効化を待機中。</value></data>
+  <data name="K050" xml:space="preserve"><value>描画の自動例外は任意で有効化します。変更はすぐに保存・適用されます。</value></data>
+  <data name="K051" xml:space="preserve"><value>前面の描画競合を自動解消</value></data>
+  <data name="K052" xml:space="preserve"><value>BG</value></data>
+  <data name="K053" xml:space="preserve"><value>例外</value></data>
+  <data name="K054" xml:space="preserve"><value>バックグラウンド</value></data>
+  <data name="K055" xml:space="preserve"><value>バックグラウンドフック</value></data>
+  <data name="K056" xml:space="preserve"><value>バックグラウンド復元</value></data>
+  <data name="K057" xml:space="preserve"><value>バックグラウンドの制限</value></data>
+  <data name="K058" xml:space="preserve"><value>バックグラウンドの描画停止</value></data>
+  <data name="K059" xml:space="preserve"><value>バックグラウンドの描画停止: 動作中。ウィンドウにフォーカスがありません。</value></data>
+  <data name="K060" xml:space="preserve"><value>バックグラウンドの描画停止: 動作中。ウィンドウは最小化されています。</value></data>
+  <data name="K061" xml:space="preserve"><value>バックグラウンドの描画停止: 待機中。Alt+Tab で別のウィンドウに切り替えると動作します。</value></data>
+  <data name="K062" xml:space="preserve"><value>バックグラウンドの描画停止: 待機中。ウィンドウを最小化すると動作します。</value></data>
+  <data name="K063" xml:space="preserve"><value>バックグラウンドの描画停止: 無効。</value></data>
+  <data name="K064" xml:space="preserve"><value>バックグラウンドの描画停止: フックの初期化に失敗：{0}</value></data>
+  <data name="K065" xml:space="preserve"><value>バックグラウンドの描画停止: フック準備完了。ネームプレートのフックは利用できません。</value></data>
+  <data name="K066" xml:space="preserve"><value>バックグラウンドの描画停止: フック準備完了。</value></data>
+  <data name="K067" xml:space="preserve"><value>バックグラウンドの描画停止: 待機中。</value></data>
+  <data name="K068" xml:space="preserve"><value>バックグラウンドの描画停止: 有効なエリア移動の例外により一時停止中。</value></data>
+  <data name="K069" xml:space="preserve"><value>バックグラウンドの描画停止: 有効なログアウト時の例外により一時停止中。</value></data>
+  <data name="K070" xml:space="preserve"><value>バックグラウンドの描画停止: 有効な復旧パルスのため一時停止中。</value></data>
+  <data name="K071" xml:space="preserve"><value>バックグラウンドの描画停止: フォーカス中の描画停止が動作している間、一時停止中。</value></data>
+  <data name="K072" xml:space="preserve"><value>バックグラウンドの描画停止: プラグインの有効化を待機中。</value></data>
+  <data name="K073" xml:space="preserve"><value>割り当て</value></data>
+  <data name="K074" xml:space="preserve"><value>黒16x16</value></data>
+  <data name="K075" xml:space="preserve"><value>黒1x1</value></data>
+  <data name="K076" xml:space="preserve"><value>{1}で{0}個のテクスチャを黒化</value></data>
+  <data name="K077" xml:space="preserve"><value>青</value></data>
+  <data name="K078" xml:space="preserve"><value>設定済み</value></data>
+  <data name="K079" xml:space="preserve"><value>キャンセル</value></data>
+  <data name="K080" xml:space="preserve"><value>設定をキャンセル</value></data>
+  <data name="K081" xml:space="preserve"><value>キャンセルして元の位置を復元</value></data>
+  <data name="K082" xml:space="preserve"><value>記録</value></data>
+  <data name="K083" xml:space="preserve"><value>再記録</value></data>
+  <data name="K084" xml:space="preserve"><value>ホットキーを記録</value></data>
+  <data name="K085" xml:space="preserve"><value>{0}の新しいホットキーを記録します。</value></data>
+  <data name="K086" xml:space="preserve"><value>キャラクター</value></data>
+  <data name="K087" xml:space="preserve"><value>キャラクター</value></data>
+  <data name="K088" xml:space="preserve"><value>チョコボ</value></data>
+  <data name="K089" xml:space="preserve"><value>上の解像度プラグインを選び、ゲームの描画倍率を管理します。</value></data>
+  <data name="K090" xml:space="preserve"><value>解像度の倍率を0.01から1.00の間で選択します。</value></data>
+  <data name="K091" xml:space="preserve"><value>正常な無効化でプラグイン状態を復元</value></data>
+  <data name="K092" xml:space="preserve"><value>クリア</value></data>
+  <data name="K093" xml:space="preserve"><value>テクスチャ統計を消去</value></data>
+  <data name="K094" xml:space="preserve"><value>保存済みのゲームウィンドウの位置とサイズを消去し、自動読み込みを無効化します。</value></data>
+  <data name="K095" xml:space="preserve"><value>{0}のホットキーを消去します。</value></data>
+  <data name="K096" xml:space="preserve"><value>クリック</value></data>
+  <data name="K097" xml:space="preserve"><value>クリック操作</value></data>
+  <data name="K098" xml:space="preserve"><value>クリック：{0}。</value></data>
+  <data name="K099" xml:space="preserve"><value>起動時の復元を省略：保存した位置とサイズの自動読み込みが無効です。</value></data>
+  <data name="K100" xml:space="preserve"><value>起動時の復元：{0}</value></data>
+  <data name="K101" xml:space="preserve"><value>閉じる</value></data>
+  <data name="K102" xml:space="preserve"><value>閉じて現在の位置を保持</value></data>
+  <data name="K103" xml:space="preserve"><value>このウィンドウを閉じます。</value></data>
+  <data name="K104" xml:space="preserve"><value>色</value></data>
+  <data name="K105" xml:space="preserve"><value>コマンド</value></data>
+  <data name="K106" xml:space="preserve"><value>コンパクトモード</value></data>
+  <data name="K107" xml:space="preserve"><value>すべて無効化のホットキーを確定</value></data>
+  <data name="K108" xml:space="preserve"><value>黒画面モードを継続適用</value></data>
+  <data name="K109" xml:space="preserve"><value>読み込んだCustom Resolutionの設定にアクセスできません。</value></data>
+  <data name="K110" xml:space="preserve"><value>{0}で前面の描画を無効化できませんでした：{1}</value></data>
+  <data name="K111" xml:space="preserve"><value>前面の描画を確認できませんでした：{0}</value></data>
+  <data name="K112" xml:space="preserve"><value>{0}で前面の描画を復元できませんでした：{1}</value></data>
+  <data name="K113" xml:space="preserve"><value>数</value></data>
+  <data name="K114" xml:space="preserve"><value>周囲の表示</value></data>
+  <data name="K115" xml:space="preserve"><value>周囲のキャラクターを非表示</value></data>
+  <data name="K116" xml:space="preserve"><value>Ctrl</value></data>
+  <data name="K117" xml:space="preserve"><value>現在</value></data>
+  <data name="K118" xml:space="preserve"><value>現在のゲームウィンドウ</value></data>
+  <data name="K119" xml:space="preserve"><value>現在のゲームウィンドウの位置を読み取りました。</value></data>
+  <data name="K120" xml:space="preserve"><value>現在のモニターの変更</value></data>
+  <data name="K121" xml:space="preserve"><value>現在のモニターの変更</value></data>
+  <data name="K122" xml:space="preserve"><value>カスタムRGB</value></data>
+  <data name="K123" xml:space="preserve"><value>Custom Resolution</value></data>
+  <data name="K124" xml:space="preserve"><value>Custom Resolution（公式）</value></data>
+  <data name="K125" xml:space="preserve"><value>Custom Resolutionのゲーム倍率を1.0xに設定しました。</value></data>
+  <data name="K126" xml:space="preserve"><value>Custom Resolutionのゲーム倍率を{0:0.###}xに設定しました。</value></data>
+  <data name="K127" xml:space="preserve"><value>Custom Resolution設定</value></data>
+  <data name="K128" xml:space="preserve"><value>DPSゲーム倍率の切り替え</value></data>
+  <data name="K129" xml:space="preserve"><value>DPS v</value></data>
+  <data name="K130" xml:space="preserve"><value>DPS: {0}</value></data>
+  <data name="K131" xml:space="preserve"><value>DTR</value></data>
+  <data name="K132" xml:space="preserve"><value>DTR オフ</value></data>
+  <data name="K133" xml:space="preserve"><value>DTR オン</value></data>
+  <data name="K134" xml:space="preserve"><value>DTR表示モード</value></data>
+  <data name="K135" xml:space="preserve"><value>DVI</value></data>
+  <data name="K136" xml:space="preserve"><value>黒画面で描画を停止</value></data>
+  <data name="K137" xml:space="preserve"><value>フレームを固定して描画を停止</value></data>
+  <data name="K138" xml:space="preserve"><value>このセッションではデバッグ用テクスチャラボを非表示にしました。</value></data>
+  <data name="K139" xml:space="preserve"><value>{0}を1減らします。</value></data>
+  <data name="K140" xml:space="preserve"><value>検出したウィンドウ</value></data>
+  <data name="K141" xml:space="preserve"><value>Dhog Potato System - 詳細設定</value></data>
+  <data name="K142" xml:space="preserve"><value>診断</value></data>
+  <data name="K143" xml:space="preserve"><value>DPSを無効にして非表示の群衆キャラクターをすべて復元します。</value></data>
+  <data name="K144" xml:space="preserve"><value>DPSを無効にして非表示の描画をすべて復元します。</value></data>
+  <data name="K145" xml:space="preserve"><value>前面・バックグラウンド・群衆の描画抑制を解除します。</value></data>
+  <data name="K146" xml:space="preserve"><value>倍率を無効化</value></data>
+  <data name="K147" xml:space="preserve"><value>無効（未割り当て）</value></data>
+  <data name="K148" xml:space="preserve"><value>無効（{0}）</value></data>
+  <data name="K149" xml:space="preserve"><value>無効時のアイコン</value></data>
+  <data name="K150" xml:space="preserve"><value>Discord</value></data>
+  <data name="K151" xml:space="preserve"><value>表示</value></data>
+  <data name="K152" xml:space="preserve"><value>画面復元</value></data>
+  <data name="K153" xml:space="preserve"><value>画面の復旧: 動作中。フォーカス中の描画停止は {0} 後に再開します。</value></data>
+  <data name="K154" xml:space="preserve"><value>画面の復旧: 動作中。再開待ち。</value></data>
+  <data name="K155" xml:space="preserve"><value>画面の復旧: 動作中。有効な条件の解消を待機中：{0}。</value></data>
+  <data name="K156" xml:space="preserve"><value>画面の復旧: 完了。フォーカス中の描画停止を再開しました。</value></data>
+  <data name="K157" xml:space="preserve"><value>画面の復旧: 保護は無効です。</value></data>
+  <data name="K158" xml:space="preserve"><value>画面の復旧: 保護は待機中です。</value></data>
+  <data name="K159" xml:space="preserve"><value>画面の復旧: 有効な例外がありません。</value></data>
+  <data name="K160" xml:space="preserve"><value>画面の復旧: フォーカス中の描画停止を待機中。</value></data>
+  <data name="K161" xml:space="preserve"><value>画面の復旧: プラグインの有効化を待機中。</value></data>
+  <data name="K162" xml:space="preserve"><value>画面の復旧: 有効なフォーカス中の例外を監視中：{0}。</value></data>
+  <data name="K163" xml:space="preserve"><value>DisplayPort</value></data>
+  <data name="K164" xml:space="preserve"><value>前面とバックグラウンドの描画停止を同時に有効にしないでください。</value></data>
+  <data name="K165" xml:space="preserve"><value>下書き</value></data>
+  <data name="K166" xml:space="preserve"><value>仮の位置</value></data>
+  <data name="K167" xml:space="preserve"><value>編集</value></data>
+  <data name="K168" xml:space="preserve"><value>有効化</value></data>
+  <data name="K169" xml:space="preserve"><value>有効化／倍率を適用</value></data>
+  <data name="K170" xml:space="preserve"><value>デバッグを有効化</value></data>
+  <data name="K171" xml:space="preserve"><value>バックグラウンドの描画を停止</value></data>
+  <data name="K172" xml:space="preserve"><value>前面の画面復元を有効化</value></data>
+  <data name="K173" xml:space="preserve"><value>フォーカス中の描画を停止</value></data>
+  <data name="K174" xml:space="preserve"><value>ゲーム倍率を有効化</value></data>
+  <data name="K175" xml:space="preserve"><value>位置とモニターの自動読み込みを有効化</value></data>
+  <data name="K176" xml:space="preserve"><value>テクスチャ置換を有効化</value></data>
+  <data name="K177" xml:space="preserve"><value>有効な例外</value></data>
+  <data name="K178" xml:space="preserve"><value>有効時のアイコン</value></data>
+  <data name="K179" xml:space="preserve"><value>すべての.tex</value></data>
+  <data name="K180" xml:space="preserve"><value>実験的なテクスチャ置換は非表示です。/dps debugを使用してください。</value></data>
+  <data name="K181" xml:space="preserve"><value>低性能PC向けの実験的なツールです。パーティ外のキャラクターの非表示、前面・バックグラウンドの描画停止、ゲームウィンドウ位置の復元に対応します。</value></data>
+  <data name="K182" xml:space="preserve"><value>失敗</value></data>
+  <data name="K183" xml:space="preserve"><value>フォーカス描画の指定</value></data>
+  <data name="K184" xml:space="preserve"><value>フォーカス描画</value></data>
+  <data name="K185" xml:space="preserve"><value>読み込み失敗：{0}</value></data>
+  <data name="K186" xml:space="preserve"><value>実行完了</value></data>
+  <data name="K187" xml:space="preserve"><value>フォーカス中</value></data>
+  <data name="K188" xml:space="preserve"><value>前面の画面復元</value></data>
+  <data name="K189" xml:space="preserve"><value>フォーカス中の描画</value></data>
+  <data name="K190" xml:space="preserve"><value>フォーカス中の描画停止: 動作中。描画バイトは 1 です。</value></data>
+  <data name="K191" xml:space="preserve"><value>フォーカス中の描画停止: 動作中。描画ゲートがフレームを抑止しています。</value></data>
+  <data name="K192" xml:space="preserve"><value>フォーカス中の描画停止: 待機中ですが、描画バイトは {0} です。</value></data>
+  <data name="K193" xml:space="preserve"><value>フォーカス中の描画停止: 待機中。従来の描画バイト方式の準備完了。</value></data>
+  <data name="K194" xml:space="preserve"><value>フォーカス中の描画停止: 待機中。描画ゲートのフックはまだ初期化されていません。</value></data>
+  <data name="K195" xml:space="preserve"><value>フォーカス中の描画停止: 待機中。描画ゲートの準備完了。</value></data>
+  <data name="K196" xml:space="preserve"><value>フォーカス中の描画停止: 無効。</value></data>
+  <data name="K197" xml:space="preserve"><value>フォーカス中の描画停止: 無効。描画バイトを 0 に復元しました。</value></data>
+  <data name="K198" xml:space="preserve"><value>フォーカス中の描画停止: 有効なエリア移動の例外により一時停止中。</value></data>
+  <data name="K199" xml:space="preserve"><value>フォーカス中の描画停止: 有効なログアウト時の例外により一時停止中。</value></data>
+  <data name="K200" xml:space="preserve"><value>フォーカス中の描画停止: 画面の復旧のため一時停止中。通常の描画を許可します。</value></data>
+  <data name="K201" xml:space="preserve"><value>フォーカス中の描画停止: 要求済みですが、描画バイトは {0} です。継続的な強制は無効です。</value></data>
+  <data name="K202" xml:space="preserve"><value>フォーカス中の描画停止: 復元待ち：{0}</value></data>
+  <data name="K203" xml:space="preserve"><value>フォーカス中の描画停止: 復元を要求しましたが、描画バイトはまだ {0} です。</value></data>
+  <data name="K204" xml:space="preserve"><value>フォーカス中の描画停止: 利用不可：描画ゲートのフックが有効ではありません。</value></data>
+  <data name="K205" xml:space="preserve"><value>フォーカス中の描画停止: 利用不可：非対応のモード {0}。</value></data>
+  <data name="K206" xml:space="preserve"><value>フォーカス中の描画停止: 利用不可：{0}</value></data>
+  <data name="K207" xml:space="preserve"><value>フォーカス中の描画停止: プラグインの有効化を待機中。</value></data>
+  <data name="K208" xml:space="preserve"><value>フォーカス中の描画：停止</value></data>
+  <data name="K209" xml:space="preserve"><value>フレーム固定とバックグラウンドの例外</value></data>
+  <data name="K210" xml:space="preserve"><value>プロセスのウィンドウ一覧からゲームウィンドウを検出しました。</value></data>
+  <data name="K211" xml:space="preserve"><value>現在のプロセスのメインウィンドウからゲームウィンドウを検出しました。</value></data>
+  <data name="K212" xml:space="preserve"><value>ゲームウィンドウのハンドルはまだ利用できません。</value></data>
+  <data name="K213" xml:space="preserve"><value>ゲームウィンドウ位置の自動読み込みを無効にしました。</value></data>
+  <data name="K214" xml:space="preserve"><value>ゲームウィンドウ位置の自動読み込みを有効にしました。</value></data>
+  <data name="K215" xml:space="preserve"><value>ゲームウィンドウの矩形は空です。</value></data>
+  <data name="K216" xml:space="preserve"><value>ゲームウィンドウサイズの自動読み込みを無効にしました。</value></data>
+  <data name="K217" xml:space="preserve"><value>ゲームウィンドウサイズの自動読み込みを有効にしました。</value></data>
+  <data name="K218" xml:space="preserve"><value>ゲームウィンドウのサイズは正の値が必要です。</value></data>
+  <data name="K219" xml:space="preserve"><value>ゲート</value></data>
+  <data name="K220" xml:space="preserve"><value>全体</value></data>
+  <data name="K221" xml:space="preserve"><value>保護</value></data>
+  <data name="K222" xml:space="preserve"><value>ガイド付き設定</value></data>
+  <data name="K223" xml:space="preserve"><value>HDMI</value></data>
+  <data name="K224" xml:space="preserve"><value>高さ</value></data>
+  <data name="K225" xml:space="preserve"><value>補助プラグイン</value></data>
+  <data name="K226" xml:space="preserve"><value>非表示のウィンドウ</value></data>
+  <data name="K227" xml:space="preserve"><value>非表示のウィンドウ</value></data>
+  <data name="K228" xml:space="preserve"><value>チョコボを非表示</value></data>
+  <data name="K229" xml:space="preserve"><value>ミニオンを非表示</value></data>
+  <data name="K230" xml:space="preserve"><value>ペットを非表示</value></data>
+  <data name="K231" xml:space="preserve"><value>プレイヤーを非表示</value></data>
+  <data name="K232" xml:space="preserve"><value>フック</value></data>
+  <data name="K233" xml:space="preserve"><value>フックが有効</value></data>
+  <data name="K234" xml:space="preserve"><value>ホットキー</value></data>
+  <data name="K235" xml:space="preserve"><value>ホットキー設定</value></data>
+  <data name="K236" xml:space="preserve"><value>ホットキー</value></data>
+  <data name="K237" xml:space="preserve"><value>待機</value></data>
+  <data name="K238" xml:space="preserve"><value>アイコン＋DPS</value></data>
+  <data name="K239" xml:space="preserve"><value>アイコンのみ</value></data>
+  <data name="K240" xml:space="preserve"><value>テクスチャの直接黒化が{0}回の試行後に失敗しました。</value></data>
+  <data name="K241" xml:space="preserve"><value>{0}を1増やします。</value></data>
+  <data name="K242" xml:space="preserve"><value>間接・仮想</value></data>
+  <data name="K243" xml:space="preserve"><value>間接・有線</value></data>
+  <data name="K244" xml:space="preserve"><value>{0}をインストール</value></data>
+  <data name="K245" xml:space="preserve"><value>{0}をインストールして有効にしました。</value></data>
+  <data name="K246" xml:space="preserve"><value>{0}をインストールしました。プラグインインストーラーで有効にしてください。</value></data>
+  <data name="K247" xml:space="preserve"><value>{0}をインストール中...</value></data>
+  <data name="K248" xml:space="preserve"><value>インストール中...</value></data>
+  <data name="K249" xml:space="preserve"><value>ウィンドウの寸法が0以下</value></data>
+  <data name="K250" xml:space="preserve"><value>ターゲットを表示したままにする</value></data>
+  <data name="K251" xml:space="preserve"><value>Ko-fi</value></data>
+  <data name="K252" xml:space="preserve"><value>読み込み済み</value></data>
+  <data name="K253" xml:space="preserve"><value>LVDS</value></data>
+  <data name="K254" xml:space="preserve"><value>言語</value></data>
+  <data name="K255" xml:space="preserve"><value>前回の操作</value></data>
+  <data name="K256" xml:space="preserve"><value>最終変更UTC</value></data>
+  <data name="K257" xml:space="preserve"><value>直近のゲームパス：{0}</value></data>
+  <data name="K258" xml:space="preserve"><value>リンク</value></data>
+  <data name="K259" xml:space="preserve"><value>読み込み</value></data>
+  <data name="K260" xml:space="preserve"><value>保存済みのサイズを読み込み</value></data>
+  <data name="K261" xml:space="preserve"><value>保存済みのウィンドウを読み込み</value></data>
+  <data name="K262" xml:space="preserve"><value>保存済みのウィンドウとサイズを読み込み</value></data>
+  <data name="K263" xml:space="preserve"><value>起動時に保存した位置とモニターを読み込み</value></data>
+  <data name="K264" xml:space="preserve"><value>起動時に保存したウィンドウサイズを読み込み</value></data>
+  <data name="K265" xml:space="preserve"><value>ゲームウィンドウのサイズ{0}x{1}を読み込みました。</value></data>
+  <data name="K266" xml:space="preserve"><value>ゲームウィンドウのサイズ{0}x{1}を読み込み、読み返しを検証しました。</value></data>
+  <data name="K267" xml:space="preserve"><value>{3}で{2}上のゲームウィンドウをX/Y {0}, {1}に復元しました。サイズは維持（{4}）。</value></data>
+  <data name="K268" xml:space="preserve"><value>保存したウィンドウの位置とサイズを読み込みました。{0} {1}</value></data>
+  <data name="K269" xml:space="preserve"><value>保存した位置を読み込みましたが、サイズの復元に失敗：{0}</value></data>
+  <data name="K270" xml:space="preserve"><value>UIフォントを読み込み中...</value></data>
+  <data name="K271" xml:space="preserve"><value>置換したテクスチャをログに記録</value></data>
+  <data name="K272" xml:space="preserve"><value>ログアウト時の例外</value></data>
+  <data name="K273" xml:space="preserve"><value>未導入</value></data>
+  <data name="K274" xml:space="preserve"><value>メイン</value></data>
+  <data name="K275" xml:space="preserve"><value>描画フックの最大遅延：{0:0.0} ms</value></data>
+  <data name="K276" xml:space="preserve"><value>最大分数</value></data>
+  <data name="K277" xml:space="preserve"><value>最小化したウィンドウ</value></data>
+  <data name="K278" xml:space="preserve"><value>最小化したウィンドウ</value></data>
+  <data name="K279" xml:space="preserve"><value>最小分数</value></data>
+  <data name="K280" xml:space="preserve"><value>ミニオン</value></data>
+  <data name="K281" xml:space="preserve"><value>Miracast</value></data>
+  <data name="K282" xml:space="preserve"><value>ウィンドウなし</value></data>
+  <data name="K283" xml:space="preserve"><value>ウィンドウなし</value></data>
+  <data name="K284" xml:space="preserve"><value>モニター</value></data>
+  <data name="K285" xml:space="preserve"><value>モニター範囲</value></data>
+  <data name="K286" xml:space="preserve"><value>モニター情報を読み取りました。</value></data>
+  <data name="K287" xml:space="preserve"><value>モニター構成の変更</value></data>
+  <data name="K288" xml:space="preserve"><value>モニター構成の変更</value></data>
+  <data name="K289" xml:space="preserve"><value>FFXIVのウィンドウを指定のX/Y位置に移動して結果を確認し、位置とモニターの自動読み込み用に保存するか選びます。この設定ではサイズを変更しません。</value></data>
+  <data name="K290" xml:space="preserve"><value>ゲームクライアントを保存した位置とモニターに移動します。</value></data>
+  <data name="K291" xml:space="preserve"><value>ゲームクライアントを保存した位置とモニターに移動し、保存したサイズを適用します。</value></data>
+  <data name="K292" xml:space="preserve"><value>{2}上のゲームウィンドウをX/Y {0}, {1}に移動しました。サイズは維持（{3}）。</value></data>
+  <data name="K293" xml:space="preserve"><value>ゲームウィンドウを指定のX/Y {0}, {1}に移動しました。</value></data>
+  <data name="K294" xml:space="preserve"><value>排他制御</value></data>
+  <data name="K295" xml:space="preserve"><value>排他制御に失敗：両方の描画モードが有効です。</value></data>
+  <data name="K296" xml:space="preserve"><value>いいえ</value></data>
+  <data name="K297" xml:space="preserve"><value>操作なし</value></data>
+  <data name="K298" xml:space="preserve"><value>通常</value></data>
+  <data name="K299" xml:space="preserve"><value>未初期化</value></data>
+  <data name="K300" xml:space="preserve"><value>未導入</value></data>
+  <data name="K301" xml:space="preserve"><value>未読み込み／非対応</value></data>
+  <data name="K302" xml:space="preserve"><value>未使用</value></data>
+  <data name="K303" xml:space="preserve"><value>クリック操作が設定されていません。</value></data>
+  <data name="K304" xml:space="preserve"><value>現在のモニターなし</value></data>
+  <data name="K305" xml:space="preserve"><value>画面の状態はまだ取得していません。</value></data>
+  <data name="K306" xml:space="preserve"><value>モニターなし</value></data>
+  <data name="K307" xml:space="preserve"><value>ゲームウィンドウの位置は保存されていません。</value></data>
+  <data name="K308" xml:space="preserve"><value>ゲームウィンドウの位置とサイズは保存されていません。</value></data>
+  <data name="K309" xml:space="preserve"><value>ゲームウィンドウのサイズは保存されていません。</value></data>
+  <data name="K310" xml:space="preserve"><value>ウィンドウ位置の復元に利用できるモニターがありません。</value></data>
+  <data name="K311" xml:space="preserve"><value>描画停止</value></data>
+  <data name="K312" xml:space="preserve"><value>ゲームのウィンドウにフォーカスがある間、描画を停止します。</value></data>
+  <data name="K313" xml:space="preserve"><value>ゲームのウィンドウにフォーカスがない間、描画を停止します。</value></data>
+  <data name="K314" xml:space="preserve"><value>現在のモニターなし</value></data>
+  <data name="K315" xml:space="preserve"><value>モニターなし</value></data>
+  <data name="K316" xml:space="preserve"><value>なし</value></data>
+  <data name="K317" xml:space="preserve"><value>オフ</value></data>
+  <data name="K318" xml:space="preserve"><value>無効化を要求（{0}）</value></data>
+  <data name="K319" xml:space="preserve"><value>無効化を要求、プラグインの有効化待ち</value></data>
+  <data name="K320" xml:space="preserve"><value>正常</value></data>
+  <data name="K321" xml:space="preserve"><value>オン</value></data>
+  <data name="K322" xml:space="preserve"><value>無効化するとゲーム倍率を1.0xに戻します。有効化すると最後に保存した倍率を復元し、画面設定は維持します。</value></data>
+  <data name="K323" xml:space="preserve"><value>最小化中のみ</value></data>
+  <data name="K324" xml:space="preserve"><value>Discordコミュニティのリンクを開きます。</value></data>
+  <data name="K325" xml:space="preserve"><value>Ko-fiの支援ページを開きます。</value></data>
+  <data name="K326" xml:space="preserve"><value>プラグインインストーラーを開く</value></data>
+  <data name="K327" xml:space="preserve"><value>描画の自動例外、復元、制限の設定を開きます。</value></data>
+  <data name="K328" xml:space="preserve"><value>ホットキーの割り当てを開きます。</value></data>
+  <data name="K329" xml:space="preserve"><value>メインウィンドウを開く</value></data>
+  <data name="K330" xml:space="preserve"><value>すべて無効化するホットキーの設定ガイドを開きます。</value></data>
+  <data name="K331" xml:space="preserve"><value>ウィンドウのX/Y位置の設定ガイドを開きます。</value></data>
+  <data name="K332" xml:space="preserve"><value>元の位置</value></data>
+  <data name="K333" xml:space="preserve"><value>元のX/Y {0}, {1}への復元を要求しましたが、読み返しは{2}, {3}です。</value></data>
+  <data name="K334" xml:space="preserve"><value>元のウィンドウ位置X/Y {0}, {1}を復元しました。</value></data>
+  <data name="K335" xml:space="preserve"><value>定期フレーム間隔（秒）</value></data>
+  <data name="K336" xml:space="preserve"><value>ペット</value></data>
+  <data name="K337" xml:space="preserve"><value>ピンク</value></data>
+  <data name="K338" xml:space="preserve"><value>プレイヤー</value></data>
+  <data name="K339" xml:space="preserve"><value>プラグイン</value></data>
+  <data name="K340" xml:space="preserve"><value>確認間隔（秒）</value></data>
+  <data name="K341" xml:space="preserve"><value>位置エディター</value></data>
+  <data name="K342" xml:space="preserve"><value>修飾キー以外を1つ押してください。Ctrl、Alt、Shiftとの組み合わせも可能です。Escapeでキャンセル、BackspaceまたはDeleteで仮の割り当てのみを消去します。</value></data>
+  <data name="K343" xml:space="preserve"><value>プレビュー：{0}</value></data>
+  <data name="K344" xml:space="preserve"><value>パルス時間（秒）</value></data>
+  <data name="K345" xml:space="preserve"><value>準備完了</value></data>
+  <data name="K346" xml:space="preserve"><value>読み返し</value></data>
+  <data name="K347" xml:space="preserve"><value>再待機までの時間</value></data>
+  <data name="K348" xml:space="preserve"><value>復旧</value></data>
+  <data name="K349" xml:space="preserve"><value>復元の休止時間（秒）</value></data>
+  <data name="K350" xml:space="preserve"><value>復旧パルス</value></data>
+  <data name="K351" xml:space="preserve"><value>追跡中のすべてのテクスチャを黒1x1の素材に置換します。</value></data>
+  <data name="K352" xml:space="preserve"><value>キャラクターのテクスチャを黒16x16の素材に置換します。</value></data>
+  <data name="K353" xml:space="preserve"><value>エフェクトのテクスチャを黒16x16の素材に置換します。</value></data>
+  <data name="K354" xml:space="preserve"><value>ワールドのテクスチャを黒16x16の素材に置換します。</value></data>
+  <data name="K355" xml:space="preserve"><value>置換したテクスチャ：{0}</value></data>
+  <data name="K356" xml:space="preserve"><value>描画</value></data>
+  <data name="K357" xml:space="preserve"><value>エリア移動中に描画</value></data>
+  <data name="K358" xml:space="preserve"><value>描画ゲートのフック初期化に失敗しました。</value></data>
+  <data name="K359" xml:space="preserve"><value>ログアウト中に描画</value></data>
+  <data name="K360" xml:space="preserve"><value>パーティ外のキャラクターを描画フラグで非表示にします。</value></data>
+  <data name="K361" xml:space="preserve"><value>Render.Manager.Instance()がnullを返しました。</value></data>
+  <data name="K362" xml:space="preserve"><value>Render.Manager.Instance()で{0}が発生：{1}</value></data>
+  <data name="K363" xml:space="preserve"><value>描画と周囲のキャラクター表示を制御し、動作を快適にするツールです。</value></data>
+  <data name="K364" xml:space="preserve"><value>置換素材</value></data>
+  <data name="K365" xml:space="preserve"><value>置換先パス：{0}</value></data>
+  <data name="K366" xml:space="preserve"><value>ゲームウィンドウのサイズ{0}x{1}を要求しましたが、読み返しに失敗：{2}</value></data>
+  <data name="K367" xml:space="preserve"><value>ゲームウィンドウのサイズ{0}x{1}を要求しましたが、読み返しは{2}x{3}です。</value></data>
+  <data name="K368" xml:space="preserve"><value>DTRを既定に戻す</value></data>
+  <data name="K369" xml:space="preserve"><value>このタブをリセット</value></data>
+  <data name="K370" xml:space="preserve"><value>テクスチャ置換のカウンターをリセットします。</value></data>
+  <data name="K371" xml:space="preserve"><value>ゲームクライアントを保存したサイズに変更します。</value></data>
+  <data name="K372" xml:space="preserve"><value>ゲームウィンドウのサイズを{0}x{1}に変更しました。</value></data>
+  <data name="K373" xml:space="preserve"><value>解像度</value></data>
+  <data name="K374" xml:space="preserve"><value>解像度の倍率：{0}</value></data>
+  <data name="K375" xml:space="preserve"><value>バックグラウンド描画を復元</value></data>
+  <data name="K376" xml:space="preserve"><value>フォーカス中の描画を復元</value></data>
+  <data name="K377" xml:space="preserve"><value>バックグラウンドの描画を復元します。</value></data>
+  <data name="K378" xml:space="preserve"><value>DTRのクリック操作を既定に戻します。</value></data>
+  <data name="K379" xml:space="preserve"><value>前面の描画を復元します。</value></data>
+  <data name="K380" xml:space="preserve"><value>位置の読み返しを再試行</value></data>
+  <data name="K381" xml:space="preserve"><value>ウィンドウ検出を再試行</value></data>
+  <data name="K382" xml:space="preserve"><value>実行</value></data>
+  <data name="K383" xml:space="preserve"><value>複数のクライアントやリソース不足でクラッシュや不安定さがある場合は、継続適用の無効化を検討してください。無効時は描画が自動再開する場合があります。</value></data>
+  <data name="K384" xml:space="preserve"><value>SDI</value></data>
+  <data name="K385" xml:space="preserve"><value>SDTV</value></data>
+  <data name="K386" xml:space="preserve"><value>保存</value></data>
+  <data name="K387" xml:space="preserve"><value>現在のウィンドウを保存</value></data>
+  <data name="K388" xml:space="preserve"><value>現在のゲームクライアントの位置、サイズ、モニターを保存します。</value></data>
+  <data name="K389" xml:space="preserve"><value>保存時刻UTC</value></data>
+  <data name="K390" xml:space="preserve"><value>保存済みのウィンドウ</value></data>
+  <data name="K391" xml:space="preserve"><value>{4}上のゲームウィンドウをX/Y {0}, {1}、サイズ{2}x{3}で保存しました。</value></data>
+  <data name="K392" xml:space="preserve"><value>保存したゲームウィンドウのサイズは利用できません。</value></data>
+  <data name="K393" xml:space="preserve"><value>保存したサイズが利用できないため、サイズの自動読み込みを省略しました。</value></data>
+  <data name="K394" xml:space="preserve"><value>{0}後にサイズの復元が失敗し、再試行上限に達しました。最後の結果：{1}</value></data>
+  <data name="K395" xml:space="preserve"><value>保存したモニター範囲を検出しました。</value></data>
+  <data name="K396" xml:space="preserve"><value>保存したモニターデバイスを検出しました。</value></data>
+  <data name="K397" xml:space="preserve"><value>保存したモニターデバイスパスを検出しました。</value></data>
+  <data name="K398" xml:space="preserve"><value>倍率</value></data>
+  <data name="K399" xml:space="preserve"><value>プラグインの問題や提案は「The Dumpster Fire」チャンネルでご相談ください。</value></data>
+  <data name="K400" xml:space="preserve"><value>先に読み込み済みの互換解像度プラグインを選んでください。</value></data>
+  <data name="K401" xml:space="preserve"><value>設定</value></data>
+  <data name="K402" xml:space="preserve"><value>すべて無効化のホットキーを設定</value></data>
+  <data name="K403" xml:space="preserve"><value>ウィンドウ位置を設定</value></data>
+  <data name="K404" xml:space="preserve"><value>全DPSモードを無効化し、描画と非表示の群衆を復元する安全ホットキーを設定します。</value></data>
+  <data name="K405" xml:space="preserve"><value>ゲーム倍率を1.0xに設定</value></data>
+  <data name="K406" xml:space="preserve"><value>Shift</value></data>
+  <data name="K407" xml:space="preserve"><value>すべて表示</value></data>
+  <data name="K408" xml:space="preserve"><value>DTRバーに表示</value></data>
+  <data name="K409" xml:space="preserve"><value>すべて再表示</value></data>
+  <data name="K410" xml:space="preserve"><value>このセッションのテクスチャ診断を表示します。</value></data>
+  <data name="K411" xml:space="preserve"><value>サイズエディター</value></data>
+  <data name="K412" xml:space="preserve"><value>安定時間（秒）</value></data>
+  <data name="K413" xml:space="preserve"><value>スタート</value></data>
+  <data name="K414" xml:space="preserve"><value>DPSの機能を開始します。</value></data>
+  <data name="K415" xml:space="preserve"><value>状態：{0}</value></data>
+  <data name="K416" xml:space="preserve"><value>停止</value></data>
+  <data name="K417" xml:space="preserve"><value>DPSを停止して表示を復元します。</value></data>
+  <data name="K418" xml:space="preserve"><value>読み込み成功：{0}</value></data>
+  <data name="K419" xml:space="preserve"><value>非表示制御: 動作中：現在、非表示の対象はありません。</value></data>
+  <data name="K420" xml:space="preserve"><value>非表示制御: 動作中：{0} 件を非表示。</value></data>
+  <data name="K421" xml:space="preserve"><value>非表示制御: 無効。</value></data>
+  <data name="K422" xml:space="preserve"><value>非表示制御: 待機中。</value></data>
+  <data name="K423" xml:space="preserve"><value>非表示制御: 自分のキャラクターを待機中。</value></data>
+  <data name="K424" xml:space="preserve"><value>TTSL</value></data>
+  <data name="K425" xml:space="preserve"><value>青緑</value></data>
+  <data name="K426" xml:space="preserve"><value>テキストの状態</value></data>
+  <data name="K427" xml:space="preserve"><value>テクスチャラボ</value></data>
+  <data name="K428" xml:space="preserve"><value>テクスチャフックの初期化に失敗：{0}</value></data>
+  <data name="K429" xml:space="preserve"><value>テクスチャフックは待機中です。</value></data>
+  <data name="K430" xml:space="preserve"><value>テクスチャフックの準備完了。</value></data>
+  <data name="K431" xml:space="preserve"><value>テクスチャ置換は無効です。</value></data>
+  <data name="K432" xml:space="preserve"><value>テクスチャ置換中：Texture.InitializeContentsで直接{0}</value></data>
+  <data name="K433" xml:space="preserve"><value>テクスチャ置換はプラグインの有効化待ちです。</value></data>
+  <data name="K434" xml:space="preserve"><value>テクスチャ対象</value></data>
+  <data name="K435" xml:space="preserve"><value>初回有効化でDPSプリセットを適用します。画面設定は無効、ゲーム倍率0.05x、Pointアップスケール、標準ホットキーは未割り当てです。その後、下の標準設定を調整してください。</value></data>
+  <data name="K436" xml:space="preserve"><value>保存した物理モニターは現在利用できません。ウィンドウ位置は変更していません。</value></data>
+  <data name="K437" xml:space="preserve"><value>選択したモニターにはWindowsのデバイスパスがありません。</value></data>
+  <data name="K438" xml:space="preserve"><value>選択したモニターは利用できなくなりました。ウィンドウ位置は変更していません。</value></data>
+  <data name="K439" xml:space="preserve"><value>このキーの組み合わせは{0}が使用中です。確定すると競合する割り当てを消去します。</value></data>
+  <data name="K440" xml:space="preserve"><value>この設定はFFXIVのウィンドウ位置のみを変更します。メイン画面の左や上に配置したモニターでは負の座標も有効です。サイズとサイズの自動読み込みは維持します。</value></data>
+  <data name="K441" xml:space="preserve"><value>描画制限中の待機（ms）</value></data>
+  <data name="K442" xml:space="preserve"><value>バックグラウンドの描画停止を切り替え</value></data>
+  <data name="K443" xml:space="preserve"><value>群衆の非表示を切り替え</value></data>
+  <data name="K444" xml:space="preserve"><value>前面の描画停止を切り替え</value></data>
+  <data name="K445" xml:space="preserve"><value>切り替えホットキー</value></data>
+  <data name="K446" xml:space="preserve"><value>プラグインの有効化を切り替え</value></data>
+  <data name="K447" xml:space="preserve"><value>DTRバーのDPS表示を切り替えます。</value></data>
+  <data name="K448" xml:space="preserve"><value>ツールチップ：{0} {1}。{2}</value></data>
+  <data name="K449" xml:space="preserve"><value>エリア移動</value></data>
+  <data name="K450" xml:space="preserve"><value>エリア移動時の例外</value></data>
+  <data name="K451" xml:space="preserve"><value>エリア移動の例外：{0}、ログアウトの例外：{1}、定期フレーム：{2}。</value></data>
+  <data name="K452" xml:space="preserve"><value>トリガー</value></data>
+  <data name="K453" xml:space="preserve"><value>すべて無効化</value></data>
+  <data name="K454" xml:space="preserve"><value>UDI</value></data>
+  <data name="K455" xml:space="preserve"><value>UIフォントの読み込みに失敗しました。プラグインのログを確認してください。</value></data>
+  <data name="K456" xml:space="preserve"><value>未割り当て</value></data>
+  <data name="K457" xml:space="preserve"><value>不明な接続端子</value></data>
+  <data name="K458" xml:space="preserve"><value>不明なモデル</value></data>
+  <data name="K459" xml:space="preserve"><value>従来の描画バイト方式を使用し、前面の画面を黒くします。</value></data>
+  <data name="K460" xml:space="preserve"><value>描画ゲート方式を使用し、最後のフレームを表示したままにします。</value></data>
+  <data name="K461" xml:space="preserve"><value>VFX</value></data>
+  <data name="K462" xml:space="preserve"><value>VFXのみ</value></data>
+  <data name="K463" xml:space="preserve"><value>VGA</value></data>
+  <data name="K464" xml:space="preserve"><value>VK {0}</value></data>
+  <data name="K465" xml:space="preserve"><value>バージョン</value></data>
+  <data name="K466" xml:space="preserve"><value>の可視性</value></data>
+  <data name="K467" xml:space="preserve"><value>待機</value></data>
+  <data name="K468" xml:space="preserve"><value>幅</value></data>
+  <data name="K469" xml:space="preserve"><value>ウィンドウ</value></data>
+  <data name="K470" xml:space="preserve"><value>ウィンドウとサイズを読み込み</value></data>
+  <data name="K471" xml:space="preserve"><value>サイズ復元前にウィンドウとサイズの読み込みに失敗：{0}</value></data>
+  <data name="K472" xml:space="preserve"><value>ウィンドウ位置の設定</value></data>
+  <data name="K473" xml:space="preserve"><value>ウィンドウXY</value></data>
+  <data name="K474" xml:space="preserve"><value>ウィンドウXYは待機中です。</value></data>
+  <data name="K475" xml:space="preserve"><value>ウィンドウXYタブをリセットしました。自動読み込みを無効化し、保存した位置とサイズを消去しました。</value></data>
+  <data name="K476" xml:space="preserve"><value>ウィンドウの移動</value></data>
+  <data name="K477" xml:space="preserve"><value>位置の読み返し：{2}上のX/Y {0}, {1}。</value></data>
+  <data name="K478" xml:space="preserve"><value>ウィンドウ矩形を読み取りました。</value></data>
+  <data name="K479" xml:space="preserve"><value>ウィンドウのサイズ変更</value></data>
+  <data name="K480" xml:space="preserve"><value>サイズの自動読み込みは{0}のままです。</value></data>
+  <data name="K481" xml:space="preserve"><value>ウィンドウの移動</value></data>
+  <data name="K482" xml:space="preserve"><value>ウィンドウのサイズ変更</value></data>
+  <data name="K483" xml:space="preserve"><value>ワールド</value></data>
+  <data name="K484" xml:space="preserve"><value>ワールド／地形</value></data>
+  <data name="K485" xml:space="preserve"><value>X</value></data>
+  <data name="K486" xml:space="preserve"><value>XA Slave</value></data>
+  <data name="K487" xml:space="preserve"><value>XA Slave（IPC）</value></data>
+  <data name="K488" xml:space="preserve"><value>XA Slaveのゲーム倍率</value></data>
+  <data name="K489" xml:space="preserve"><value>XA Slaveから応答がありません。</value></data>
+  <data name="K490" xml:space="preserve"><value>XA Slaveの切り替えはこのセッションで最後に成功したDPS要求（{0}）に従います。XA Slaveで倍率を変更した後は、この有効化・無効化ボタンで状態を設定してください。</value></data>
+  <data name="K491" xml:space="preserve"><value>はい</value></data>
+  <data name="K492" xml:space="preserve"><value>はい</value></data>
+  <data name="K493" xml:space="preserve"><value>ウィンドウの寸法が0以下</value></data>
+  <data name="K494" xml:space="preserve"><value>現在のモニターを代用</value></data>
+  <data name="K495" xml:space="preserve"><value>現在のモニターなし</value></data>
+  <data name="K496" xml:space="preserve"><value>現在のモニターを利用不可</value></data>
+  <data name="K497" xml:space="preserve"><value>有効、{0}秒ごと</value></data>
+  <data name="K498" xml:space="preserve"><value>一覧から検出したプロセスウィンドウ</value></data>
+  <data name="K499" xml:space="preserve"><value>ゲームウィンドウのハンドルを利用不可</value></data>
+  <data name="K500" xml:space="preserve"><value>ゲームウィンドウ読み取り済み</value></data>
+  <data name="K501" xml:space="preserve"><value>従来の黒画面</value></data>
+  <data name="K502" xml:space="preserve"><value>モニター情報読み取り済み</value></data>
+  <data name="K503" xml:space="preserve"><value>モニター={0} [{1}]、ウィンドウ={2}（{3}）、現在のモニター={4}（{5}）、有効={6}</value></data>
+  <data name="K504" xml:space="preserve"><value>予定なし</value></data>
+  <data name="K505" xml:space="preserve"><value>保留中</value></data>
+  <data name="K506" xml:space="preserve"><value>プロセスのメインウィンドウ</value></data>
+  <data name="K507" xml:space="preserve"><value>描画フラグの読み取りに失敗：{0}：{1}</value></data>
+  <data name="K508" xml:space="preserve"><value>描画フラグの書き込みに失敗：{0}：{1}</value></data>
+  <data name="K509" xml:space="preserve"><value>安全なフレーム固定</value></data>
+  <data name="K510" xml:space="preserve"><value>保存したモニター範囲</value></data>
+  <data name="K511" xml:space="preserve"><value>保存したモニターデバイス</value></data>
+  <data name="K512" xml:space="preserve"><value>保存したモニターデバイスパス</value></data>
+  <data name="K513" xml:space="preserve"><value>プラグインを切り替え</value></data>
+  <data name="K514" xml:space="preserve"><value>不明</value></data>
+  <data name="K515" xml:space="preserve"><value>不明なモニター</value></data>
+  <data name="K516" xml:space="preserve"><value>有効な条件の解消待ち：{0}</value></data>
+  <data name="K517" xml:space="preserve"><value>ウィンドウ非表示</value></data>
+  <data name="K518" xml:space="preserve"><value>ウィンドウ最小化</value></data>
+  <data name="K519" xml:space="preserve"><value>ウィンドウなし</value></data>
+  <data name="K520" xml:space="preserve"><value>ウィンドウ矩形が空</value></data>
+  <data name="K521" xml:space="preserve"><value>ウィンドウ矩形読み取り済み</value></data>
+  <data name="K522" xml:space="preserve"><value>{0:0}分</value></data>
+  <data name="K523" xml:space="preserve"><value>{0:0}秒</value></data>
+  <data name="K524" xml:space="preserve"><value>{0} #{1}</value></data>
+  <data name="K525" xml:space="preserve"><value>{0} (0x{1:X2})</value></data>
+  <data name="K526" xml:space="preserve"><value>{0} - 詳細設定</value></data>
+  <data name="K527" xml:space="preserve"><value>{0} DPS</value></data>
+  <data name="K528" xml:space="preserve"><value>{0} サイズの再試行予定はありません。{1}後に再試行上限に達します。</value></data>
+  <data name="K529" xml:space="preserve"><value>{0} {1}後に保存したサイズを再試行します。</value></data>
+  <data name="K530" xml:space="preserve"><value>{0}に失敗（Win32 {1}：{2}）。</value></data>
+  <data name="K531" xml:space="preserve"><value>{0}の入力待ち</value></data>
+  <data name="K532" xml:space="preserve"><value>{0} {1}。{2}</value></data>
+  <data name="K533" xml:space="preserve"><value>{0} — {1} — {2} — {3}x{4} 位置{5},{6} [{7}]</value></data>
+  <data name="K534" xml:space="preserve"><value>{0},{1} - {2},{3}</value></data>
+  <data name="K535" xml:space="preserve"><value>{0},{1} {2}x{3}、表示={4}、最小化={5}</value></data>
+  <data name="K536" xml:space="preserve"><value>{0}: {1}</value></data>
+  <data name="K537" xml:space="preserve"><value>{0}x{1}</value></data>
+  <data name="K538" xml:space="preserve"><value>有効</value></data>
+  <data name="K539" xml:space="preserve"><value>無効</value></data>
+  <data name="K540" xml:space="preserve"><value>はい</value></data>
+  <data name="K541" xml:space="preserve"><value>いいえ</value></data>
+  <data name="K542" xml:space="preserve"><value>有効</value></data>
+  <data name="K543" xml:space="preserve"><value>(利用不可)</value></data>
+  <data name="K544" xml:space="preserve"><value>(不明)</value></data>
+  <data name="K545" xml:space="preserve"><value>メイン</value></data>
+  <data name="K546" xml:space="preserve"><value>左</value></data>
+  <data name="K547" xml:space="preserve"><value>右</value></data>
+  <data name="K548" xml:space="preserve"><value>内蔵</value></data>
+  <data name="K549" xml:space="preserve"><value>コンポーネント</value></data>
+  <data name="K550" xml:space="preserve"><value>コンポジット</value></data>
+  <data name="K551" xml:space="preserve"><value>安全なフレーム固定</value></data>
+  <data name="K552" xml:space="preserve"><value>従来の黒画面</value></data>
+  <data name="K553" xml:space="preserve"><value>、次に</value></data>
+  <data name="K554" xml:space="preserve"><value>DPS DLL={0}、モード={1}、要求={2}、ゲート={3}、画面復元バイパス={4}、ClientStructs DLL={5}、ClientStructsバージョン={6}、Manager={7}、フラグ={8}、バイト={9}、状態={10}</value></data>
+  <data name="K555" xml:space="preserve"><value>DPS DLL={0}、モード={1}、要求={2}、ゲート={3}、画面復元バイパス={4}、ClientStructs DLL={5}、ClientStructsバージョン={6}、Manager={7}、フラグ={8}、バイト={9}、状態={10}、エラー={11}</value></data>
+  <data name="K556" xml:space="preserve"><value>不明なエラー</value></data>
+  <data name="K557" xml:space="preserve"><value>描画ゲートのフック初期化に失敗</value></data>
+  <data xml:space="preserve" name="Status">
+    <value>状態</value>
+  </data>
+</root>

@@ -1,0 +1,568 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms</value></resheader>
+  <data name="K000" xml:space="preserve"><value> Верхний левый угол ограничен границами монитора.</value></data>
+  <data name="K001" xml:space="preserve"><value>%.2fx</value></data>
+  <data name="K002" xml:space="preserve"><value>(динамически или недоступно)</value></data>
+  <data name="K003" xml:space="preserve"><value>(не используется)</value></data>
+  <data name="K004" xml:space="preserve"><value>/dps</value></data>
+  <data name="K005" xml:space="preserve"><value>/dps debug   открыть лабораторию текстур</value></data>
+  <data name="K006" xml:space="preserve"><value>/dps debug off</value></data>
+  <data name="K007" xml:space="preserve"><value>/dps foff    отключить отрисовку на переднем плане</value></data>
+  <data name="K008" xml:space="preserve"><value>/dps fon     включить отрисовку на переднем плане</value></data>
+  <data name="K009" xml:space="preserve"><value>/dps j       случайно разместить окно плагина в области просмотра</value></data>
+  <data name="K010" xml:space="preserve"><value>/dps roff    подготовить отключение фоновой отрисовки</value></data>
+  <data name="K011" xml:space="preserve"><value>/dps ron     восстановить фоновую отрисовку</value></data>
+  <data name="K012" xml:space="preserve"><value>/dps wload   загрузить сохранённые X/Y + монитор</value></data>
+  <data name="K013" xml:space="preserve"><value>/dps wloadall загрузить сохранённые X/Y + монитор + размер</value></data>
+  <data name="K014" xml:space="preserve"><value>/dps wreset  сбросить сохранённые положение/размер окна</value></data>
+  <data name="K015" xml:space="preserve"><value>/dps ws      переместить окно плагина в 1,1</value></data>
+  <data name="K016" xml:space="preserve"><value>/dps wsave   сохранить X/Y + размер + монитор</value></data>
+  <data name="K017" xml:space="preserve"><value>/xlplugins</value></data>
+  <data name="K018" xml:space="preserve"><value>Рекомендуется 0. Задержка в перехватчике отрисовки может вызвать рывки при смене зоны.</value></data>
+  <data name="K019" xml:space="preserve"><value>АКТИВЕН</value></data>
+  <data name="K020" xml:space="preserve"><value>ГОТОВО</value></data>
+  <data name="K021" xml:space="preserve"><value>О программе</value></data>
+  <data name="K022" xml:space="preserve"><value>Действие</value></data>
+  <data name="K023" xml:space="preserve"><value>Добавить репозиторий + установить XA Slave</value></data>
+  <data name="K024" xml:space="preserve"><value>Дополнительно</value></data>
+  <data name="K025" xml:space="preserve"><value>Дополнительные параметры</value></data>
+  <data name="K026" xml:space="preserve"><value>Агрессивно, кроме интерфейса</value></data>
+  <data name="K027" xml:space="preserve"><value>Всё выключить</value></data>
+  <data name="K028" xml:space="preserve"><value>Настройка клавиши «Выключить всё»</value></data>
+  <data name="K029" xml:space="preserve"><value>«Выключить всё» — безопасное действие: отключает режимы без отрисовки на переднем и заднем плане и скрытие толпы, восстанавливает обычную отрисовку и показывает скрытых персонажей.</value></data>
+  <data name="K030" xml:space="preserve"><value>Все скрытые персонажи восстановлены.</value></data>
+  <data name="K031" xml:space="preserve"><value>Разрешить периодические кадры</value></data>
+  <data name="K032" xml:space="preserve"><value>Позволяет DPS отключать MultiDisableRender в AutoRetainer при запросе остановки отрисовки на переднем плане. Выключение этой опции сохраняет текущую настройку AutoRetainer.</value></data>
+  <data name="K033" xml:space="preserve"><value>Alt</value></data>
+  <data name="K034" xml:space="preserve"><value>Применяется к обоим режимам переднего плана. Только выбранные условия могут приостановить режим без отрисовки.</value></data>
+  <data name="K035" xml:space="preserve"><value>Применить положение</value></data>
+  <data name="K036" xml:space="preserve"><value>Автозагрузка включена, но положение/размер игрового окна не сохранены.</value></data>
+  <data name="K037" xml:space="preserve"><value>AutoRetainer</value></data>
+  <data name="K038" xml:space="preserve"><value>Автоматическое устранение конфликтов AutoRetainer: {0}.</value></data>
+  <data name="K039" xml:space="preserve"><value>Автоматические импульсы восстановления фона</value></data>
+  <data name="K040" xml:space="preserve"><value>Автоматический импульс восстановления: активен ещё {0}.</value></data>
+  <data name="K041" xml:space="preserve"><value>Автоматический импульс восстановления: активен {0}с.</value></data>
+  <data name="K042" xml:space="preserve"><value>Автоматический импульс восстановления: отменён при выгрузке.</value></data>
+  <data name="K043" xml:space="preserve"><value>Автоматический импульс восстановления: отменён.</value></data>
+  <data name="K044" xml:space="preserve"><value>Автоматический импульс восстановления: выключено.</value></data>
+  <data name="K045" xml:space="preserve"><value>Автоматический импульс восстановления: ожидает запуска в следующем активном цикле отключения фоновой отрисовки.</value></data>
+  <data name="K046" xml:space="preserve"><value>Автоматический импульс восстановления: запланирован примерно через {0}м.</value></data>
+  <data name="K047" xml:space="preserve"><value>Автоматический импульс восстановления: запланирован через {0}.</value></data>
+  <data name="K048" xml:space="preserve"><value>Автоматический импульс восстановления: ожидание отключения фоновой отрисовки.</value></data>
+  <data name="K049" xml:space="preserve"><value>Автоматический импульс восстановления: ожидание включения плагина.</value></data>
+  <data name="K050" xml:space="preserve"><value>Автоматические исключения отрисовки включаются по выбору. Изменения сохраняются и применяются сразу.</value></data>
+  <data name="K051" xml:space="preserve"><value>Автоматически устранять конфликты отрисовки на переднем плане</value></data>
+  <data name="K052" xml:space="preserve"><value>BG</value></data>
+  <data name="K053" xml:space="preserve"><value>ИСКЛЮЧЕНИЕ</value></data>
+  <data name="K054" xml:space="preserve"><value>Фоновое окно</value></data>
+  <data name="K055" xml:space="preserve"><value>Фоновый перехват</value></data>
+  <data name="K056" xml:space="preserve"><value>Восстановление фона</value></data>
+  <data name="K057" xml:space="preserve"><value>Ограничение фона</value></data>
+  <data name="K058" xml:space="preserve"><value>Отключение фоновой отрисовки</value></data>
+  <data name="K059" xml:space="preserve"><value>Фоновая отрисовка: активно. Окно неактивно.</value></data>
+  <data name="K060" xml:space="preserve"><value>Фоновая отрисовка: активно. Окно свёрнуто.</value></data>
+  <data name="K061" xml:space="preserve"><value>Фоновая отрисовка: готово. Переключитесь из окна с помощью Alt+Tab.</value></data>
+  <data name="K062" xml:space="preserve"><value>Фоновая отрисовка: готово. Сверните окно для запуска.</value></data>
+  <data name="K063" xml:space="preserve"><value>Фоновая отрисовка: выключено.</value></data>
+  <data name="K064" xml:space="preserve"><value>Фоновая отрисовка: сбой инициализации перехвата: {0}</value></data>
+  <data name="K065" xml:space="preserve"><value>Фоновая отрисовка: перехват готов. Перехват табличек имён недоступен.</value></data>
+  <data name="K066" xml:space="preserve"><value>Фоновая отрисовка: перехваты готовы.</value></data>
+  <data name="K067" xml:space="preserve"><value>Фоновая отрисовка: простой.</value></data>
+  <data name="K068" xml:space="preserve"><value>Фоновая отрисовка: приостановлено включённым исключением для перехода территории.</value></data>
+  <data name="K069" xml:space="preserve"><value>Фоновая отрисовка: приостановлено включённым исключением вне игры.</value></data>
+  <data name="K070" xml:space="preserve"><value>Фоновая отрисовка: приостановлено для включённого импульса восстановления.</value></data>
+  <data name="K071" xml:space="preserve"><value>Фоновая отрисовка: приостановлено, пока отключена отрисовка активного окна.</value></data>
+  <data name="K072" xml:space="preserve"><value>Фоновая отрисовка: ожидание включения плагина.</value></data>
+  <data name="K073" xml:space="preserve"><value>Привязка</value></data>
+  <data name="K074" xml:space="preserve"><value>Чёрная 16x16</value></data>
+  <data name="K075" xml:space="preserve"><value>Чёрная 1x1</value></data>
+  <data name="K076" xml:space="preserve"><value>Затемнено текстур: {0}, через {1}</value></data>
+  <data name="K077" xml:space="preserve"><value>Синий</value></data>
+  <data name="K078" xml:space="preserve"><value>НАСТРОЕНО</value></data>
+  <data name="K079" xml:space="preserve"><value>Отмена</value></data>
+  <data name="K080" xml:space="preserve"><value>Отменить настройку</value></data>
+  <data name="K081" xml:space="preserve"><value>Отменить и восстановить исходное</value></data>
+  <data name="K082" xml:space="preserve"><value>Записать</value></data>
+  <data name="K083" xml:space="preserve"><value>Записать снова</value></data>
+  <data name="K084" xml:space="preserve"><value>Записать сочетание клавиш</value></data>
+  <data name="K085" xml:space="preserve"><value>Записать новое сочетание для {0}.</value></data>
+  <data name="K086" xml:space="preserve"><value>Персонаж</value></data>
+  <data name="K087" xml:space="preserve"><value>Персонажи</value></data>
+  <data name="K088" xml:space="preserve"><value>Чокобо</value></data>
+  <data name="K089" xml:space="preserve"><value>Выберите выше плагин разрешения для управления масштабом игры.</value></data>
+  <data name="K090" xml:space="preserve"><value>Выберите масштаб разрешения от 0.01 до 1.00.</value></data>
+  <data name="K091" xml:space="preserve"><value>Корректное отключение восстанавливает состояние плагина</value></data>
+  <data name="K092" xml:space="preserve"><value>Очистить</value></data>
+  <data name="K093" xml:space="preserve"><value>Сбросить статистику текстур</value></data>
+  <data name="K094" xml:space="preserve"><value>Удалить сохранённые положение/размер окна и отключить автозагрузку.</value></data>
+  <data name="K095" xml:space="preserve"><value>Удалить сочетание для {0}.</value></data>
+  <data name="K096" xml:space="preserve"><value>Щелчок</value></data>
+  <data name="K097" xml:space="preserve"><value>Действия щелчка</value></data>
+  <data name="K098" xml:space="preserve"><value>Щелчок: {0}.</value></data>
+  <data name="K099" xml:space="preserve"><value>Восстановление при загрузке пропущено: автозагрузка положения и размера отключена.</value></data>
+  <data name="K100" xml:space="preserve"><value>Восстановление при загрузке: {0}</value></data>
+  <data name="K101" xml:space="preserve"><value>Закрыть</value></data>
+  <data name="K102" xml:space="preserve"><value>Закрыть и сохранить текущее положение</value></data>
+  <data name="K103" xml:space="preserve"><value>Закрыть это окно.</value></data>
+  <data name="K104" xml:space="preserve"><value>Цвет</value></data>
+  <data name="K105" xml:space="preserve"><value>Команды</value></data>
+  <data name="K106" xml:space="preserve"><value>Компактный режим</value></data>
+  <data name="K107" xml:space="preserve"><value>Подтвердить клавишу «Выключить всё»</value></data>
+  <data name="K108" xml:space="preserve"><value>Постоянно поддерживать чёрный экран</value></data>
+  <data name="K109" xml:space="preserve"><value>Не удалось получить загруженную конфигурацию Custom Resolution.</value></data>
+  <data name="K110" xml:space="preserve"><value>Не удалось отключить отрисовку на переднем плане через {0}: {1}</value></data>
+  <data name="K111" xml:space="preserve"><value>Не удалось проверить отрисовку на переднем плане: {0}</value></data>
+  <data name="K112" xml:space="preserve"><value>Не удалось восстановить отрисовку на переднем плане через {0}: {1}</value></data>
+  <data name="K113" xml:space="preserve"><value>Количество</value></data>
+  <data name="K114" xml:space="preserve"><value>Толпа</value></data>
+  <data name="K115" xml:space="preserve"><value>Скрытие толпы</value></data>
+  <data name="K116" xml:space="preserve"><value>Ctrl</value></data>
+  <data name="K117" xml:space="preserve"><value>Текущий</value></data>
+  <data name="K118" xml:space="preserve"><value>Текущее игровое окно</value></data>
+  <data name="K119" xml:space="preserve"><value>Текущее положение игрового окна прочитано.</value></data>
+  <data name="K120" xml:space="preserve"><value>Изменения текущего монитора</value></data>
+  <data name="K121" xml:space="preserve"><value>Изменения текущего монитора</value></data>
+  <data name="K122" xml:space="preserve"><value>Свой RGB</value></data>
+  <data name="K123" xml:space="preserve"><value>Custom Resolution</value></data>
+  <data name="K124" xml:space="preserve"><value>Custom Resolution (официальный)</value></data>
+  <data name="K125" xml:space="preserve"><value>Масштаб игры Custom Resolution установлен на 1.0x.</value></data>
+  <data name="K126" xml:space="preserve"><value>Масштаб игры Custom Resolution установлен на {0:0.###}x.</value></data>
+  <data name="K127" xml:space="preserve"><value>Настройки Custom Resolution</value></data>
+  <data name="K128" xml:space="preserve"><value>Переключение масштаба игры DPS</value></data>
+  <data name="K129" xml:space="preserve"><value>DPS v</value></data>
+  <data name="K130" xml:space="preserve"><value>DPS: {0}</value></data>
+  <data name="K131" xml:space="preserve"><value>DTR</value></data>
+  <data name="K132" xml:space="preserve"><value>DTR выкл</value></data>
+  <data name="K133" xml:space="preserve"><value>DTR вкл</value></data>
+  <data name="K134" xml:space="preserve"><value>Режим DTR</value></data>
+  <data name="K135" xml:space="preserve"><value>DVI</value></data>
+  <data name="K136" xml:space="preserve"><value>Остановить отрисовку с чёрным экраном</value></data>
+  <data name="K137" xml:space="preserve"><value>Остановить отрисовку с замороженным кадром</value></data>
+  <data name="K138" xml:space="preserve"><value>Лаборатория текстур скрыта на этот сеанс.</value></data>
+  <data name="K139" xml:space="preserve"><value>Уменьшить {0} на 1.</value></data>
+  <data name="K140" xml:space="preserve"><value>Обнаруженное окно</value></data>
+  <data name="K141" xml:space="preserve"><value>Dhog Potato System — дополнительно</value></data>
+  <data name="K142" xml:space="preserve"><value>Диагностика</value></data>
+  <data name="K143" xml:space="preserve"><value>Отключить DPS и восстановить всех скрытых персонажей толпы.</value></data>
+  <data name="K144" xml:space="preserve"><value>Отключить DPS и восстановить все скрытые визуальные элементы.</value></data>
+  <data name="K145" xml:space="preserve"><value>Отключить подавление переднего плана, фона и толпы.</value></data>
+  <data name="K146" xml:space="preserve"><value>Отключить масштабирование</value></data>
+  <data name="K147" xml:space="preserve"><value>Отключено (не назначено)</value></data>
+  <data name="K148" xml:space="preserve"><value>Отключено ({0})</value></data>
+  <data name="K149" xml:space="preserve"><value>Значок отключения</value></data>
+  <data name="K150" xml:space="preserve"><value>Discord</value></data>
+  <data name="K151" xml:space="preserve"><value>Отображение</value></data>
+  <data name="K152" xml:space="preserve"><value>Восстановление экрана</value></data>
+  <data name="K153" xml:space="preserve"><value>Восстановление экрана: активно; отключение отрисовки окна возобновится через {0}.</value></data>
+  <data name="K154" xml:space="preserve"><value>Восстановление экрана: активно; ожидание повторной готовности.</value></data>
+  <data name="K155" xml:space="preserve"><value>Восстановление экрана: активно; ожидание завершения включённых условий: {0}.</value></data>
+  <data name="K156" xml:space="preserve"><value>Восстановление экрана: завершено; отключение отрисовки окна возобновлено.</value></data>
+  <data name="K157" xml:space="preserve"><value>Восстановление экрана: защита выключена.</value></data>
+  <data name="K158" xml:space="preserve"><value>Восстановление экрана: защита простаивает.</value></data>
+  <data name="K159" xml:space="preserve"><value>Восстановление экрана: нет включённых исключений.</value></data>
+  <data name="K160" xml:space="preserve"><value>Восстановление экрана: ожидание отключения отрисовки активного окна.</value></data>
+  <data name="K161" xml:space="preserve"><value>Восстановление экрана: ожидание включения плагина.</value></data>
+  <data name="K162" xml:space="preserve"><value>Восстановление экрана: наблюдение за включёнными исключениями активного окна: {0}.</value></data>
+  <data name="K163" xml:space="preserve"><value>DisplayPort</value></data>
+  <data name="K164" xml:space="preserve"><value>Не включайте одновременно режимы без отрисовки на переднем и заднем плане.</value></data>
+  <data name="K165" xml:space="preserve"><value>Черновик</value></data>
+  <data name="K166" xml:space="preserve"><value>Черновое положение</value></data>
+  <data name="K167" xml:space="preserve"><value>Править</value></data>
+  <data name="K168" xml:space="preserve"><value>Включить</value></data>
+  <data name="K169" xml:space="preserve"><value>Включить / применить масштаб</value></data>
+  <data name="K170" xml:space="preserve"><value>Включить отладку</value></data>
+  <data name="K171" xml:space="preserve"><value>Включить отключение фоновой отрисовки</value></data>
+  <data name="K172" xml:space="preserve"><value>Включить восстановление экрана переднего плана</value></data>
+  <data name="K173" xml:space="preserve"><value>Включить отключение отрисовки в активном окне</value></data>
+  <data name="K174" xml:space="preserve"><value>Включить масштабирование игры</value></data>
+  <data name="K175" xml:space="preserve"><value>Включить автозагрузку положения/экрана</value></data>
+  <data name="K176" xml:space="preserve"><value>Включить перенаправление текстур</value></data>
+  <data name="K177" xml:space="preserve"><value>Включённые исключения</value></data>
+  <data name="K178" xml:space="preserve"><value>Значок включения</value></data>
+  <data name="K179" xml:space="preserve"><value>Все .tex</value></data>
+  <data name="K180" xml:space="preserve"><value>Экспериментальное перенаправление текстур скрыто. Используйте /dps debug.</value></data>
+  <data name="K181" xml:space="preserve"><value>Экспериментальная утилита для слабых ПК: скрывает персонажей вне группы, переключает отрисовку на переднем и заднем плане и восстанавливает положение игрового окна.</value></data>
+  <data name="K182" xml:space="preserve"><value>СБОЙ</value></data>
+  <data name="K183" xml:space="preserve"><value>Запрошенная отрисовка</value></data>
+  <data name="K184" xml:space="preserve"><value>Отрисовка окна</value></data>
+  <data name="K185" xml:space="preserve"><value>Неудачные загрузки: {0}</value></data>
+  <data name="K186" xml:space="preserve"><value>Завершение</value></data>
+  <data name="K187" xml:space="preserve"><value>Активное окно</value></data>
+  <data name="K188" xml:space="preserve"><value>Восстановление экрана переднего плана</value></data>
+  <data name="K189" xml:space="preserve"><value>Отрисовка активного окна</value></data>
+  <data name="K190" xml:space="preserve"><value>Отрисовка активного окна: активно. Байт отрисовки равен 1.</value></data>
+  <data name="K191" xml:space="preserve"><value>Отрисовка активного окна: активно. Блокировка отрисовки подавляет кадры.</value></data>
+  <data name="K192" xml:space="preserve"><value>Отрисовка активного окна: готово, но байт отрисовки равен {0}.</value></data>
+  <data name="K193" xml:space="preserve"><value>Отрисовка активного окна: готово. Старый режим байта отрисовки готов.</value></data>
+  <data name="K194" xml:space="preserve"><value>Отрисовка активного окна: готово. Перехват блокировки отрисовки ещё не инициализирован.</value></data>
+  <data name="K195" xml:space="preserve"><value>Отрисовка активного окна: готово. Блокировка отрисовки готова.</value></data>
+  <data name="K196" xml:space="preserve"><value>Отрисовка активного окна: выключено.</value></data>
+  <data name="K197" xml:space="preserve"><value>Отрисовка активного окна: выключено. Байт отрисовки восстановлен до 0.</value></data>
+  <data name="K198" xml:space="preserve"><value>Отрисовка активного окна: приостановлено включённым исключением для перехода территории.</value></data>
+  <data name="K199" xml:space="preserve"><value>Отрисовка активного окна: приостановлено включённым исключением вне игры.</value></data>
+  <data name="K200" xml:space="preserve"><value>Отрисовка активного окна: приостановлено для восстановления экрана. Обычная отрисовка разрешена.</value></data>
+  <data name="K201" xml:space="preserve"><value>Отрисовка активного окна: запрошено, но байт отрисовки равен {0}. Постоянное принудительное применение выключено.</value></data>
+  <data name="K202" xml:space="preserve"><value>Отрисовка активного окна: ожидание восстановления: {0}</value></data>
+  <data name="K203" xml:space="preserve"><value>Отрисовка активного окна: восстановление запрошено, но байт отрисовки всё ещё равен {0}.</value></data>
+  <data name="K204" xml:space="preserve"><value>Отрисовка активного окна: недоступно: перехват блокировки отрисовки неактивен.</value></data>
+  <data name="K205" xml:space="preserve"><value>Отрисовка активного окна: недоступно: режим {0} не поддерживается.</value></data>
+  <data name="K206" xml:space="preserve"><value>Отрисовка активного окна: недоступно: {0}</value></data>
+  <data name="K207" xml:space="preserve"><value>Отрисовка активного окна: ожидание включения плагина.</value></data>
+  <data name="K208" xml:space="preserve"><value>Отрисовка активного окна ВЫКЛ</value></data>
+  <data name="K209" xml:space="preserve"><value>Исключения замороженного кадра и фона</value></data>
+  <data name="K210" xml:space="preserve"><value>Игровое окно найдено перебором окон процесса.</value></data>
+  <data name="K211" xml:space="preserve"><value>Игровое окно найдено через главное окно текущего процесса.</value></data>
+  <data name="K212" xml:space="preserve"><value>Дескриптор игрового окна пока недоступен.</value></data>
+  <data name="K213" xml:space="preserve"><value>Автозагрузка положения игрового окна отключена.</value></data>
+  <data name="K214" xml:space="preserve"><value>Автозагрузка положения игрового окна включена.</value></data>
+  <data name="K215" xml:space="preserve"><value>Прямоугольник игрового окна пуст.</value></data>
+  <data name="K216" xml:space="preserve"><value>Автозагрузка размера игрового окна отключена.</value></data>
+  <data name="K217" xml:space="preserve"><value>Автозагрузка размера игрового окна включена.</value></data>
+  <data name="K218" xml:space="preserve"><value>Размер игрового окна должен быть положительным.</value></data>
+  <data name="K219" xml:space="preserve"><value>Блокировка</value></data>
+  <data name="K220" xml:space="preserve"><value>Общее</value></data>
+  <data name="K221" xml:space="preserve"><value>Защита</value></data>
+  <data name="K222" xml:space="preserve"><value>Мастер настройки</value></data>
+  <data name="K223" xml:space="preserve"><value>HDMI</value></data>
+  <data name="K224" xml:space="preserve"><value>Высота</value></data>
+  <data name="K225" xml:space="preserve"><value>Вспомогательные плагины</value></data>
+  <data name="K226" xml:space="preserve"><value>Скрытое окно</value></data>
+  <data name="K227" xml:space="preserve"><value>Скрытое окно</value></data>
+  <data name="K228" xml:space="preserve"><value>Скрыть чокобо</value></data>
+  <data name="K229" xml:space="preserve"><value>Скрыть миньонов</value></data>
+  <data name="K230" xml:space="preserve"><value>Скрыть питомцев</value></data>
+  <data name="K231" xml:space="preserve"><value>Скрыть игроков</value></data>
+  <data name="K232" xml:space="preserve"><value>Перехват</value></data>
+  <data name="K233" xml:space="preserve"><value>Перехват активен</value></data>
+  <data name="K234" xml:space="preserve"><value>Горячая клавиша</value></data>
+  <data name="K235" xml:space="preserve"><value>Настройки клавиш</value></data>
+  <data name="K236" xml:space="preserve"><value>Горячие клавиши</value></data>
+  <data name="K237" xml:space="preserve"><value>ПРОСТОЙ</value></data>
+  <data name="K238" xml:space="preserve"><value>Значок + DPS</value></data>
+  <data name="K239" xml:space="preserve"><value>Только значок</value></data>
+  <data name="K240" xml:space="preserve"><value>Затемнение текстур на месте не удалось после {0} попыток.</value></data>
+  <data name="K241" xml:space="preserve"><value>Увеличить {0} на 1.</value></data>
+  <data name="K242" xml:space="preserve"><value>Непрямой виртуальный</value></data>
+  <data name="K243" xml:space="preserve"><value>Непрямой проводной</value></data>
+  <data name="K244" xml:space="preserve"><value>Установить {0}</value></data>
+  <data name="K245" xml:space="preserve"><value>{0} установлен и включён.</value></data>
+  <data name="K246" xml:space="preserve"><value>{0} установлен; включите его в установщике плагинов.</value></data>
+  <data name="K247" xml:space="preserve"><value>Установка {0}...</value></data>
+  <data name="K248" xml:space="preserve"><value>Установка...</value></data>
+  <data name="K249" xml:space="preserve"><value>Нулевые или отрицательные размеры окна</value></data>
+  <data name="K250" xml:space="preserve"><value>Оставлять цель видимой</value></data>
+  <data name="K251" xml:space="preserve"><value>Ko-fi</value></data>
+  <data name="K252" xml:space="preserve"><value>ЗАГРУЖЕНО</value></data>
+  <data name="K253" xml:space="preserve"><value>LVDS</value></data>
+  <data name="K254" xml:space="preserve"><value>Язык</value></data>
+  <data name="K255" xml:space="preserve"><value>Последнее действие</value></data>
+  <data name="K256" xml:space="preserve"><value>Последнее изменение UTC</value></data>
+  <data name="K257" xml:space="preserve"><value>Последний путь игры: {0}</value></data>
+  <data name="K258" xml:space="preserve"><value>Ссылки</value></data>
+  <data name="K259" xml:space="preserve"><value>Загрузить</value></data>
+  <data name="K260" xml:space="preserve"><value>Загрузить сохранённый размер</value></data>
+  <data name="K261" xml:space="preserve"><value>Загрузить сохранённое окно</value></data>
+  <data name="K262" xml:space="preserve"><value>Загрузить сохранённое окно + размер</value></data>
+  <data name="K263" xml:space="preserve"><value>Загружать сохранённые положение + экран при запуске</value></data>
+  <data name="K264" xml:space="preserve"><value>Загружать сохранённый размер окна при запуске</value></data>
+  <data name="K265" xml:space="preserve"><value>Размер игрового окна {0}x{1} загружен.</value></data>
+  <data name="K266" xml:space="preserve"><value>Размер игрового окна {0}x{1} загружен; проверка чтением пройдена.</value></data>
+  <data name="K267" xml:space="preserve"><value>Окно загружено в X/Y {0}, {1} на {2} через {3}; размер сохранён ({4}).</value></data>
+  <data name="K268" xml:space="preserve"><value>Сохранённые положение и размер окна загружены. {0} {1}</value></data>
+  <data name="K269" xml:space="preserve"><value>Положение загружено, но восстановление размера не удалось: {0}</value></data>
+  <data name="K270" xml:space="preserve"><value>Загрузка шрифтов интерфейса...</value></data>
+  <data name="K271" xml:space="preserve"><value>Записывать перенаправленные текстуры</value></data>
+  <data name="K272" xml:space="preserve"><value>Исключение вне игры</value></data>
+  <data name="K273" xml:space="preserve"><value>Отсутствует</value></data>
+  <data name="K274" xml:space="preserve"><value>Основное окно</value></data>
+  <data name="K275" xml:space="preserve"><value>Макс. задержка перехватчика отрисовки: {0:0.0} мс</value></data>
+  <data name="K276" xml:space="preserve"><value>Максимум минут</value></data>
+  <data name="K277" xml:space="preserve"><value>Свёрнутое окно</value></data>
+  <data name="K278" xml:space="preserve"><value>Свёрнутое окно</value></data>
+  <data name="K279" xml:space="preserve"><value>Минимум минут</value></data>
+  <data name="K280" xml:space="preserve"><value>Питомцы</value></data>
+  <data name="K281" xml:space="preserve"><value>Miracast</value></data>
+  <data name="K282" xml:space="preserve"><value>Отсутствующее окно</value></data>
+  <data name="K283" xml:space="preserve"><value>Отсутствующее окно</value></data>
+  <data name="K284" xml:space="preserve"><value>Монитор</value></data>
+  <data name="K285" xml:space="preserve"><value>Границы монитора</value></data>
+  <data name="K286" xml:space="preserve"><value>Информация монитора прочитана.</value></data>
+  <data name="K287" xml:space="preserve"><value>Изменения расположения мониторов</value></data>
+  <data name="K288" xml:space="preserve"><value>Изменения расположения мониторов</value></data>
+  <data name="K289" xml:space="preserve"><value>Переместите окно FFXIV в точные координаты X/Y, проверьте результат и выберите сохранение для автозагрузки положения/экрана. Эта настройка не меняет размер окна.</value></data>
+  <data name="K290" xml:space="preserve"><value>Переместить клиент на сохранённые положение и монитор.</value></data>
+  <data name="K291" xml:space="preserve"><value>Переместить клиент на сохранённые положение/экран и применить сохранённый размер.</value></data>
+  <data name="K292" xml:space="preserve"><value>Игровое окно перемещено в X/Y {0}, {1} на {2}; размер сохранён ({3}).</value></data>
+  <data name="K293" xml:space="preserve"><value>Игровое окно перемещено в точные X/Y {0}, {1}.</value></data>
+  <data name="K294" xml:space="preserve"><value>Взаимоисключение</value></data>
+  <data name="K295" xml:space="preserve"><value>Ошибка взаимоисключения: включены оба режима отрисовки.</value></data>
+  <data name="K296" xml:space="preserve"><value>НЕТ</value></data>
+  <data name="K297" xml:space="preserve"><value>БЕЗ ДЕЙСТВИЯ</value></data>
+  <data name="K298" xml:space="preserve"><value>ОБЫЧНО</value></data>
+  <data name="K299" xml:space="preserve"><value>НЕ ИНИЦИАЛИЗИРОВАНО</value></data>
+  <data name="K300" xml:space="preserve"><value>НЕ УСТАНОВЛЕНО</value></data>
+  <data name="K301" xml:space="preserve"><value>НЕ ЗАГРУЖЕНО / НЕСОВМЕСТИМО</value></data>
+  <data name="K302" xml:space="preserve"><value>НЕ ИСПОЛЬЗУЕТСЯ</value></data>
+  <data name="K303" xml:space="preserve"><value>Действия щелчка не настроены.</value></data>
+  <data name="K304" xml:space="preserve"><value>Нет текущего монитора</value></data>
+  <data name="K305" xml:space="preserve"><value>Снимка состояния экрана пока нет.</value></data>
+  <data name="K306" xml:space="preserve"><value>Нет мониторов</value></data>
+  <data name="K307" xml:space="preserve"><value>Положение игрового окна не сохранено.</value></data>
+  <data name="K308" xml:space="preserve"><value>Положение/размер игрового окна не сохранены.</value></data>
+  <data name="K309" xml:space="preserve"><value>Размер игрового окна не сохранён.</value></data>
+  <data name="K310" xml:space="preserve"><value>Не найден подходящий монитор для восстановления положения.</value></data>
+  <data name="K311" xml:space="preserve"><value>Без отрисовки</value></data>
+  <data name="K312" xml:space="preserve"><value>Не отрисовывать игру, пока её окно активно.</value></data>
+  <data name="K313" xml:space="preserve"><value>Не отрисовывать игру, пока её окно неактивно.</value></data>
+  <data name="K314" xml:space="preserve"><value>Нет текущего монитора</value></data>
+  <data name="K315" xml:space="preserve"><value>Нет мониторов</value></data>
+  <data name="K316" xml:space="preserve"><value>Нет</value></data>
+  <data name="K317" xml:space="preserve"><value>ВЫКЛ</value></data>
+  <data name="K318" xml:space="preserve"><value>Запрошено отключение ({0})</value></data>
+  <data name="K319" xml:space="preserve"><value>Запрошено отключение, ожидание включения плагина</value></data>
+  <data name="K320" xml:space="preserve"><value>ОК</value></data>
+  <data name="K321" xml:space="preserve"><value>ВКЛ</value></data>
+  <data name="K322" xml:space="preserve"><value>Выключение ставит масштаб игры 1.0x. Включение возвращает последний сохранённый масштаб; настройки экрана сохраняются.</value></data>
+  <data name="K323" xml:space="preserve"><value>Только при свёрнутом окне</value></data>
+  <data name="K324" xml:space="preserve"><value>Открыть ссылку сообщества Discord.</value></data>
+  <data name="K325" xml:space="preserve"><value>Открыть страницу поддержки Ko-fi.</value></data>
+  <data name="K326" xml:space="preserve"><value>Открыть установщик плагинов</value></data>
+  <data name="K327" xml:space="preserve"><value>Открыть автоматические исключения отрисовки, восстановление и ограничение.</value></data>
+  <data name="K328" xml:space="preserve"><value>Открыть привязки клавиш.</value></data>
+  <data name="K329" xml:space="preserve"><value>Открыть главное окно</value></data>
+  <data name="K330" xml:space="preserve"><value>Открыть мастер клавиши «Выключить всё».</value></data>
+  <data name="K331" xml:space="preserve"><value>Открыть мастер положения окна X/Y.</value></data>
+  <data name="K332" xml:space="preserve"><value>Исходное положение</value></data>
+  <data name="K333" xml:space="preserve"><value>Запрошено исходное положение X/Y {0}, {1}, но прочитано {2}, {3}.</value></data>
+  <data name="K334" xml:space="preserve"><value>Исходное положение восстановлено в X/Y {0}, {1}.</value></data>
+  <data name="K335" xml:space="preserve"><value>Интервал периодических кадров (с)</value></data>
+  <data name="K336" xml:space="preserve"><value>Питомцы</value></data>
+  <data name="K337" xml:space="preserve"><value>Розовый</value></data>
+  <data name="K338" xml:space="preserve"><value>Игроки</value></data>
+  <data name="K339" xml:space="preserve"><value>Плагин</value></data>
+  <data name="K340" xml:space="preserve"><value>Интервал опроса (с)</value></data>
+  <data name="K341" xml:space="preserve"><value>Редактор положения</value></data>
+  <data name="K342" xml:space="preserve"><value>Нажмите одну обычную клавишу, при желании с Ctrl, Alt и/или Shift. Escape отменяет, Backspace или Delete очищает только черновик.</value></data>
+  <data name="K343" xml:space="preserve"><value>Просмотр: {0}</value></data>
+  <data name="K344" xml:space="preserve"><value>Длительность импульса (с)</value></data>
+  <data name="K345" xml:space="preserve"><value>ГОТОВО</value></data>
+  <data name="K346" xml:space="preserve"><value>Повторное чтение</value></data>
+  <data name="K347" xml:space="preserve"><value>До повторного включения</value></data>
+  <data name="K348" xml:space="preserve"><value>Восстановление</value></data>
+  <data name="K349" xml:space="preserve"><value>Пауза восстановления (с)</value></data>
+  <data name="K350" xml:space="preserve"><value>Импульс восстановления</value></data>
+  <data name="K351" xml:space="preserve"><value>Перенаправить все отслеживаемые текстуры на чёрный ресурс 1x1.</value></data>
+  <data name="K352" xml:space="preserve"><value>Перенаправить текстуры персонажей на чёрный ресурс 16x16.</value></data>
+  <data name="K353" xml:space="preserve"><value>Перенаправить текстуры эффектов на чёрный ресурс 16x16.</value></data>
+  <data name="K354" xml:space="preserve"><value>Перенаправить текстуры мира на чёрный ресурс 16x16.</value></data>
+  <data name="K355" xml:space="preserve"><value>Перенаправленные текстуры: {0}</value></data>
+  <data name="K356" xml:space="preserve"><value>Отрисовка</value></data>
+  <data name="K357" xml:space="preserve"><value>Отрисовывать при смене зоны</value></data>
+  <data name="K358" xml:space="preserve"><value>Не удалось инициализировать перехватчик блокировки отрисовки.</value></data>
+  <data name="K359" xml:space="preserve"><value>Отрисовывать вне игры</value></data>
+  <data name="K360" xml:space="preserve"><value>Подавление флагом отрисовки персонажей вне группы.</value></data>
+  <data name="K361" xml:space="preserve"><value>Render.Manager.Instance() вернул null.</value></data>
+  <data name="K362" xml:space="preserve"><value>Render.Manager.Instance() вызвал {0}: {1}</value></data>
+  <data name="K363" xml:space="preserve"><value>Управление отрисовкой и видимостью толпы для более плавной работы.</value></data>
+  <data name="K364" xml:space="preserve"><value>Ресурс замены</value></data>
+  <data name="K365" xml:space="preserve"><value>Путь замены: {0}</value></data>
+  <data name="K366" xml:space="preserve"><value>Запрошен размер окна {0}x{1}, но повторное чтение не удалось: {2}</value></data>
+  <data name="K367" xml:space="preserve"><value>Запрошен размер окна {0}x{1}, но прочитано {2}x{3}.</value></data>
+  <data name="K368" xml:space="preserve"><value>Сбросить DTR по умолчанию</value></data>
+  <data name="K369" xml:space="preserve"><value>Сбросить эту вкладку</value></data>
+  <data name="K370" xml:space="preserve"><value>Сбросить счётчики перенаправления текстур.</value></data>
+  <data name="K371" xml:space="preserve"><value>Изменить размер клиента на сохранённый.</value></data>
+  <data name="K372" xml:space="preserve"><value>Размер игрового окна изменён на {0}x{1}.</value></data>
+  <data name="K373" xml:space="preserve"><value>Разрешение</value></data>
+  <data name="K374" xml:space="preserve"><value>Масштаб разрешения: {0}</value></data>
+  <data name="K375" xml:space="preserve"><value>Включить фоновую отрисовку</value></data>
+  <data name="K376" xml:space="preserve"><value>Включить отрисовку окна</value></data>
+  <data name="K377" xml:space="preserve"><value>Восстановить фоновую отрисовку.</value></data>
+  <data name="K378" xml:space="preserve"><value>Восстановить действия щелчка DTR по умолчанию.</value></data>
+  <data name="K379" xml:space="preserve"><value>Восстановить отрисовку переднего плана.</value></data>
+  <data name="K380" xml:space="preserve"><value>Повторить чтение положения</value></data>
+  <data name="K381" xml:space="preserve"><value>Повторить поиск окна</value></data>
+  <data name="K382" xml:space="preserve"><value>Запуск</value></data>
+  <data name="K383" xml:space="preserve"><value>Много клиентов или мало ресурсов? При сбоях или нестабильности попробуйте отключить постоянное применение. Тогда отрисовка может возобновляться автоматически.</value></data>
+  <data name="K384" xml:space="preserve"><value>SDI</value></data>
+  <data name="K385" xml:space="preserve"><value>SDTV</value></data>
+  <data name="K386" xml:space="preserve"><value>Сохранить</value></data>
+  <data name="K387" xml:space="preserve"><value>Сохранить текущее окно</value></data>
+  <data name="K388" xml:space="preserve"><value>Сохранить текущие положение, размер и монитор клиента.</value></data>
+  <data name="K389" xml:space="preserve"><value>Сохранено UTC</value></data>
+  <data name="K390" xml:space="preserve"><value>Сохранённое окно</value></data>
+  <data name="K391" xml:space="preserve"><value>Игровое окно сохранено в X/Y {0}, {1}, размер {2}x{3} на {4}.</value></data>
+  <data name="K392" xml:space="preserve"><value>Сохранённый размер игрового окна недоступен.</value></data>
+  <data name="K393" xml:space="preserve"><value>Сохранённый размер окна недоступен; автозагрузка размера пропущена.</value></data>
+  <data name="K394" xml:space="preserve"><value>Восстановление размера не удалось после {0}; достигнут предел попыток. Последний результат: {1}</value></data>
+  <data name="K395" xml:space="preserve"><value>Сохранённые границы монитора найдены.</value></data>
+  <data name="K396" xml:space="preserve"><value>Сохранённое устройство монитора найдено.</value></data>
+  <data name="K397" xml:space="preserve"><value>Сохранённый путь устройства монитора найден.</value></data>
+  <data name="K398" xml:space="preserve"><value>Масштаб</value></data>
+  <data name="K399" xml:space="preserve"><value>Проблемы и предложения по плагинам обсуждаются в канале «The Dumpster Fire».</value></data>
+  <data name="K400" xml:space="preserve"><value>Сначала выберите загруженный совместимый плагин разрешения.</value></data>
+  <data name="K401" xml:space="preserve"><value>Задать</value></data>
+  <data name="K402" xml:space="preserve"><value>Настроить клавишу «Выключить всё»</value></data>
+  <data name="K403" xml:space="preserve"><value>Настроить положение окна</value></data>
+  <data name="K404" xml:space="preserve"><value>Задайте безопасную клавишу, отключающую все режимы DPS, восстанавливающую отрисовку и показывающую скрытую толпу.</value></data>
+  <data name="K405" xml:space="preserve"><value>Установить масштаб игры 1.0x</value></data>
+  <data name="K406" xml:space="preserve"><value>Shift</value></data>
+  <data name="K407" xml:space="preserve"><value>Показать всё</value></data>
+  <data name="K408" xml:space="preserve"><value>Показывать элемент в панели DTR</value></data>
+  <data name="K409" xml:space="preserve"><value>Снова показать всё</value></data>
+  <data name="K410" xml:space="preserve"><value>Показать диагностику текстур на этот сеанс.</value></data>
+  <data name="K411" xml:space="preserve"><value>Редактор размера</value></data>
+  <data name="K412" xml:space="preserve"><value>Секунды стабильности</value></data>
+  <data name="K413" xml:space="preserve"><value>Начало</value></data>
+  <data name="K414" xml:space="preserve"><value>Запустить управление DPS.</value></data>
+  <data name="K415" xml:space="preserve"><value>Состояние: {0}</value></data>
+  <data name="K416" xml:space="preserve"><value>Стоп</value></data>
+  <data name="K417" xml:space="preserve"><value>Остановить DPS и восстановить видимость.</value></data>
+  <data name="K418" xml:space="preserve"><value>Успешные загрузки: {0}</value></data>
+  <data name="K419" xml:space="preserve"><value>Скрытие: активно: сейчас ничего не скрыто.</value></data>
+  <data name="K420" xml:space="preserve"><value>Скрытие: активно: скрыто {0}.</value></data>
+  <data name="K421" xml:space="preserve"><value>Скрытие: выключено.</value></data>
+  <data name="K422" xml:space="preserve"><value>Скрытие: простой.</value></data>
+  <data name="K423" xml:space="preserve"><value>Скрытие: ожидание локального игрока.</value></data>
+  <data name="K424" xml:space="preserve"><value>TTSL</value></data>
+  <data name="K425" xml:space="preserve"><value>Бирюзовый</value></data>
+  <data name="K426" xml:space="preserve"><value>Текстовое состояние</value></data>
+  <data name="K427" xml:space="preserve"><value>Лаборатория текстур</value></data>
+  <data name="K428" xml:space="preserve"><value>Инициализация перехватчика текстур не удалась: {0}</value></data>
+  <data name="K429" xml:space="preserve"><value>Перехватчики текстур бездействуют.</value></data>
+  <data name="K430" xml:space="preserve"><value>Перехватчики текстур готовы.</value></data>
+  <data name="K431" xml:space="preserve"><value>Перенаправление текстур отключено.</value></data>
+  <data name="K432" xml:space="preserve"><value>Перенаправление текстур активно: {0} через Texture.InitializeContents на месте</value></data>
+  <data name="K433" xml:space="preserve"><value>Перенаправление текстур ожидает включения плагина.</value></data>
+  <data name="K434" xml:space="preserve"><value>Область текстур</value></data>
+  <data name="K435" xml:space="preserve"><value>Первое включение применяет профиль DPS: экран отключён, игра 0.05x, увеличение Point, штатные клавиши не назначены. Затем настройте штатные параметры ниже.</value></data>
+  <data name="K436" xml:space="preserve"><value>Сохранённый физический монитор недоступен; положение окна не изменено.</value></data>
+  <data name="K437" xml:space="preserve"><value>Выбранный монитор не предоставляет путь устройства Windows.</value></data>
+  <data name="K438" xml:space="preserve"><value>Выбранный монитор больше недоступен; положение окна не изменено.</value></data>
+  <data name="K439" xml:space="preserve"><value>Это сочетание используется для {0}. Подтверждение удалит конфликтующие привязки.</value></data>
+  <data name="K440" xml:space="preserve"><value>Меняется только положение окна FFXIV. Отрицательные координаты допустимы на мониторах слева или выше основного. Размер окна и автозагрузка размера не меняются.</value></data>
+  <data name="K441" xml:space="preserve"><value>Задержка при блокировке (мс)</value></data>
+  <data name="K442" xml:space="preserve"><value>Переключить режим без фоновой отрисовки</value></data>
+  <data name="K443" xml:space="preserve"><value>Переключить скрытие толпы</value></data>
+  <data name="K444" xml:space="preserve"><value>Переключить режим без отрисовки переднего плана</value></data>
+  <data name="K445" xml:space="preserve"><value>Клавиша переключения</value></data>
+  <data name="K446" xml:space="preserve"><value>Переключить включение плагина</value></data>
+  <data name="K447" xml:space="preserve"><value>Переключить запись DPS в строке DTR.</value></data>
+  <data name="K448" xml:space="preserve"><value>Подсказка: {0} {1}. {2}</value></data>
+  <data name="K449" xml:space="preserve"><value>Переход</value></data>
+  <data name="K450" xml:space="preserve"><value>Исключение при переходе</value></data>
+  <data name="K451" xml:space="preserve"><value>Исключение перехода: {0}; исключение выхода: {1}; периодические кадры: {2}.</value></data>
+  <data name="K452" xml:space="preserve"><value>Событие</value></data>
+  <data name="K453" xml:space="preserve"><value>Выключить всё</value></data>
+  <data name="K454" xml:space="preserve"><value>UDI</value></data>
+  <data name="K455" xml:space="preserve"><value>Не удалось загрузить шрифты интерфейса. См. журнал плагина.</value></data>
+  <data name="K456" xml:space="preserve"><value>Не назначено</value></data>
+  <data name="K457" xml:space="preserve"><value>Неизвестный разъём</value></data>
+  <data name="K458" xml:space="preserve"><value>Неизвестная модель</value></data>
+  <data name="K459" xml:space="preserve"><value>Использует старый путь байта отрисовки и затемняет передний план.</value></data>
+  <data name="K460" xml:space="preserve"><value>Использует блокировку отрисовки и оставляет последний кадр видимым.</value></data>
+  <data name="K461" xml:space="preserve"><value>VFX</value></data>
+  <data name="K462" xml:space="preserve"><value>Только VFX</value></data>
+  <data name="K463" xml:space="preserve"><value>VGA</value></data>
+  <data name="K464" xml:space="preserve"><value>VK {0}</value></data>
+  <data name="K465" xml:space="preserve"><value>Версия</value></data>
+  <data name="K466" xml:space="preserve"><value>Видимость</value></data>
+  <data name="K467" xml:space="preserve"><value>ОЖИДАНИЕ</value></data>
+  <data name="K468" xml:space="preserve"><value>Ширина</value></data>
+  <data name="K469" xml:space="preserve"><value>Окно</value></data>
+  <data name="K470" xml:space="preserve"><value>Загрузка окна + размера</value></data>
+  <data name="K471" xml:space="preserve"><value>Загрузка окна + размера не удалась до восстановления размера: {0}</value></data>
+  <data name="K472" xml:space="preserve"><value>Настройка положения окна</value></data>
+  <data name="K473" xml:space="preserve"><value>Окно XY</value></data>
+  <data name="K474" xml:space="preserve"><value>Окно XY бездействует.</value></data>
+  <data name="K475" xml:space="preserve"><value>Вкладка «Окно XY» сброшена. Автозагрузка отключена, сохранённые положение/размер удалены.</value></data>
+  <data name="K476" xml:space="preserve"><value>Перемещение окна</value></data>
+  <data name="K477" xml:space="preserve"><value>Повторное чтение положения: X/Y {0}, {1} на {2}.</value></data>
+  <data name="K478" xml:space="preserve"><value>Прямоугольник окна прочитан.</value></data>
+  <data name="K479" xml:space="preserve"><value>Изменение размера окна</value></data>
+  <data name="K480" xml:space="preserve"><value>Автозагрузка размера окна остаётся {0}.</value></data>
+  <data name="K481" xml:space="preserve"><value>Перемещение окна</value></data>
+  <data name="K482" xml:space="preserve"><value>Изменение размера окна</value></data>
+  <data name="K483" xml:space="preserve"><value>Мир</value></data>
+  <data name="K484" xml:space="preserve"><value>Мир / ландшафт</value></data>
+  <data name="K485" xml:space="preserve"><value>X</value></data>
+  <data name="K486" xml:space="preserve"><value>XA Slave</value></data>
+  <data name="K487" xml:space="preserve"><value>XA Slave (IPC)</value></data>
+  <data name="K488" xml:space="preserve"><value>Масштаб игры XA Slave</value></data>
+  <data name="K489" xml:space="preserve"><value>XA Slave не ответил.</value></data>
+  <data name="K490" xml:space="preserve"><value>Переключатель XA Slave следует последнему успешному запросу DPS в сеансе ({0}). После изменения масштаба в XA Slave используйте эти кнопки включения/отключения.</value></data>
+  <data name="K491" xml:space="preserve"><value>Д</value></data>
+  <data name="K492" xml:space="preserve"><value>ДА</value></data>
+  <data name="K493" xml:space="preserve"><value>Нулевые или отрицательные размеры окна</value></data>
+  <data name="K494" xml:space="preserve"><value>резервный текущий монитор</value></data>
+  <data name="K495" xml:space="preserve"><value>текущий монитор отсутствует</value></data>
+  <data name="K496" xml:space="preserve"><value>текущий монитор недоступен</value></data>
+  <data name="K497" xml:space="preserve"><value>включено, каждые {0}с</value></data>
+  <data name="K498" xml:space="preserve"><value>перечисленное окно процесса</value></data>
+  <data name="K499" xml:space="preserve"><value>дескриптор игрового окна недоступен</value></data>
+  <data name="K500" xml:space="preserve"><value>игровое окно прочитано</value></data>
+  <data name="K501" xml:space="preserve"><value>старый чёрный экран</value></data>
+  <data name="K502" xml:space="preserve"><value>информация монитора прочитана</value></data>
+  <data name="K503" xml:space="preserve"><value>мониторы={0} [{1}]; окно={2} ({3}); текущийМонитор={4} ({5}); допустимо={6}</value></data>
+  <data name="K504" xml:space="preserve"><value>не запланировано</value></data>
+  <data name="K505" xml:space="preserve"><value>ожидание</value></data>
+  <data name="K506" xml:space="preserve"><value>главное окно процесса</value></data>
+  <data name="K507" xml:space="preserve"><value>Не удалось прочитать флаг отрисовки: {0}: {1}</value></data>
+  <data name="K508" xml:space="preserve"><value>Не удалось записать флаг отрисовки: {0}: {1}</value></data>
+  <data name="K509" xml:space="preserve"><value>безопасный замороженный кадр</value></data>
+  <data name="K510" xml:space="preserve"><value>сохранённые границы монитора</value></data>
+  <data name="K511" xml:space="preserve"><value>сохранённое устройство монитора</value></data>
+  <data name="K512" xml:space="preserve"><value>сохранённый путь устройства монитора</value></data>
+  <data name="K513" xml:space="preserve"><value>переключить плагин</value></data>
+  <data name="K514" xml:space="preserve"><value>Неизвестно</value></data>
+  <data name="K515" xml:space="preserve"><value>неизвестный монитор</value></data>
+  <data name="K516" xml:space="preserve"><value>ожидание снятия включённых условий: {0}</value></data>
+  <data name="K517" xml:space="preserve"><value>окно скрыто</value></data>
+  <data name="K518" xml:space="preserve"><value>окно свёрнуто</value></data>
+  <data name="K519" xml:space="preserve"><value>окно отсутствует</value></data>
+  <data name="K520" xml:space="preserve"><value>прямоугольник окна пуст</value></data>
+  <data name="K521" xml:space="preserve"><value>прямоугольник окна прочитан</value></data>
+  <data name="K522" xml:space="preserve"><value>{0:0}м</value></data>
+  <data name="K523" xml:space="preserve"><value>{0:0}с</value></data>
+  <data name="K524" xml:space="preserve"><value>{0} #{1}</value></data>
+  <data name="K525" xml:space="preserve"><value>{0} (0x{1:X2})</value></data>
+  <data name="K526" xml:space="preserve"><value>{0} — дополнительно</value></data>
+  <data name="K527" xml:space="preserve"><value>{0} DPS</value></data>
+  <data name="K528" xml:space="preserve"><value>{0} Новая попытка размера не назначена; предел будет достигнут через {1}.</value></data>
+  <data name="K529" xml:space="preserve"><value>{0} Повтор сохранённого размера через {1}.</value></data>
+  <data name="K530" xml:space="preserve"><value>{0} не удалось (Win32 {1}: {2}).</value></data>
+  <data name="K531" xml:space="preserve"><value>Ожидание клавиши {0}</value></data>
+  <data name="K532" xml:space="preserve"><value>{0} {1}. {2}</value></data>
+  <data name="K533" xml:space="preserve"><value>{0} — {1} — {2} — {3}x{4} в {5},{6} [{7}]</value></data>
+  <data name="K534" xml:space="preserve"><value>{0},{1} - {2},{3}</value></data>
+  <data name="K535" xml:space="preserve"><value>{0},{1} {2}x{3}; видно={4}; свёрнуто={5}</value></data>
+  <data name="K536" xml:space="preserve"><value>{0}: {1}</value></data>
+  <data name="K537" xml:space="preserve"><value>{0}x{1}</value></data>
+  <data name="K538" xml:space="preserve"><value>Включено</value></data>
+  <data name="K539" xml:space="preserve"><value>Отключено</value></data>
+  <data name="K540" xml:space="preserve"><value>Истина</value></data>
+  <data name="K541" xml:space="preserve"><value>Ложь</value></data>
+  <data name="K542" xml:space="preserve"><value>Допустимо</value></data>
+  <data name="K543" xml:space="preserve"><value>(недоступно)</value></data>
+  <data name="K544" xml:space="preserve"><value>(неизвестно)</value></data>
+  <data name="K545" xml:space="preserve"><value>Основной</value></data>
+  <data name="K546" xml:space="preserve"><value>Слева</value></data>
+  <data name="K547" xml:space="preserve"><value>Справа</value></data>
+  <data name="K548" xml:space="preserve"><value>Встроенный</value></data>
+  <data name="K549" xml:space="preserve"><value>Компонентный</value></data>
+  <data name="K550" xml:space="preserve"><value>Композитный</value></data>
+  <data name="K551" xml:space="preserve"><value>Безопасный замороженный кадр</value></data>
+  <data name="K552" xml:space="preserve"><value>Старый чёрный экран</value></data>
+  <data name="K553" xml:space="preserve"><value>; затем </value></data>
+  <data name="K554" xml:space="preserve"><value>DPS DLL={0}; Режим={1}; Намерение={2}; Блокировка={3}; ОбходВосстановленияЭкрана={4}; ClientStructs DLL={5}; версия ClientStructs={6}; Manager={7}; Флаг={8}; Байт={9}; Состояние={10}</value></data>
+  <data name="K555" xml:space="preserve"><value>DPS DLL={0}; Режим={1}; Намерение={2}; Блокировка={3}; ОбходВосстановленияЭкрана={4}; ClientStructs DLL={5}; версия ClientStructs={6}; Manager={7}; Флаг={8}; Байт={9}; Состояние={10}; Ошибка={11}</value></data>
+  <data name="K556" xml:space="preserve"><value>неизвестная ошибка</value></data>
+  <data name="K557" xml:space="preserve"><value>не удалось инициализировать перехватчик блокировки отрисовки</value></data>
+  <data xml:space="preserve" name="Status">
+    <value>Состояние</value>
+  </data>
+</root>

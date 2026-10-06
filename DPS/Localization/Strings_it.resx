@@ -1,0 +1,568 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms</value></resheader>
+  <data name="K000" xml:space="preserve"><value> L'angolo superiore sinistro è stato limitato ai bordi del monitor.</value></data>
+  <data name="K001" xml:space="preserve"><value>%.2fx</value></data>
+  <data name="K002" xml:space="preserve"><value>(dinamico o non disponibile)</value></data>
+  <data name="K003" xml:space="preserve"><value>(non usato)</value></data>
+  <data name="K004" xml:space="preserve"><value>/dps</value></data>
+  <data name="K005" xml:space="preserve"><value>/dps debug   mostra laboratorio texture</value></data>
+  <data name="K006" xml:space="preserve"><value>/dps debug off</value></data>
+  <data name="K007" xml:space="preserve"><value>/dps foff    disattiva rendering in primo piano</value></data>
+  <data name="K008" xml:space="preserve"><value>/dps fon     attiva rendering in primo piano</value></data>
+  <data name="K009" xml:space="preserve"><value>/dps j       posiziona casualmente la finestra del plugin</value></data>
+  <data name="K010" xml:space="preserve"><value>/dps roff    prepara arresto rendering in background</value></data>
+  <data name="K011" xml:space="preserve"><value>/dps ron     ripristina rendering in background</value></data>
+  <data name="K012" xml:space="preserve"><value>/dps wload   carica X/Y + monitor salvati</value></data>
+  <data name="K013" xml:space="preserve"><value>/dps wloadall carica X/Y + monitor + dimensioni salvati</value></data>
+  <data name="K014" xml:space="preserve"><value>/dps wreset  ripristina posizione/dimensioni salvate</value></data>
+  <data name="K015" xml:space="preserve"><value>/dps ws      sposta finestra del plugin a 1,1</value></data>
+  <data name="K016" xml:space="preserve"><value>/dps wsave   salva X/Y + dimensioni + monitor</value></data>
+  <data name="K017" xml:space="preserve"><value>/xlplugins</value></data>
+  <data name="K018" xml:space="preserve"><value>Si consiglia 0. Una pausa nell'hook di rendering può causare scatti nei cambi di zona.</value></data>
+  <data name="K019" xml:space="preserve"><value>ATTIVO</value></data>
+  <data name="K020" xml:space="preserve"><value>PRONTO</value></data>
+  <data name="K021" xml:space="preserve"><value>Informazioni</value></data>
+  <data name="K022" xml:space="preserve"><value>Azione</value></data>
+  <data name="K023" xml:space="preserve"><value>Aggiungi repository + installa XA Slave</value></data>
+  <data name="K024" xml:space="preserve"><value>Avanzate</value></data>
+  <data name="K025" xml:space="preserve"><value>Opzioni avanzate</value></data>
+  <data name="K026" xml:space="preserve"><value>Aggressivo senza UI</value></data>
+  <data name="K027" xml:space="preserve"><value>Disattiva tutto</value></data>
+  <data name="K028" xml:space="preserve"><value>Configura scorciatoia Disattiva tutto</value></data>
+  <data name="K029" xml:space="preserve"><value>Disattiva tutto è l'azione di sicurezza: disattiva i modi senza rendering in primo piano e in background e la soppressione della folla, ripristina il rendering normale e mostra gli attori nascosti.</value></data>
+  <data name="K030" xml:space="preserve"><value>Tutti gli attori nascosti sono stati ripristinati.</value></data>
+  <data name="K031" xml:space="preserve"><value>Consenti fotogrammi periodici</value></data>
+  <data name="K032" xml:space="preserve"><value>Consente a DPS di disattivare MultiDisableRender di AutoRetainer quando si richiede l'arresto del rendering in primo piano. Disattivando questa opzione, l'impostazione attuale di AutoRetainer resta invariata.</value></data>
+  <data name="K033" xml:space="preserve"><value>Alt</value></data>
+  <data name="K034" xml:space="preserve"><value>Si applica a entrambi i modi in primo piano. Solo le condizioni selezionate possono sospendere l'arresto del rendering.</value></data>
+  <data name="K035" xml:space="preserve"><value>Applica posizione</value></data>
+  <data name="K036" xml:space="preserve"><value>Caricamento automatico attivo, ma nessuna posizione/dimensione della finestra salvata.</value></data>
+  <data name="K037" xml:space="preserve"><value>AutoRetainer</value></data>
+  <data name="K038" xml:space="preserve"><value>Risoluzione automatica conflitti AutoRetainer: {0}.</value></data>
+  <data name="K039" xml:space="preserve"><value>Impulsi automatici di ripristino in background</value></data>
+  <data name="K040" xml:space="preserve"><value>Impulso automatico di ripristino: attivo per altri {0}.</value></data>
+  <data name="K041" xml:space="preserve"><value>Impulso automatico di ripristino: attivo per {0}s.</value></data>
+  <data name="K042" xml:space="preserve"><value>Impulso automatico di ripristino: annullato allo scaricamento.</value></data>
+  <data name="K043" xml:space="preserve"><value>Impulso automatico di ripristino: annullato.</value></data>
+  <data name="K044" xml:space="preserve"><value>Impulso automatico di ripristino: disattivato.</value></data>
+  <data name="K045" xml:space="preserve"><value>Impulso automatico di ripristino: in attesa; partirà al prossimo ciclo attivo del blocco in secondo piano.</value></data>
+  <data name="K046" xml:space="preserve"><value>Impulso automatico di ripristino: in coda tra circa {0} min.</value></data>
+  <data name="K047" xml:space="preserve"><value>Impulso automatico di ripristino: in coda tra {0}.</value></data>
+  <data name="K048" xml:space="preserve"><value>Impulso automatico di ripristino: attesa del blocco rendering in secondo piano.</value></data>
+  <data name="K049" xml:space="preserve"><value>Impulso automatico di ripristino: attesa dell’attivazione del plugin.</value></data>
+  <data name="K050" xml:space="preserve"><value>Le eccezioni automatiche di rendering sono facoltative. Le modifiche si salvano e applicano subito.</value></data>
+  <data name="K051" xml:space="preserve"><value>Risolvi automaticamente conflitti di rendering in primo piano</value></data>
+  <data name="K052" xml:space="preserve"><value>BG</value></data>
+  <data name="K053" xml:space="preserve"><value>ECCEZIONE</value></data>
+  <data name="K054" xml:space="preserve"><value>Secondo piano</value></data>
+  <data name="K055" xml:space="preserve"><value>Hook in secondo piano</value></data>
+  <data name="K056" xml:space="preserve"><value>Ripristino in background</value></data>
+  <data name="K057" xml:space="preserve"><value>Limitazione in background</value></data>
+  <data name="K058" xml:space="preserve"><value>Rendering disattivo in secondo piano</value></data>
+  <data name="K059" xml:space="preserve"><value>Rendering in secondo piano: attivo. La finestra è inattiva.</value></data>
+  <data name="K060" xml:space="preserve"><value>Rendering in secondo piano: attivo. La finestra è ridotta a icona.</value></data>
+  <data name="K061" xml:space="preserve"><value>Rendering in secondo piano: pronto. Usa Alt+Tab per attivarlo.</value></data>
+  <data name="K062" xml:space="preserve"><value>Rendering in secondo piano: pronto. Riduci la finestra a icona per attivarlo.</value></data>
+  <data name="K063" xml:space="preserve"><value>Rendering in secondo piano: disattivato.</value></data>
+  <data name="K064" xml:space="preserve"><value>Rendering in secondo piano: inizializzazione hook non riuscita: {0}</value></data>
+  <data name="K065" xml:space="preserve"><value>Rendering in secondo piano: hook pronto. Hook dei nomi non disponibile.</value></data>
+  <data name="K066" xml:space="preserve"><value>Rendering in secondo piano: hook pronti.</value></data>
+  <data name="K067" xml:space="preserve"><value>Rendering in secondo piano: inattivo.</value></data>
+  <data name="K068" xml:space="preserve"><value>Rendering in secondo piano: in pausa per l’eccezione attiva di cambio zona.</value></data>
+  <data name="K069" xml:space="preserve"><value>Rendering in secondo piano: in pausa per l’eccezione attiva di disconnessione.</value></data>
+  <data name="K070" xml:space="preserve"><value>Rendering in secondo piano: in pausa per l’impulso di ripristino attivo.</value></data>
+  <data name="K071" xml:space="preserve"><value>Rendering in secondo piano: in pausa mentre è attivo il blocco del rendering in primo piano.</value></data>
+  <data name="K072" xml:space="preserve"><value>Rendering in secondo piano: attesa dell’attivazione del plugin.</value></data>
+  <data name="K073" xml:space="preserve"><value>Associazione</value></data>
+  <data name="K074" xml:space="preserve"><value>Nero 16x16</value></data>
+  <data name="K075" xml:space="preserve"><value>Nero 1x1</value></data>
+  <data name="K076" xml:space="preserve"><value>{0} texture annerite tramite {1}</value></data>
+  <data name="K077" xml:space="preserve"><value>Blu</value></data>
+  <data name="K078" xml:space="preserve"><value>CONFIGURATO</value></data>
+  <data name="K079" xml:space="preserve"><value>Annulla</value></data>
+  <data name="K080" xml:space="preserve"><value>Annulla configurazione</value></data>
+  <data name="K081" xml:space="preserve"><value>Annulla e ripristina originale</value></data>
+  <data name="K082" xml:space="preserve"><value>Acquisisci</value></data>
+  <data name="K083" xml:space="preserve"><value>Acquisisci di nuovo</value></data>
+  <data name="K084" xml:space="preserve"><value>Acquisisci scorciatoia</value></data>
+  <data name="K085" xml:space="preserve"><value>Acquisisci una nuova scorciatoia per {0}.</value></data>
+  <data name="K086" xml:space="preserve"><value>Personaggio</value></data>
+  <data name="K087" xml:space="preserve"><value>Personaggi</value></data>
+  <data name="K088" xml:space="preserve"><value>Chocobo</value></data>
+  <data name="K089" xml:space="preserve"><value>Scegli sopra un plugin di risoluzione per gestire la scala di gioco.</value></data>
+  <data name="K090" xml:space="preserve"><value>Scegli una scala di risoluzione tra 0.01 e 1.00.</value></data>
+  <data name="K091" xml:space="preserve"><value>La disattivazione regolare ripristina lo stato del plugin</value></data>
+  <data name="K092" xml:space="preserve"><value>Cancella</value></data>
+  <data name="K093" xml:space="preserve"><value>Azzera statistiche texture</value></data>
+  <data name="K094" xml:space="preserve"><value>Cancella posizione/dimensioni salvate e disattiva il caricamento automatico.</value></data>
+  <data name="K095" xml:space="preserve"><value>Cancella la scorciatoia di {0}.</value></data>
+  <data name="K096" xml:space="preserve"><value>Clic</value></data>
+  <data name="K097" xml:space="preserve"><value>Azioni clic</value></data>
+  <data name="K098" xml:space="preserve"><value>Clic: {0}.</value></data>
+  <data name="K099" xml:space="preserve"><value>Ripristino al caricamento saltato: caricamento automatico di posizione e dimensioni disattivato.</value></data>
+  <data name="K100" xml:space="preserve"><value>Ripristino al caricamento: {0}</value></data>
+  <data name="K101" xml:space="preserve"><value>Chiudi</value></data>
+  <data name="K102" xml:space="preserve"><value>Chiudi e mantieni posizione attuale</value></data>
+  <data name="K103" xml:space="preserve"><value>Chiudi questa finestra.</value></data>
+  <data name="K104" xml:space="preserve"><value>Colore</value></data>
+  <data name="K105" xml:space="preserve"><value>Comandi</value></data>
+  <data name="K106" xml:space="preserve"><value>Modalità compatta</value></data>
+  <data name="K107" xml:space="preserve"><value>Conferma scorciatoia Disattiva tutto</value></data>
+  <data name="K108" xml:space="preserve"><value>Applica continuamente il modo schermo nero</value></data>
+  <data name="K109" xml:space="preserve"><value>Impossibile accedere alla configurazione caricata di Custom Resolution.</value></data>
+  <data name="K110" xml:space="preserve"><value>Impossibile disattivare il rendering in primo piano tramite {0}: {1}</value></data>
+  <data name="K111" xml:space="preserve"><value>Impossibile osservare il rendering in primo piano: {0}</value></data>
+  <data name="K112" xml:space="preserve"><value>Impossibile ripristinare il rendering in primo piano tramite {0}: {1}</value></data>
+  <data name="K113" xml:space="preserve"><value>Conteggi</value></data>
+  <data name="K114" xml:space="preserve"><value>Folla</value></data>
+  <data name="K115" xml:space="preserve"><value>Nascondi la folla</value></data>
+  <data name="K116" xml:space="preserve"><value>Ctrl</value></data>
+  <data name="K117" xml:space="preserve"><value>Corrente</value></data>
+  <data name="K118" xml:space="preserve"><value>Finestra di gioco attuale</value></data>
+  <data name="K119" xml:space="preserve"><value>Posizione attuale della finestra letta.</value></data>
+  <data name="K120" xml:space="preserve"><value>Cambiamenti del monitor attuale</value></data>
+  <data name="K121" xml:space="preserve"><value>Cambiamenti del monitor attuale</value></data>
+  <data name="K122" xml:space="preserve"><value>RGB personalizzato</value></data>
+  <data name="K123" xml:space="preserve"><value>Custom Resolution</value></data>
+  <data name="K124" xml:space="preserve"><value>Custom Resolution (ufficiale)</value></data>
+  <data name="K125" xml:space="preserve"><value>Scala di gioco Custom Resolution impostata a 1.0x.</value></data>
+  <data name="K126" xml:space="preserve"><value>Scala di gioco Custom Resolution impostata a {0:0.###}x.</value></data>
+  <data name="K127" xml:space="preserve"><value>Impostazioni Custom Resolution</value></data>
+  <data name="K128" xml:space="preserve"><value>Alterna scala di gioco DPS</value></data>
+  <data name="K129" xml:space="preserve"><value>DPS v</value></data>
+  <data name="K130" xml:space="preserve"><value>DPS: {0}</value></data>
+  <data name="K131" xml:space="preserve"><value>DTR</value></data>
+  <data name="K132" xml:space="preserve"><value>DTR disattivo</value></data>
+  <data name="K133" xml:space="preserve"><value>DTR attivo</value></data>
+  <data name="K134" xml:space="preserve"><value>Modalità DTR</value></data>
+  <data name="K135" xml:space="preserve"><value>DVI</value></data>
+  <data name="K136" xml:space="preserve"><value>Arresta rendering con schermo nero</value></data>
+  <data name="K137" xml:space="preserve"><value>Arresta rendering con fotogramma bloccato</value></data>
+  <data name="K138" xml:space="preserve"><value>Laboratorio texture di debug nascosto per questa sessione.</value></data>
+  <data name="K139" xml:space="preserve"><value>Riduci {0} di 1.</value></data>
+  <data name="K140" xml:space="preserve"><value>Finestra rilevata</value></data>
+  <data name="K141" xml:space="preserve"><value>Dhog Potato System – Avanzate</value></data>
+  <data name="K142" xml:space="preserve"><value>Diagnostica</value></data>
+  <data name="K143" xml:space="preserve"><value>Disattiva DPS e ripristina tutti gli attori della folla nascosti.</value></data>
+  <data name="K144" xml:space="preserve"><value>Disattiva DPS e ripristina tutti gli elementi visivi nascosti.</value></data>
+  <data name="K145" xml:space="preserve"><value>Disattiva soppressione in primo piano, in background e della folla.</value></data>
+  <data name="K146" xml:space="preserve"><value>Disattiva scala</value></data>
+  <data name="K147" xml:space="preserve"><value>Disattivato (non assegnato)</value></data>
+  <data name="K148" xml:space="preserve"><value>Disattivato ({0})</value></data>
+  <data name="K149" xml:space="preserve"><value>Icona disattivata</value></data>
+  <data name="K150" xml:space="preserve"><value>Discord</value></data>
+  <data name="K151" xml:space="preserve"><value>Schermo</value></data>
+  <data name="K152" xml:space="preserve"><value>Ripristino schermo</value></data>
+  <data name="K153" xml:space="preserve"><value>Ripristino dello schermo: attivo; il blocco in primo piano si riattiva tra {0}.</value></data>
+  <data name="K154" xml:space="preserve"><value>Ripristino dello schermo: attivo; riattivazione in attesa.</value></data>
+  <data name="K155" xml:space="preserve"><value>Ripristino dello schermo: attivo; attesa della fine delle condizioni abilitate: {0}.</value></data>
+  <data name="K156" xml:space="preserve"><value>Ripristino dello schermo: completato; il blocco in primo piano è riattivato.</value></data>
+  <data name="K157" xml:space="preserve"><value>Ripristino dello schermo: protezione disattiva.</value></data>
+  <data name="K158" xml:space="preserve"><value>Ripristino dello schermo: protezione inattiva.</value></data>
+  <data name="K159" xml:space="preserve"><value>Ripristino dello schermo: nessuna eccezione attiva.</value></data>
+  <data name="K160" xml:space="preserve"><value>Ripristino dello schermo: attesa del blocco rendering in primo piano.</value></data>
+  <data name="K161" xml:space="preserve"><value>Ripristino dello schermo: attesa dell’attivazione del plugin.</value></data>
+  <data name="K162" xml:space="preserve"><value>Ripristino dello schermo: controllo delle eccezioni attive in primo piano: {0}.</value></data>
+  <data name="K163" xml:space="preserve"><value>DisplayPort</value></data>
+  <data name="K164" xml:space="preserve"><value>Non attivare insieme i modi senza rendering in primo piano e in background.</value></data>
+  <data name="K165" xml:space="preserve"><value>Bozza</value></data>
+  <data name="K166" xml:space="preserve"><value>Posizione provvisoria</value></data>
+  <data name="K167" xml:space="preserve"><value>Modifica</value></data>
+  <data name="K168" xml:space="preserve"><value>Attiva</value></data>
+  <data name="K169" xml:space="preserve"><value>Attiva / applica scala</value></data>
+  <data name="K170" xml:space="preserve"><value>Attiva debug</value></data>
+  <data name="K171" xml:space="preserve"><value>Disattiva il rendering in secondo piano</value></data>
+  <data name="K172" xml:space="preserve"><value>Attiva ripristino schermo in primo piano</value></data>
+  <data name="K173" xml:space="preserve"><value>Disattiva il rendering in primo piano</value></data>
+  <data name="K174" xml:space="preserve"><value>Attiva scala di gioco</value></data>
+  <data name="K175" xml:space="preserve"><value>Attiva caricamento automatico posizione/schermo</value></data>
+  <data name="K176" xml:space="preserve"><value>Attiva reindirizzamento texture</value></data>
+  <data name="K177" xml:space="preserve"><value>Eccezioni attive</value></data>
+  <data name="K178" xml:space="preserve"><value>Icona attivata</value></data>
+  <data name="K179" xml:space="preserve"><value>Tutti i .tex</value></data>
+  <data name="K180" xml:space="preserve"><value>Reindirizzamento sperimentale nascosto. Usa /dps debug.</value></data>
+  <data name="K181" xml:space="preserve"><value>Utilità sperimentale per computer poco potenti: nasconde attori esterni al gruppo, alterna rendering in primo piano/background e ripristina la posizione della finestra.</value></data>
+  <data name="K182" xml:space="preserve"><value>NON RIUSCITO</value></data>
+  <data name="K183" xml:space="preserve"><value>Stato richiesto primo piano</value></data>
+  <data name="K184" xml:space="preserve"><value>Rendering primo piano</value></data>
+  <data name="K185" xml:space="preserve"><value>Caricamenti falliti: {0}</value></data>
+  <data name="K186" xml:space="preserve"><value>Fine esecuzione</value></data>
+  <data name="K187" xml:space="preserve"><value>Primo piano</value></data>
+  <data name="K188" xml:space="preserve"><value>Ripristino schermo in primo piano</value></data>
+  <data name="K189" xml:space="preserve"><value>Rendering in primo piano</value></data>
+  <data name="K190" xml:space="preserve"><value>Rendering in primo piano: attivo. Il byte di rendering è 1.</value></data>
+  <data name="K191" xml:space="preserve"><value>Rendering in primo piano: attivo. Il blocco rendering sopprime i fotogrammi.</value></data>
+  <data name="K192" xml:space="preserve"><value>Rendering in primo piano: pronto, ma il byte di rendering è {0}.</value></data>
+  <data name="K193" xml:space="preserve"><value>Rendering in primo piano: pronto. Modalità legacy del byte di rendering pronta.</value></data>
+  <data name="K194" xml:space="preserve"><value>Rendering in primo piano: pronto. Hook del blocco rendering non ancora inizializzato.</value></data>
+  <data name="K195" xml:space="preserve"><value>Rendering in primo piano: pronto. Blocco rendering pronto.</value></data>
+  <data name="K196" xml:space="preserve"><value>Rendering in primo piano: disattivato.</value></data>
+  <data name="K197" xml:space="preserve"><value>Rendering in primo piano: disattivato. Byte di rendering ripristinato a 0.</value></data>
+  <data name="K198" xml:space="preserve"><value>Rendering in primo piano: in pausa per l’eccezione attiva di cambio zona.</value></data>
+  <data name="K199" xml:space="preserve"><value>Rendering in primo piano: in pausa per l’eccezione attiva di disconnessione.</value></data>
+  <data name="K200" xml:space="preserve"><value>Rendering in primo piano: in pausa per ripristino schermo. Rendering normale consentito.</value></data>
+  <data name="K201" xml:space="preserve"><value>Rendering in primo piano: richiesto, ma il byte di rendering è {0}. L’applicazione continua è disattiva.</value></data>
+  <data name="K202" xml:space="preserve"><value>Rendering in primo piano: ripristino in attesa: {0}</value></data>
+  <data name="K203" xml:space="preserve"><value>Rendering in primo piano: ripristino richiesto, ma il byte è ancora {0}.</value></data>
+  <data name="K204" xml:space="preserve"><value>Rendering in primo piano: non disponibile: il hook di blocco rendering non è attivo.</value></data>
+  <data name="K205" xml:space="preserve"><value>Rendering in primo piano: non disponibile: modalità {0} non supportata.</value></data>
+  <data name="K206" xml:space="preserve"><value>Rendering in primo piano: non disponibile: {0}</value></data>
+  <data name="K207" xml:space="preserve"><value>Rendering in primo piano: attesa dell’attivazione del plugin.</value></data>
+  <data name="K208" xml:space="preserve"><value>Rendering in primo piano DISATTIVO</value></data>
+  <data name="K209" xml:space="preserve"><value>Eccezioni fotogramma bloccato e background</value></data>
+  <data name="K210" xml:space="preserve"><value>Finestra di gioco trovata enumerando le finestre del processo.</value></data>
+  <data name="K211" xml:space="preserve"><value>Finestra di gioco trovata dalla finestra principale del processo attuale.</value></data>
+  <data name="K212" xml:space="preserve"><value>Handle della finestra di gioco non ancora disponibile.</value></data>
+  <data name="K213" xml:space="preserve"><value>Caricamento automatico posizione finestra disattivato.</value></data>
+  <data name="K214" xml:space="preserve"><value>Caricamento automatico posizione finestra attivato.</value></data>
+  <data name="K215" xml:space="preserve"><value>Il rettangolo della finestra di gioco è vuoto.</value></data>
+  <data name="K216" xml:space="preserve"><value>Caricamento automatico dimensioni finestra disattivato.</value></data>
+  <data name="K217" xml:space="preserve"><value>Caricamento automatico dimensioni finestra attivato.</value></data>
+  <data name="K218" xml:space="preserve"><value>Le dimensioni della finestra devono essere positive.</value></data>
+  <data name="K219" xml:space="preserve"><value>Blocco</value></data>
+  <data name="K220" xml:space="preserve"><value>Globale</value></data>
+  <data name="K221" xml:space="preserve"><value>Protezione</value></data>
+  <data name="K222" xml:space="preserve"><value>Configurazione guidata</value></data>
+  <data name="K223" xml:space="preserve"><value>HDMI</value></data>
+  <data name="K224" xml:space="preserve"><value>Altezza</value></data>
+  <data name="K225" xml:space="preserve"><value>Plugin ausiliari</value></data>
+  <data name="K226" xml:space="preserve"><value>Finestra nascosta</value></data>
+  <data name="K227" xml:space="preserve"><value>Finestra nascosta</value></data>
+  <data name="K228" xml:space="preserve"><value>Nascondi chocobo</value></data>
+  <data name="K229" xml:space="preserve"><value>Nascondi mascotte</value></data>
+  <data name="K230" xml:space="preserve"><value>Nascondi famigli</value></data>
+  <data name="K231" xml:space="preserve"><value>Nascondi giocatori</value></data>
+  <data name="K232" xml:space="preserve"><value>Hook</value></data>
+  <data name="K233" xml:space="preserve"><value>Hook attivo</value></data>
+  <data name="K234" xml:space="preserve"><value>Scorciatoia</value></data>
+  <data name="K235" xml:space="preserve"><value>Impostazioni scorciatoie</value></data>
+  <data name="K236" xml:space="preserve"><value>Scorciatoie</value></data>
+  <data name="K237" xml:space="preserve"><value>INATTIVO</value></data>
+  <data name="K238" xml:space="preserve"><value>Icona + DPS</value></data>
+  <data name="K239" xml:space="preserve"><value>Solo icona</value></data>
+  <data name="K240" xml:space="preserve"><value>Annerimento diretto delle texture fallito dopo {0} tentativi.</value></data>
+  <data name="K241" xml:space="preserve"><value>Aumenta {0} di 1.</value></data>
+  <data name="K242" xml:space="preserve"><value>Virtuale indiretto</value></data>
+  <data name="K243" xml:space="preserve"><value>Cablato indiretto</value></data>
+  <data name="K244" xml:space="preserve"><value>Installa {0}</value></data>
+  <data name="K245" xml:space="preserve"><value>{0} installato e attivato.</value></data>
+  <data name="K246" xml:space="preserve"><value>{0} installato; attivalo nell'installatore plugin.</value></data>
+  <data name="K247" xml:space="preserve"><value>Installazione di {0}...</value></data>
+  <data name="K248" xml:space="preserve"><value>Installazione...</value></data>
+  <data name="K249" xml:space="preserve"><value>Dimensioni finestra zero o negative</value></data>
+  <data name="K250" xml:space="preserve"><value>Mantieni visibile il bersaglio</value></data>
+  <data name="K251" xml:space="preserve"><value>Ko-fi</value></data>
+  <data name="K252" xml:space="preserve"><value>CARICATO</value></data>
+  <data name="K253" xml:space="preserve"><value>LVDS</value></data>
+  <data name="K254" xml:space="preserve"><value>Lingua</value></data>
+  <data name="K255" xml:space="preserve"><value>Ultima azione</value></data>
+  <data name="K256" xml:space="preserve"><value>Ultima modifica UTC</value></data>
+  <data name="K257" xml:space="preserve"><value>Ultimo percorso di gioco: {0}</value></data>
+  <data name="K258" xml:space="preserve"><value>Collegamenti</value></data>
+  <data name="K259" xml:space="preserve"><value>Carica</value></data>
+  <data name="K260" xml:space="preserve"><value>Carica dimensioni salvate</value></data>
+  <data name="K261" xml:space="preserve"><value>Carica finestra salvata</value></data>
+  <data name="K262" xml:space="preserve"><value>Carica finestra + dimensioni salvate</value></data>
+  <data name="K263" xml:space="preserve"><value>Carica posizione + schermo salvati all'avvio</value></data>
+  <data name="K264" xml:space="preserve"><value>Carica dimensioni salvate all'avvio</value></data>
+  <data name="K265" xml:space="preserve"><value>Dimensioni finestra {0}x{1} caricate.</value></data>
+  <data name="K266" xml:space="preserve"><value>Dimensioni finestra {0}x{1} caricate; rilettura verificata.</value></data>
+  <data name="K267" xml:space="preserve"><value>Finestra caricata a X/Y {0}, {1} su {2} tramite {3}; dimensioni mantenute ({4}).</value></data>
+  <data name="K268" xml:space="preserve"><value>Posizione e dimensioni salvate caricate. {0} {1}</value></data>
+  <data name="K269" xml:space="preserve"><value>Posizione salvata caricata, ma ripristino dimensioni fallito: {0}</value></data>
+  <data name="K270" xml:space="preserve"><value>Caricamento dei caratteri dell’interfaccia...</value></data>
+  <data name="K271" xml:space="preserve"><value>Registra texture reindirizzate</value></data>
+  <data name="K272" xml:space="preserve"><value>Eccezione disconnesso</value></data>
+  <data name="K273" xml:space="preserve"><value>Mancante</value></data>
+  <data name="K274" xml:space="preserve"><value>Principale</value></data>
+  <data name="K275" xml:space="preserve"><value>Ritardo massimo hook di rendering: {0:0.0} ms</value></data>
+  <data name="K276" xml:space="preserve"><value>Minuti massimi</value></data>
+  <data name="K277" xml:space="preserve"><value>Finestra minimizzata</value></data>
+  <data name="K278" xml:space="preserve"><value>Finestra minimizzata</value></data>
+  <data name="K279" xml:space="preserve"><value>Minuti minimi</value></data>
+  <data name="K280" xml:space="preserve"><value>Minion</value></data>
+  <data name="K281" xml:space="preserve"><value>Miracast</value></data>
+  <data name="K282" xml:space="preserve"><value>Finestra assente</value></data>
+  <data name="K283" xml:space="preserve"><value>Finestra assente</value></data>
+  <data name="K284" xml:space="preserve"><value>Monitor</value></data>
+  <data name="K285" xml:space="preserve"><value>Bordi del monitor</value></data>
+  <data name="K286" xml:space="preserve"><value>Informazioni monitor lette.</value></data>
+  <data name="K287" xml:space="preserve"><value>Cambiamenti disposizione monitor</value></data>
+  <data name="K288" xml:space="preserve"><value>Cambiamenti disposizione monitor</value></data>
+  <data name="K289" xml:space="preserve"><value>Sposta la finestra FFXIV a una posizione X/Y esatta, verifica il risultato e scegli se salvarla per il caricamento automatico posizione/schermo. Questa configurazione non ridimensiona mai la finestra.</value></data>
+  <data name="K290" xml:space="preserve"><value>Sposta il client alla posizione e al monitor salvati.</value></data>
+  <data name="K291" xml:space="preserve"><value>Sposta il client a posizione/schermo salvati, poi applica dimensioni salvate.</value></data>
+  <data name="K292" xml:space="preserve"><value>Finestra spostata a X/Y {0}, {1} su {2}; dimensioni mantenute ({3}).</value></data>
+  <data name="K293" xml:space="preserve"><value>Finestra spostata alle X/Y esatte {0}, {1}.</value></data>
+  <data name="K294" xml:space="preserve"><value>Esclusione reciproca</value></data>
+  <data name="K295" xml:space="preserve"><value>Esclusione reciproca non riuscita: entrambi i modi di rendering sono attivi.</value></data>
+  <data name="K296" xml:space="preserve"><value>NO</value></data>
+  <data name="K297" xml:space="preserve"><value>NESSUNA AZIONE</value></data>
+  <data name="K298" xml:space="preserve"><value>NORMALE</value></data>
+  <data name="K299" xml:space="preserve"><value>NON INIZIALIZZATO</value></data>
+  <data name="K300" xml:space="preserve"><value>NON INSTALLATO</value></data>
+  <data name="K301" xml:space="preserve"><value>NON CARICATO / INCOMPATIBILE</value></data>
+  <data name="K302" xml:space="preserve"><value>NON UTILIZZATO</value></data>
+  <data name="K303" xml:space="preserve"><value>Nessuna azione clic configurata.</value></data>
+  <data name="K304" xml:space="preserve"><value>Nessun monitor attuale</value></data>
+  <data name="K305" xml:space="preserve"><value>Nessuna istantanea schermo disponibile.</value></data>
+  <data name="K306" xml:space="preserve"><value>Nessun monitor</value></data>
+  <data name="K307" xml:space="preserve"><value>Nessuna posizione finestra salvata.</value></data>
+  <data name="K308" xml:space="preserve"><value>Nessuna posizione/dimensione finestra salvata.</value></data>
+  <data name="K309" xml:space="preserve"><value>Nessuna dimensione finestra salvata.</value></data>
+  <data name="K310" xml:space="preserve"><value>Nessun monitor utilizzabile trovato per ripristinare la posizione.</value></data>
+  <data name="K311" xml:space="preserve"><value>Nessun rendering</value></data>
+  <data name="K312" xml:space="preserve"><value>Nessun rendering mentre la finestra di gioco è attiva.</value></data>
+  <data name="K313" xml:space="preserve"><value>Nessun rendering mentre la finestra di gioco è inattiva.</value></data>
+  <data name="K314" xml:space="preserve"><value>Nessun monitor attuale</value></data>
+  <data name="K315" xml:space="preserve"><value>Nessun monitor</value></data>
+  <data name="K316" xml:space="preserve"><value>Nessuno</value></data>
+  <data name="K317" xml:space="preserve"><value>DISATTIVO</value></data>
+  <data name="K318" xml:space="preserve"><value>Disattivazione richiesta ({0})</value></data>
+  <data name="K319" xml:space="preserve"><value>Disattivazione richiesta, in attesa di attivazione plugin</value></data>
+  <data name="K320" xml:space="preserve"><value>OK</value></data>
+  <data name="K321" xml:space="preserve"><value>ATTIVO</value></data>
+  <data name="K322" xml:space="preserve"><value>Disattiva imposta il gioco a 1.0x. Attiva ripristina l'ultima scala salvata; le impostazioni schermo restano invariate.</value></data>
+  <data name="K323" xml:space="preserve"><value>Solo quando minimizzata</value></data>
+  <data name="K324" xml:space="preserve"><value>Apri collegamento community Discord.</value></data>
+  <data name="K325" xml:space="preserve"><value>Apri pagina di supporto Ko-fi.</value></data>
+  <data name="K326" xml:space="preserve"><value>Apri installatore plugin</value></data>
+  <data name="K327" xml:space="preserve"><value>Apri controlli eccezioni rendering automatiche, ripristino e limitazione.</value></data>
+  <data name="K328" xml:space="preserve"><value>Apri associazioni tasti.</value></data>
+  <data name="K329" xml:space="preserve"><value>Apri finestra principale</value></data>
+  <data name="K330" xml:space="preserve"><value>Apri configurazione guidata scorciatoia Disattiva tutto.</value></data>
+  <data name="K331" xml:space="preserve"><value>Apri configurazione guidata posizione X/Y.</value></data>
+  <data name="K332" xml:space="preserve"><value>Posizione originale</value></data>
+  <data name="K333" xml:space="preserve"><value>Ripristino originale X/Y {0}, {1} richiesto, ma rilettura è {2}, {3}.</value></data>
+  <data name="K334" xml:space="preserve"><value>Posizione originale ripristinata a X/Y {0}, {1}.</value></data>
+  <data name="K335" xml:space="preserve"><value>Intervallo fotogrammi periodici (s)</value></data>
+  <data name="K336" xml:space="preserve"><value>Famigli</value></data>
+  <data name="K337" xml:space="preserve"><value>Rosa</value></data>
+  <data name="K338" xml:space="preserve"><value>Giocatori</value></data>
+  <data name="K339" xml:space="preserve"><value>Plugin</value></data>
+  <data name="K340" xml:space="preserve"><value>Intervallo controllo (s)</value></data>
+  <data name="K341" xml:space="preserve"><value>Editor posizione</value></data>
+  <data name="K342" xml:space="preserve"><value>Premi un tasto non modificatore, eventualmente con Ctrl, Alt e/o Shift. Escape annulla; Backspace o Delete cancella solo la bozza.</value></data>
+  <data name="K343" xml:space="preserve"><value>Anteprima: {0}</value></data>
+  <data name="K344" xml:space="preserve"><value>Durata impulso (s)</value></data>
+  <data name="K345" xml:space="preserve"><value>PRONTO</value></data>
+  <data name="K346" xml:space="preserve"><value>Rilettura</value></data>
+  <data name="K347" xml:space="preserve"><value>Tempo al riarmo</value></data>
+  <data name="K348" xml:space="preserve"><value>Recupero</value></data>
+  <data name="K349" xml:space="preserve"><value>Pausa ripristino (s)</value></data>
+  <data name="K350" xml:space="preserve"><value>Impulso di ripristino</value></data>
+  <data name="K351" xml:space="preserve"><value>Reindirizza tutte le texture tracciate alla risorsa nera 1x1.</value></data>
+  <data name="K352" xml:space="preserve"><value>Reindirizza texture dei personaggi alla risorsa nera 16x16.</value></data>
+  <data name="K353" xml:space="preserve"><value>Reindirizza texture effetti alla risorsa nera 16x16.</value></data>
+  <data name="K354" xml:space="preserve"><value>Reindirizza texture del mondo alla risorsa nera 16x16.</value></data>
+  <data name="K355" xml:space="preserve"><value>Texture reindirizzate: {0}</value></data>
+  <data name="K356" xml:space="preserve"><value>Rendering</value></data>
+  <data name="K357" xml:space="preserve"><value>Rendering durante cambi di zona</value></data>
+  <data name="K358" xml:space="preserve"><value>Inizializzazione hook del blocco rendering fallita.</value></data>
+  <data name="K359" xml:space="preserve"><value>Rendering quando disconnesso</value></data>
+  <data name="K360" xml:space="preserve"><value>Soppressione tramite flag rendering per attori fuori gruppo.</value></data>
+  <data name="K361" xml:space="preserve"><value>Render.Manager.Instance() ha restituito null.</value></data>
+  <data name="K362" xml:space="preserve"><value>Render.Manager.Instance() ha generato {0}: {1}</value></data>
+  <data name="K363" xml:space="preserve"><value>Strumento per rendering e controllo della folla per un’esperienza più fluida.</value></data>
+  <data name="K364" xml:space="preserve"><value>Risorsa sostitutiva</value></data>
+  <data name="K365" xml:space="preserve"><value>Percorso sostitutivo: {0}</value></data>
+  <data name="K366" xml:space="preserve"><value>Dimensioni {0}x{1} richieste, ma rilettura fallita: {2}</value></data>
+  <data name="K367" xml:space="preserve"><value>Dimensioni {0}x{1} richieste, ma rilettura è {2}x{3}.</value></data>
+  <data name="K368" xml:space="preserve"><value>Ripristina valori DTR</value></data>
+  <data name="K369" xml:space="preserve"><value>Ripristina questa scheda</value></data>
+  <data name="K370" xml:space="preserve"><value>Azzera contatori reindirizzamento texture.</value></data>
+  <data name="K371" xml:space="preserve"><value>Ridimensiona il client alle dimensioni salvate.</value></data>
+  <data name="K372" xml:space="preserve"><value>Finestra ridimensionata a {0}x{1}.</value></data>
+  <data name="K373" xml:space="preserve"><value>Risoluzione</value></data>
+  <data name="K374" xml:space="preserve"><value>Scala risoluzione: {0}</value></data>
+  <data name="K375" xml:space="preserve"><value>Ripristina secondo piano</value></data>
+  <data name="K376" xml:space="preserve"><value>Ripristina primo piano</value></data>
+  <data name="K377" xml:space="preserve"><value>Ripristina rendering in background.</value></data>
+  <data name="K378" xml:space="preserve"><value>Ripristina azioni clic DTR predefinite.</value></data>
+  <data name="K379" xml:space="preserve"><value>Ripristina rendering in primo piano.</value></data>
+  <data name="K380" xml:space="preserve"><value>Riprova lettura posizione</value></data>
+  <data name="K381" xml:space="preserve"><value>Riprova rilevamento finestra</value></data>
+  <data name="K382" xml:space="preserve"><value>Esegui</value></data>
+  <data name="K383" xml:space="preserve"><value>Molti client o poche risorse? In caso di arresti o instabilità, considera di disattivare l'applicazione continua. Il rendering può riprendere automaticamente.</value></data>
+  <data name="K384" xml:space="preserve"><value>SDI</value></data>
+  <data name="K385" xml:space="preserve"><value>SDTV</value></data>
+  <data name="K386" xml:space="preserve"><value>Salva</value></data>
+  <data name="K387" xml:space="preserve"><value>Salva finestra attuale</value></data>
+  <data name="K388" xml:space="preserve"><value>Salva posizione, dimensioni e monitor attuali del client.</value></data>
+  <data name="K389" xml:space="preserve"><value>Salvato UTC</value></data>
+  <data name="K390" xml:space="preserve"><value>Finestra salvata</value></data>
+  <data name="K391" xml:space="preserve"><value>Finestra salvata a X/Y {0}, {1}, dimensioni {2}x{3} su {4}.</value></data>
+  <data name="K392" xml:space="preserve"><value>Dimensioni finestra salvate non disponibili.</value></data>
+  <data name="K393" xml:space="preserve"><value>Dimensioni salvate non disponibili; caricamento automatico saltato.</value></data>
+  <data name="K394" xml:space="preserve"><value>Ripristino dimensioni fallito dopo {0}; limite tentativi raggiunto. Ultimo risultato: {1}</value></data>
+  <data name="K395" xml:space="preserve"><value>Bordi monitor salvati trovati.</value></data>
+  <data name="K396" xml:space="preserve"><value>Dispositivo monitor salvato trovato.</value></data>
+  <data name="K397" xml:space="preserve"><value>Percorso dispositivo monitor salvato trovato.</value></data>
+  <data name="K398" xml:space="preserve"><value>Scala</value></data>
+  <data name="K399" xml:space="preserve"><value>Visita il canale «The Dumpster Fire» per problemi e suggerimenti sui plugin.</value></data>
+  <data name="K400" xml:space="preserve"><value>Scegli prima un plugin di risoluzione compatibile e caricato.</value></data>
+  <data name="K401" xml:space="preserve"><value>Imposta</value></data>
+  <data name="K402" xml:space="preserve"><value>Configura scorciatoia Disattiva tutto</value></data>
+  <data name="K403" xml:space="preserve"><value>Configura posizione finestra</value></data>
+  <data name="K404" xml:space="preserve"><value>Imposta una scorciatoia di sicurezza che disattiva tutti i modi DPS, ripristina rendering e mostra gli attori nascosti.</value></data>
+  <data name="K405" xml:space="preserve"><value>Imposta gioco a 1.0x</value></data>
+  <data name="K406" xml:space="preserve"><value>Shift</value></data>
+  <data name="K407" xml:space="preserve"><value>Mostra tutto</value></data>
+  <data name="K408" xml:space="preserve"><value>Mostra voce nella barra DTR</value></data>
+  <data name="K409" xml:space="preserve"><value>Mostra di nuovo tutto</value></data>
+  <data name="K410" xml:space="preserve"><value>Mostra diagnostica texture per questa sessione.</value></data>
+  <data name="K411" xml:space="preserve"><value>Editor dimensioni</value></data>
+  <data name="K412" xml:space="preserve"><value>Stabilità (s)</value></data>
+  <data name="K413" xml:space="preserve"><value>Inizio</value></data>
+  <data name="K414" xml:space="preserve"><value>Avvia controlli DPS.</value></data>
+  <data name="K415" xml:space="preserve"><value>Stato: {0}</value></data>
+  <data name="K416" xml:space="preserve"><value>Interrompi</value></data>
+  <data name="K417" xml:space="preserve"><value>Arresta DPS e ripristina visibilità.</value></data>
+  <data name="K418" xml:space="preserve"><value>Caricamenti riusciti: {0}</value></data>
+  <data name="K419" xml:space="preserve"><value>Nascondimento: attivo: nessun oggetto nascosto.</value></data>
+  <data name="K420" xml:space="preserve"><value>Nascondimento: attivo: {0} nascosti.</value></data>
+  <data name="K421" xml:space="preserve"><value>Nascondimento: disattivato.</value></data>
+  <data name="K422" xml:space="preserve"><value>Nascondimento: inattivo.</value></data>
+  <data name="K423" xml:space="preserve"><value>Nascondimento: attesa del giocatore locale.</value></data>
+  <data name="K424" xml:space="preserve"><value>TTSL</value></data>
+  <data name="K425" xml:space="preserve"><value>Verde acqua</value></data>
+  <data name="K426" xml:space="preserve"><value>Stato testuale</value></data>
+  <data name="K427" xml:space="preserve"><value>Laboratorio texture</value></data>
+  <data name="K428" xml:space="preserve"><value>Inizializzazione hook texture fallita: {0}</value></data>
+  <data name="K429" xml:space="preserve"><value>Hook texture inattivi.</value></data>
+  <data name="K430" xml:space="preserve"><value>Hook texture pronti.</value></data>
+  <data name="K431" xml:space="preserve"><value>Reindirizzamento texture disattivato.</value></data>
+  <data name="K432" xml:space="preserve"><value>Reindirizzamento attivo: {0} tramite Texture.InitializeContents diretto</value></data>
+  <data name="K433" xml:space="preserve"><value>Reindirizzamento texture in attesa di attivazione plugin.</value></data>
+  <data name="K434" xml:space="preserve"><value>Ambito texture</value></data>
+  <data name="K435" xml:space="preserve"><value>La prima attivazione applica il preset DPS: schermo disattivato, gioco 0.05x, upscaling Point e tasti nativi non assegnati. Poi personalizza le impostazioni native sotto.</value></data>
+  <data name="K436" xml:space="preserve"><value>Il monitor fisico salvato non è disponibile; posizione finestra invariata.</value></data>
+  <data name="K437" xml:space="preserve"><value>Il monitor selezionato non espone un percorso dispositivo Windows.</value></data>
+  <data name="K438" xml:space="preserve"><value>Il monitor selezionato non è più disponibile; posizione invariata.</value></data>
+  <data name="K439" xml:space="preserve"><value>Questa combinazione è usata da {0}. Confermando si cancellano le associazioni in conflitto.</value></data>
+  <data name="K440" xml:space="preserve"><value>Questa configurazione cambia solo la posizione FFXIV. Coordinate negative sono valide su monitor a sinistra o sopra il principale. Dimensioni e caricamento automatico dimensioni restano invariati.</value></data>
+  <data name="K441" xml:space="preserve"><value>Pausa limitazione durante blocco (ms)</value></data>
+  <data name="K442" xml:space="preserve"><value>Alterna arresto rendering in background</value></data>
+  <data name="K443" xml:space="preserve"><value>Alterna soppressione folla</value></data>
+  <data name="K444" xml:space="preserve"><value>Alterna arresto rendering in primo piano</value></data>
+  <data name="K445" xml:space="preserve"><value>Scorciatoia di attivazione</value></data>
+  <data name="K446" xml:space="preserve"><value>Alterna attivazione plugin</value></data>
+  <data name="K447" xml:space="preserve"><value>Alterna voce DPS nella barra DTR.</value></data>
+  <data name="K448" xml:space="preserve"><value>Suggerimento: {0} {1}. {2}</value></data>
+  <data name="K449" xml:space="preserve"><value>Transizione</value></data>
+  <data name="K450" xml:space="preserve"><value>Eccezione transizione</value></data>
+  <data name="K451" xml:space="preserve"><value>Eccezione transizione: {0}; eccezione disconnesso: {1}; fotogrammi periodici: {2}.</value></data>
+  <data name="K452" xml:space="preserve"><value>Attivazione</value></data>
+  <data name="K453" xml:space="preserve"><value>Disattiva tutto</value></data>
+  <data name="K454" xml:space="preserve"><value>UDI</value></data>
+  <data name="K455" xml:space="preserve"><value>Caricamento dei caratteri dell’interfaccia non riuscito. Consulta il log del plugin.</value></data>
+  <data name="K456" xml:space="preserve"><value>Non assegnato</value></data>
+  <data name="K457" xml:space="preserve"><value>Connettore sconosciuto</value></data>
+  <data name="K458" xml:space="preserve"><value>Modello sconosciuto</value></data>
+  <data name="K459" xml:space="preserve"><value>Usa il percorso legacy del byte rendering e oscura il primo piano.</value></data>
+  <data name="K460" xml:space="preserve"><value>Usa il blocco rendering e mantiene visibile l'ultimo fotogramma.</value></data>
+  <data name="K461" xml:space="preserve"><value>VFX</value></data>
+  <data name="K462" xml:space="preserve"><value>Solo VFX</value></data>
+  <data name="K463" xml:space="preserve"><value>VGA</value></data>
+  <data name="K464" xml:space="preserve"><value>VK {0}</value></data>
+  <data name="K465" xml:space="preserve"><value>Versione</value></data>
+  <data name="K466" xml:space="preserve"><value>Visibilità</value></data>
+  <data name="K467" xml:space="preserve"><value>ATTESA</value></data>
+  <data name="K468" xml:space="preserve"><value>Larghezza</value></data>
+  <data name="K469" xml:space="preserve"><value>Finestra</value></data>
+  <data name="K470" xml:space="preserve"><value>Carica finestra + dimensioni</value></data>
+  <data name="K471" xml:space="preserve"><value>Caricamento finestra + dimensioni fallito prima del ripristino dimensioni: {0}</value></data>
+  <data name="K472" xml:space="preserve"><value>Configurazione posizione finestra</value></data>
+  <data name="K473" xml:space="preserve"><value>Finestra XY</value></data>
+  <data name="K474" xml:space="preserve"><value>Finestra XY inattiva.</value></data>
+  <data name="K475" xml:space="preserve"><value>Scheda Finestra XY ripristinata. Caricamento automatico disattivato e posizione/dimensioni cancellate.</value></data>
+  <data name="K476" xml:space="preserve"><value>Spostamento finestra</value></data>
+  <data name="K477" xml:space="preserve"><value>Rilettura posizione: X/Y {0}, {1} su {2}.</value></data>
+  <data name="K478" xml:space="preserve"><value>Rettangolo finestra letto.</value></data>
+  <data name="K479" xml:space="preserve"><value>Ridimensionamento finestra</value></data>
+  <data name="K480" xml:space="preserve"><value>Il caricamento automatico dimensioni resta {0}.</value></data>
+  <data name="K481" xml:space="preserve"><value>Spostamento finestra</value></data>
+  <data name="K482" xml:space="preserve"><value>Ridimensionamento finestra</value></data>
+  <data name="K483" xml:space="preserve"><value>Mondo</value></data>
+  <data name="K484" xml:space="preserve"><value>Mondo / terreno</value></data>
+  <data name="K485" xml:space="preserve"><value>X</value></data>
+  <data name="K486" xml:space="preserve"><value>XA Slave</value></data>
+  <data name="K487" xml:space="preserve"><value>XA Slave (IPC)</value></data>
+  <data name="K488" xml:space="preserve"><value>Scala di gioco XA Slave</value></data>
+  <data name="K489" xml:space="preserve"><value>XA Slave non ha risposto.</value></data>
+  <data name="K490" xml:space="preserve"><value>L'interruttore XA Slave segue l'ultima richiesta DPS riuscita in questa sessione ({0}). Dopo modifiche in XA Slave, usa questi pulsanti attiva/disattiva.</value></data>
+  <data name="K491" xml:space="preserve"><value>S</value></data>
+  <data name="K492" xml:space="preserve"><value>SÌ</value></data>
+  <data name="K493" xml:space="preserve"><value>Dimensioni finestra zero o negative</value></data>
+  <data name="K494" xml:space="preserve"><value>monitor attuale di riserva</value></data>
+  <data name="K495" xml:space="preserve"><value>monitor attuale assente</value></data>
+  <data name="K496" xml:space="preserve"><value>monitor attuale non disponibile</value></data>
+  <data name="K497" xml:space="preserve"><value>attivo, ogni {0}s</value></data>
+  <data name="K498" xml:space="preserve"><value>finestra processo enumerata</value></data>
+  <data name="K499" xml:space="preserve"><value>handle finestra di gioco non disponibile</value></data>
+  <data name="K500" xml:space="preserve"><value>finestra di gioco letta</value></data>
+  <data name="K501" xml:space="preserve"><value>schermo nero legacy</value></data>
+  <data name="K502" xml:space="preserve"><value>informazioni monitor lette</value></data>
+  <data name="K503" xml:space="preserve"><value>monitor={0} [{1}]; finestra={2} ({3}); monitorAttuale={4} ({5}); valido={6}</value></data>
+  <data name="K504" xml:space="preserve"><value>non pianificato</value></data>
+  <data name="K505" xml:space="preserve"><value>in attesa</value></data>
+  <data name="K506" xml:space="preserve"><value>finestra principale del processo</value></data>
+  <data name="K507" xml:space="preserve"><value>Lettura flag rendering fallita: {0}: {1}</value></data>
+  <data name="K508" xml:space="preserve"><value>Scrittura flag rendering fallita: {0}: {1}</value></data>
+  <data name="K509" xml:space="preserve"><value>fotogramma bloccato sicuro</value></data>
+  <data name="K510" xml:space="preserve"><value>bordi monitor salvati</value></data>
+  <data name="K511" xml:space="preserve"><value>dispositivo monitor salvato</value></data>
+  <data name="K512" xml:space="preserve"><value>percorso dispositivo monitor salvato</value></data>
+  <data name="K513" xml:space="preserve"><value>alterna plugin</value></data>
+  <data name="K514" xml:space="preserve"><value>Sconosciuto</value></data>
+  <data name="K515" xml:space="preserve"><value>monitor sconosciuto</value></data>
+  <data name="K516" xml:space="preserve"><value>attesa cessazione condizioni attive: {0}</value></data>
+  <data name="K517" xml:space="preserve"><value>finestra nascosta</value></data>
+  <data name="K518" xml:space="preserve"><value>finestra minimizzata</value></data>
+  <data name="K519" xml:space="preserve"><value>finestra assente</value></data>
+  <data name="K520" xml:space="preserve"><value>rettangolo finestra vuoto</value></data>
+  <data name="K521" xml:space="preserve"><value>rettangolo finestra letto</value></data>
+  <data name="K522" xml:space="preserve"><value>{0:0}min</value></data>
+  <data name="K523" xml:space="preserve"><value>{0:0}s</value></data>
+  <data name="K524" xml:space="preserve"><value>{0} #{1}</value></data>
+  <data name="K525" xml:space="preserve"><value>{0} (0x{1:X2})</value></data>
+  <data name="K526" xml:space="preserve"><value>{0} – Avanzate</value></data>
+  <data name="K527" xml:space="preserve"><value>{0} DPS</value></data>
+  <data name="K528" xml:space="preserve"><value>{0} Nessun altro tentativo dimensioni previsto; limite raggiunto tra {1}.</value></data>
+  <data name="K529" xml:space="preserve"><value>{0} Nuovo tentativo dimensioni salvate tra {1}.</value></data>
+  <data name="K530" xml:space="preserve"><value>{0} fallito (Win32 {1}: {2}).</value></data>
+  <data name="K531" xml:space="preserve"><value>{0} in ascolto</value></data>
+  <data name="K532" xml:space="preserve"><value>{0} {1}. {2}</value></data>
+  <data name="K533" xml:space="preserve"><value>{0} — {1} — {2} — {3}x{4} a {5},{6} [{7}]</value></data>
+  <data name="K534" xml:space="preserve"><value>{0},{1} - {2},{3}</value></data>
+  <data name="K535" xml:space="preserve"><value>{0},{1} {2}x{3}; visibile={4}; minimizzata={5}</value></data>
+  <data name="K536" xml:space="preserve"><value>{0}: {1}</value></data>
+  <data name="K537" xml:space="preserve"><value>{0}x{1}</value></data>
+  <data name="K538" xml:space="preserve"><value>Attivo</value></data>
+  <data name="K539" xml:space="preserve"><value>Disattivato</value></data>
+  <data name="K540" xml:space="preserve"><value>Vero</value></data>
+  <data name="K541" xml:space="preserve"><value>Falso</value></data>
+  <data name="K542" xml:space="preserve"><value>Valido</value></data>
+  <data name="K543" xml:space="preserve"><value>(non disponibile)</value></data>
+  <data name="K544" xml:space="preserve"><value>(sconosciuto)</value></data>
+  <data name="K545" xml:space="preserve"><value>Principale</value></data>
+  <data name="K546" xml:space="preserve"><value>Sinistra</value></data>
+  <data name="K547" xml:space="preserve"><value>Destra</value></data>
+  <data name="K548" xml:space="preserve"><value>Interno</value></data>
+  <data name="K549" xml:space="preserve"><value>Componente</value></data>
+  <data name="K550" xml:space="preserve"><value>Composito</value></data>
+  <data name="K551" xml:space="preserve"><value>Fotogramma bloccato sicuro</value></data>
+  <data name="K552" xml:space="preserve"><value>Schermo nero legacy</value></data>
+  <data name="K553" xml:space="preserve"><value>; poi </value></data>
+  <data name="K554" xml:space="preserve"><value>DPS DLL={0}; Modo={1}; Intento={2}; Blocco={3}; EsclusioneRipristinoSchermo={4}; ClientStructs DLL={5}; versione ClientStructs={6}; Manager={7}; Flag={8}; Byte={9}; Stato={10}</value></data>
+  <data name="K555" xml:space="preserve"><value>DPS DLL={0}; Modo={1}; Intento={2}; Blocco={3}; EsclusioneRipristinoSchermo={4}; ClientStructs DLL={5}; versione ClientStructs={6}; Manager={7}; Flag={8}; Byte={9}; Stato={10}; Errore={11}</value></data>
+  <data name="K556" xml:space="preserve"><value>errore sconosciuto</value></data>
+  <data name="K557" xml:space="preserve"><value>inizializzazione hook del blocco rendering fallita</value></data>
+  <data xml:space="preserve" name="Status">
+    <value>Stato</value>
+  </data>
+</root>

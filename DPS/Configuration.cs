@@ -21,6 +21,9 @@ public enum ResolutionProvider
 public class Configuration : IPluginConfiguration
 {
     public int Version { get; set; } = 13;
+    public bool UiCompact { get; set; }
+    public string UiLanguage { get; set; } = "en";
+    public uint UiAccentRgb { get; set; } = 0x00BCD4;
     public bool PluginEnabled { get; set; }
     public bool DtrBarEnabled { get; set; } = true;
     public int DtrBarMode { get; set; } = 1;

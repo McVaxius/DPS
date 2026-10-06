@@ -1,0 +1,568 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms</value></resheader>
+  <data name="K000" xml:space="preserve"><value> 左上角已限制在显示器范围内。</value></data>
+  <data name="K001" xml:space="preserve"><value>%.2fx</value></data>
+  <data name="K002" xml:space="preserve"><value>(动态或不可用)</value></data>
+  <data name="K003" xml:space="preserve"><value>(未使用)</value></data>
+  <data name="K004" xml:space="preserve"><value>/dps</value></data>
+  <data name="K005" xml:space="preserve"><value>/dps debug   显示纹理实验室</value></data>
+  <data name="K006" xml:space="preserve"><value>/dps debug off</value></data>
+  <data name="K007" xml:space="preserve"><value>/dps foff    关闭前台渲染</value></data>
+  <data name="K008" xml:space="preserve"><value>/dps fon     开启前台渲染</value></data>
+  <data name="K009" xml:space="preserve"><value>/dps j       在视口内随机放置插件窗口</value></data>
+  <data name="K010" xml:space="preserve"><value>/dps roff    准备后台无渲染模式</value></data>
+  <data name="K011" xml:space="preserve"><value>/dps ron     恢复后台渲染</value></data>
+  <data name="K012" xml:space="preserve"><value>/dps wload   加载已保存的游戏窗口 X/Y 和显示器</value></data>
+  <data name="K013" xml:space="preserve"><value>/dps wloadall 加载已保存的 X/Y、显示器和大小</value></data>
+  <data name="K014" xml:space="preserve"><value>/dps wreset  重置已保存的游戏窗口位置和大小</value></data>
+  <data name="K015" xml:space="preserve"><value>/dps ws      将插件窗口移至 1,1</value></data>
+  <data name="K016" xml:space="preserve"><value>/dps wsave   保存游戏窗口 X/Y、大小和显示器</value></data>
+  <data name="K017" xml:space="preserve"><value>/xlplugins</value></data>
+  <data name="K018" xml:space="preserve"><value>建议设为 0。渲染钩子内的等待可能导致区域切换卡顿。</value></data>
+  <data name="K019" xml:space="preserve"><value>使用中</value></data>
+  <data name="K020" xml:space="preserve"><value>已待命</value></data>
+  <data name="K021" xml:space="preserve"><value>关于</value></data>
+  <data name="K022" xml:space="preserve"><value>操作</value></data>
+  <data name="K023" xml:space="preserve"><value>添加仓库并安装 XA Slave</value></data>
+  <data name="K024" xml:space="preserve"><value>高级</value></data>
+  <data name="K025" xml:space="preserve"><value>高级选项</value></data>
+  <data name="K026" xml:space="preserve"><value>激进模式（不含界面）</value></data>
+  <data name="K027" xml:space="preserve"><value>全部关闭</value></data>
+  <data name="K028" xml:space="preserve"><value>设置全部关闭快捷键</value></data>
+  <data name="K029" xml:space="preserve"><value>全部关闭是安全操作：关闭前后台无渲染模式和人群隐藏，恢复正常渲染并重新显示隐藏的角色。</value></data>
+  <data name="K030" xml:space="preserve"><value>已恢复所有隐藏角色。</value></data>
+  <data name="K031" xml:space="preserve"><value>允许定期帧渲染</value></data>
+  <data name="K032" xml:space="preserve"><value>请求前台无渲染时，允许 DPS 关闭 AutoRetainer 的 MultiDisableRender。关闭此选项会保留 AutoRetainer 当前设置。</value></data>
+  <data name="K033" xml:space="preserve"><value>Alt</value></data>
+  <data name="K034" xml:space="preserve"><value>适用于两种前台模式。仅所选条件可以暂停无渲染。</value></data>
+  <data name="K035" xml:space="preserve"><value>应用位置</value></data>
+  <data name="K036" xml:space="preserve"><value>已启用自动加载，但未保存游戏窗口位置和大小。</value></data>
+  <data name="K037" xml:space="preserve"><value>AutoRetainer</value></data>
+  <data name="K038" xml:space="preserve"><value>AutoRetainer 自动冲突解决：{0}。</value></data>
+  <data name="K039" xml:space="preserve"><value>自动后台恢复脉冲</value></data>
+  <data name="K040" xml:space="preserve"><value>自动恢复脉冲: 还将激活 {0}。</value></data>
+  <data name="K041" xml:space="preserve"><value>自动恢复脉冲: 将激活 {0} 秒。</value></data>
+  <data name="K042" xml:space="preserve"><value>自动恢复脉冲: 已在卸载时取消。</value></data>
+  <data name="K043" xml:space="preserve"><value>自动恢复脉冲: 已取消。</value></data>
+  <data name="K044" xml:space="preserve"><value>自动恢复脉冲: 已禁用。</value></data>
+  <data name="K045" xml:space="preserve"><value>自动恢复脉冲: 已到执行时间，将在下一次后台停止渲染的激活周期中执行。</value></data>
+  <data name="K046" xml:space="preserve"><value>自动恢复脉冲: 预计 {0} 分钟后执行。</value></data>
+  <data name="K047" xml:space="preserve"><value>自动恢复脉冲: 将在 {0} 后执行。</value></data>
+  <data name="K048" xml:space="preserve"><value>自动恢复脉冲: 正在等待后台停止渲染。</value></data>
+  <data name="K049" xml:space="preserve"><value>自动恢复脉冲: 正在等待启用插件。</value></data>
+  <data name="K050" xml:space="preserve"><value>自动渲染例外按需启用。更改会立即保存并应用。</value></data>
+  <data name="K051" xml:space="preserve"><value>自动解决前台渲染冲突</value></data>
+  <data name="K052" xml:space="preserve"><value>BG</value></data>
+  <data name="K053" xml:space="preserve"><value>例外</value></data>
+  <data name="K054" xml:space="preserve"><value>后台</value></data>
+  <data name="K055" xml:space="preserve"><value>后台钩子</value></data>
+  <data name="K056" xml:space="preserve"><value>后台恢复</value></data>
+  <data name="K057" xml:space="preserve"><value>后台限速</value></data>
+  <data name="K058" xml:space="preserve"><value>后台停止渲染</value></data>
+  <data name="K059" xml:space="preserve"><value>后台停止渲染: 已激活。窗口未获得焦点。</value></data>
+  <data name="K060" xml:space="preserve"><value>后台停止渲染: 已激活。窗口已最小化。</value></data>
+  <data name="K061" xml:space="preserve"><value>后台停止渲染: 已待命。按 Alt+Tab 切换窗口以触发。</value></data>
+  <data name="K062" xml:space="preserve"><value>后台停止渲染: 已待命。最小化窗口以触发。</value></data>
+  <data name="K063" xml:space="preserve"><value>后台停止渲染: 已禁用。</value></data>
+  <data name="K064" xml:space="preserve"><value>后台停止渲染: 钩子初始化失败：{0}</value></data>
+  <data name="K065" xml:space="preserve"><value>后台停止渲染: 钩子已就绪。名牌钩子不可用。</value></data>
+  <data name="K066" xml:space="preserve"><value>后台停止渲染: 钩子已就绪。</value></data>
+  <data name="K067" xml:space="preserve"><value>后台停止渲染: 空闲。</value></data>
+  <data name="K068" xml:space="preserve"><value>后台停止渲染: 因已启用的区域切换例外而暂停。</value></data>
+  <data name="K069" xml:space="preserve"><value>后台停止渲染: 因已启用的登出例外而暂停。</value></data>
+  <data name="K070" xml:space="preserve"><value>后台停止渲染: 因已启用的恢复脉冲而暂停。</value></data>
+  <data name="K071" xml:space="preserve"><value>后台停止渲染: 前台停止渲染处于激活状态时暂停。</value></data>
+  <data name="K072" xml:space="preserve"><value>后台停止渲染: 正在等待启用插件。</value></data>
+  <data name="K073" xml:space="preserve"><value>绑定</value></data>
+  <data name="K074" xml:space="preserve"><value>黑色 16x16</value></data>
+  <data name="K075" xml:space="preserve"><value>黑色 1x1</value></data>
+  <data name="K076" xml:space="preserve"><value>通过 {1} 将 {0} 个纹理变黑</value></data>
+  <data name="K077" xml:space="preserve"><value>蓝色</value></data>
+  <data name="K078" xml:space="preserve"><value>已配置</value></data>
+  <data name="K079" xml:space="preserve"><value>取消</value></data>
+  <data name="K080" xml:space="preserve"><value>取消设置</value></data>
+  <data name="K081" xml:space="preserve"><value>取消并恢复原始位置</value></data>
+  <data name="K082" xml:space="preserve"><value>捕获</value></data>
+  <data name="K083" xml:space="preserve"><value>重新捕获</value></data>
+  <data name="K084" xml:space="preserve"><value>捕获快捷键</value></data>
+  <data name="K085" xml:space="preserve"><value>为 {0} 捕获新的快捷键。</value></data>
+  <data name="K086" xml:space="preserve"><value>角色</value></data>
+  <data name="K087" xml:space="preserve"><value>角色</value></data>
+  <data name="K088" xml:space="preserve"><value>陆行鸟</value></data>
+  <data name="K089" xml:space="preserve"><value>请在上方选择分辨率插件以管理游戏缩放。</value></data>
+  <data name="K090" xml:space="preserve"><value>请选择 0.01 至 1.00 之间的分辨率缩放比例。</value></data>
+  <data name="K091" xml:space="preserve"><value>正常停用可恢复插件状态</value></data>
+  <data name="K092" xml:space="preserve"><value>清空</value></data>
+  <data name="K093" xml:space="preserve"><value>清除纹理统计</value></data>
+  <data name="K094" xml:space="preserve"><value>清除已保存的游戏窗口位置和大小并禁用自动加载。</value></data>
+  <data name="K095" xml:space="preserve"><value>清除 {0} 的快捷键。</value></data>
+  <data name="K096" xml:space="preserve"><value>点击</value></data>
+  <data name="K097" xml:space="preserve"><value>点击操作</value></data>
+  <data name="K098" xml:space="preserve"><value>点击：{0}。</value></data>
+  <data name="K099" xml:space="preserve"><value>已跳过客户端加载恢复：保存的窗口位置和大小自动加载已禁用。</value></data>
+  <data name="K100" xml:space="preserve"><value>客户端加载恢复：{0}</value></data>
+  <data name="K101" xml:space="preserve"><value>关闭</value></data>
+  <data name="K102" xml:space="preserve"><value>关闭并保留当前位置</value></data>
+  <data name="K103" xml:space="preserve"><value>关闭此窗口。</value></data>
+  <data name="K104" xml:space="preserve"><value>颜色</value></data>
+  <data name="K105" xml:space="preserve"><value>命令</value></data>
+  <data name="K106" xml:space="preserve"><value>紧凑模式</value></data>
+  <data name="K107" xml:space="preserve"><value>确认全部关闭快捷键</value></data>
+  <data name="K108" xml:space="preserve"><value>持续强制黑屏模式</value></data>
+  <data name="K109" xml:space="preserve"><value>无法访问已加载的 Custom Resolution 配置。</value></data>
+  <data name="K110" xml:space="preserve"><value>无法通过 {0} 关闭前台渲染：{1}</value></data>
+  <data name="K111" xml:space="preserve"><value>无法检查前台渲染：{0}</value></data>
+  <data name="K112" xml:space="preserve"><value>无法通过 {0} 恢复前台渲染：{1}</value></data>
+  <data name="K113" xml:space="preserve"><value>数量</value></data>
+  <data name="K114" xml:space="preserve"><value>人群</value></data>
+  <data name="K115" xml:space="preserve"><value>隐藏人群</value></data>
+  <data name="K116" xml:space="preserve"><value>Ctrl</value></data>
+  <data name="K117" xml:space="preserve"><value>电流</value></data>
+  <data name="K118" xml:space="preserve"><value>当前游戏窗口</value></data>
+  <data name="K119" xml:space="preserve"><value>已读取当前游戏窗口位置。</value></data>
+  <data name="K120" xml:space="preserve"><value>当前显示器变化</value></data>
+  <data name="K121" xml:space="preserve"><value>当前显示器变化</value></data>
+  <data name="K122" xml:space="preserve"><value>自定义RGB</value></data>
+  <data name="K123" xml:space="preserve"><value>Custom Resolution</value></data>
+  <data name="K124" xml:space="preserve"><value>Custom Resolution（官方）</value></data>
+  <data name="K125" xml:space="preserve"><value>Custom Resolution 游戏缩放已设为 1.0x。</value></data>
+  <data name="K126" xml:space="preserve"><value>Custom Resolution 游戏缩放已设为 {0:0.###}x。</value></data>
+  <data name="K127" xml:space="preserve"><value>Custom Resolution 设置</value></data>
+  <data name="K128" xml:space="preserve"><value>DPS 游戏缩放开关</value></data>
+  <data name="K129" xml:space="preserve"><value>DPS v</value></data>
+  <data name="K130" xml:space="preserve"><value>DPS: {0}</value></data>
+  <data name="K131" xml:space="preserve"><value>DTR</value></data>
+  <data name="K132" xml:space="preserve"><value>DTR 关闭</value></data>
+  <data name="K133" xml:space="preserve"><value>DTR 开启</value></data>
+  <data name="K134" xml:space="preserve"><value>DTR模式</value></data>
+  <data name="K135" xml:space="preserve"><value>DVI</value></data>
+  <data name="K136" xml:space="preserve"><value>黑屏停止渲染</value></data>
+  <data name="K137" xml:space="preserve"><value>定格画面停止渲染</value></data>
+  <data name="K138" xml:space="preserve"><value>本次会话已隐藏调试纹理实验室。</value></data>
+  <data name="K139" xml:space="preserve"><value>将 {0} 减少 1。</value></data>
+  <data name="K140" xml:space="preserve"><value>检测到的窗口</value></data>
+  <data name="K141" xml:space="preserve"><value>Dhog Potato System - 高级</value></data>
+  <data name="K142" xml:space="preserve"><value>诊断</value></data>
+  <data name="K143" xml:space="preserve"><value>禁用 DPS 并恢复所有隐藏的人群角色。</value></data>
+  <data name="K144" xml:space="preserve"><value>禁用 DPS 并恢复所有隐藏的视觉内容。</value></data>
+  <data name="K145" xml:space="preserve"><value>关闭前台、后台和人群抑制。</value></data>
+  <data name="K146" xml:space="preserve"><value>禁用缩放</value></data>
+  <data name="K147" xml:space="preserve"><value>已禁用（未绑定）</value></data>
+  <data name="K148" xml:space="preserve"><value>已禁用（{0}）</value></data>
+  <data name="K149" xml:space="preserve"><value>禁用图标</value></data>
+  <data name="K150" xml:space="preserve"><value>Discord</value></data>
+  <data name="K151" xml:space="preserve"><value>显示</value></data>
+  <data name="K152" xml:space="preserve"><value>显示恢复</value></data>
+  <data name="K153" xml:space="preserve"><value>显示恢复: 已激活；前台停止渲染将在 {0} 后重新待命。</value></data>
+  <data name="K154" xml:space="preserve"><value>显示恢复: 已激活；正在等待重新待命。</value></data>
+  <data name="K155" xml:space="preserve"><value>显示恢复: 已激活；正在等待已启用的条件解除：{0}。</value></data>
+  <data name="K156" xml:space="preserve"><value>显示恢复: 已完成；前台停止渲染已重新待命。</value></data>
+  <data name="K157" xml:space="preserve"><value>显示恢复: 保护已禁用。</value></data>
+  <data name="K158" xml:space="preserve"><value>显示恢复: 保护空闲。</value></data>
+  <data name="K159" xml:space="preserve"><value>显示恢复: 没有已启用的例外。</value></data>
+  <data name="K160" xml:space="preserve"><value>显示恢复: 正在等待前台停止渲染。</value></data>
+  <data name="K161" xml:space="preserve"><value>显示恢复: 正在等待启用插件。</value></data>
+  <data name="K162" xml:space="preserve"><value>显示恢复: 正在监视已启用的前台例外：{0}。</value></data>
+  <data name="K163" xml:space="preserve"><value>DisplayPort</value></data>
+  <data name="K164" xml:space="preserve"><value>请勿同时启用前台和后台无渲染。</value></data>
+  <data name="K165" xml:space="preserve"><value>草稿</value></data>
+  <data name="K166" xml:space="preserve"><value>草稿位置</value></data>
+  <data name="K167" xml:space="preserve"><value>编辑</value></data>
+  <data name="K168" xml:space="preserve"><value>启用</value></data>
+  <data name="K169" xml:space="preserve"><value>启用／应用缩放</value></data>
+  <data name="K170" xml:space="preserve"><value>启用调试</value></data>
+  <data name="K171" xml:space="preserve"><value>启用后台停止渲染</value></data>
+  <data name="K172" xml:space="preserve"><value>启用前台显示恢复</value></data>
+  <data name="K173" xml:space="preserve"><value>启用前台停止渲染</value></data>
+  <data name="K174" xml:space="preserve"><value>启用游戏缩放</value></data>
+  <data name="K175" xml:space="preserve"><value>启用位置／显示自动加载</value></data>
+  <data name="K176" xml:space="preserve"><value>启用纹理重定向</value></data>
+  <data name="K177" xml:space="preserve"><value>已启用的例外</value></data>
+  <data name="K178" xml:space="preserve"><value>启用图标</value></data>
+  <data name="K179" xml:space="preserve"><value>所有 .tex</value></data>
+  <data name="K180" xml:space="preserve"><value>实验性纹理重定向已隐藏。请使用 /dps debug。</value></data>
+  <data name="K181" xml:space="preserve"><value>面向低性能电脑的实验性工具，用于隐藏非队伍角色、切换前后台无渲染并恢复游戏窗口位置。</value></data>
+  <data name="K182" xml:space="preserve"><value>失败</value></data>
+  <data name="K183" xml:space="preserve"><value>前台请求状态</value></data>
+  <data name="K184" xml:space="preserve"><value>前台渲染</value></data>
+  <data name="K185" xml:space="preserve"><value>加载失败：{0}</value></data>
+  <data name="K186" xml:space="preserve"><value>运行结束</value></data>
+  <data name="K187" xml:space="preserve"><value>前台</value></data>
+  <data name="K188" xml:space="preserve"><value>前台显示恢复</value></data>
+  <data name="K189" xml:space="preserve"><value>前台渲染</value></data>
+  <data name="K190" xml:space="preserve"><value>前台停止渲染: 已激活。渲染字节为 1。</value></data>
+  <data name="K191" xml:space="preserve"><value>前台停止渲染: 已激活。渲染门控正在抑制帧。</value></data>
+  <data name="K192" xml:space="preserve"><value>前台停止渲染: 已待命，但渲染字节为 {0}。</value></data>
+  <data name="K193" xml:space="preserve"><value>前台停止渲染: 已待命。旧版渲染字节模式已就绪。</value></data>
+  <data name="K194" xml:space="preserve"><value>前台停止渲染: 已待命。渲染门控钩子尚未初始化。</value></data>
+  <data name="K195" xml:space="preserve"><value>前台停止渲染: 已待命。渲染门控已就绪。</value></data>
+  <data name="K196" xml:space="preserve"><value>前台停止渲染: 已禁用。</value></data>
+  <data name="K197" xml:space="preserve"><value>前台停止渲染: 已禁用。渲染字节已恢复为 0。</value></data>
+  <data name="K198" xml:space="preserve"><value>前台停止渲染: 因已启用的区域切换例外而暂停。</value></data>
+  <data name="K199" xml:space="preserve"><value>前台停止渲染: 因已启用的登出例外而暂停。</value></data>
+  <data name="K200" xml:space="preserve"><value>前台停止渲染: 因显示恢复而暂停。允许正常渲染。</value></data>
+  <data name="K201" xml:space="preserve"><value>前台停止渲染: 已请求，但渲染字节为 {0}。持续强制已关闭。</value></data>
+  <data name="K202" xml:space="preserve"><value>前台停止渲染: 正在等待恢复：{0}</value></data>
+  <data name="K203" xml:space="preserve"><value>前台停止渲染: 已请求恢复，但渲染字节仍为 {0}。</value></data>
+  <data name="K204" xml:space="preserve"><value>前台停止渲染: 不可用：渲染门控钩子未激活。</value></data>
+  <data name="K205" xml:space="preserve"><value>前台停止渲染: 不可用：不支持模式 {0}。</value></data>
+  <data name="K206" xml:space="preserve"><value>前台停止渲染: 不可用：{0}</value></data>
+  <data name="K207" xml:space="preserve"><value>前台停止渲染: 正在等待启用插件。</value></data>
+  <data name="K208" xml:space="preserve"><value>前台渲染关闭</value></data>
+  <data name="K209" xml:space="preserve"><value>定格画面和后台例外</value></data>
+  <data name="K210" xml:space="preserve"><value>通过枚举进程窗口找到游戏窗口。</value></data>
+  <data name="K211" xml:space="preserve"><value>通过当前进程主窗口找到游戏窗口。</value></data>
+  <data name="K212" xml:space="preserve"><value>游戏窗口句柄尚不可用。</value></data>
+  <data name="K213" xml:space="preserve"><value>已禁用游戏窗口位置自动加载。</value></data>
+  <data name="K214" xml:space="preserve"><value>已启用游戏窗口位置自动加载。</value></data>
+  <data name="K215" xml:space="preserve"><value>游戏窗口矩形为空。</value></data>
+  <data name="K216" xml:space="preserve"><value>已禁用游戏窗口大小自动加载。</value></data>
+  <data name="K217" xml:space="preserve"><value>已启用游戏窗口大小自动加载。</value></data>
+  <data name="K218" xml:space="preserve"><value>游戏窗口大小必须为正数。</value></data>
+  <data name="K219" xml:space="preserve"><value>门控</value></data>
+  <data name="K220" xml:space="preserve"><value>全局</value></data>
+  <data name="K221" xml:space="preserve"><value>保护</value></data>
+  <data name="K222" xml:space="preserve"><value>引导设置</value></data>
+  <data name="K223" xml:space="preserve"><value>HDMI</value></data>
+  <data name="K224" xml:space="preserve"><value>高度</value></data>
+  <data name="K225" xml:space="preserve"><value>辅助插件</value></data>
+  <data name="K226" xml:space="preserve"><value>隐藏的窗口</value></data>
+  <data name="K227" xml:space="preserve"><value>隐藏的窗口</value></data>
+  <data name="K228" xml:space="preserve"><value>隐藏陆行鸟</value></data>
+  <data name="K229" xml:space="preserve"><value>隐藏宠物小伙伴</value></data>
+  <data name="K230" xml:space="preserve"><value>隐藏宠物</value></data>
+  <data name="K231" xml:space="preserve"><value>隐藏玩家</value></data>
+  <data name="K232" xml:space="preserve"><value>钩子</value></data>
+  <data name="K233" xml:space="preserve"><value>钩子已激活</value></data>
+  <data name="K234" xml:space="preserve"><value>快捷键</value></data>
+  <data name="K235" xml:space="preserve"><value>快捷键设置</value></data>
+  <data name="K236" xml:space="preserve"><value>快捷键</value></data>
+  <data name="K237" xml:space="preserve"><value>空闲</value></data>
+  <data name="K238" xml:space="preserve"><value>图标 + DPS</value></data>
+  <data name="K239" xml:space="preserve"><value>仅图标</value></data>
+  <data name="K240" xml:space="preserve"><value>原位纹理变黑在 {0} 次尝试后失败。</value></data>
+  <data name="K241" xml:space="preserve"><value>将 {0} 增加 1。</value></data>
+  <data name="K242" xml:space="preserve"><value>间接虚拟</value></data>
+  <data name="K243" xml:space="preserve"><value>间接有线</value></data>
+  <data name="K244" xml:space="preserve"><value>安装 {0}</value></data>
+  <data name="K245" xml:space="preserve"><value>已安装并启用 {0}。</value></data>
+  <data name="K246" xml:space="preserve"><value>已安装 {0}；请在插件安装器中启用。</value></data>
+  <data name="K247" xml:space="preserve"><value>正在安装 {0}...</value></data>
+  <data name="K248" xml:space="preserve"><value>正在安装...</value></data>
+  <data name="K249" xml:space="preserve"><value>窗口尺寸为零或负数</value></data>
+  <data name="K250" xml:space="preserve"><value>保持目标可见</value></data>
+  <data name="K251" xml:space="preserve"><value>Ko-fi</value></data>
+  <data name="K252" xml:space="preserve"><value>已加载</value></data>
+  <data name="K253" xml:space="preserve"><value>LVDS</value></data>
+  <data name="K254" xml:space="preserve"><value>语言</value></data>
+  <data name="K255" xml:space="preserve"><value>上次操作</value></data>
+  <data name="K256" xml:space="preserve"><value>上次变更 UTC</value></data>
+  <data name="K257" xml:space="preserve"><value>上次游戏路径：{0}</value></data>
+  <data name="K258" xml:space="preserve"><value>链接</value></data>
+  <data name="K259" xml:space="preserve"><value>加载</value></data>
+  <data name="K260" xml:space="preserve"><value>加载已保存大小</value></data>
+  <data name="K261" xml:space="preserve"><value>加载已保存窗口</value></data>
+  <data name="K262" xml:space="preserve"><value>加载已保存窗口和大小</value></data>
+  <data name="K263" xml:space="preserve"><value>客户端加载时加载保存的窗口位置和显示器</value></data>
+  <data name="K264" xml:space="preserve"><value>客户端加载时加载保存的窗口大小</value></data>
+  <data name="K265" xml:space="preserve"><value>已加载游戏窗口大小 {0}x{1}。</value></data>
+  <data name="K266" xml:space="preserve"><value>已加载游戏窗口大小 {0}x{1}；回读已验证。</value></data>
+  <data name="K267" xml:space="preserve"><value>已通过 {3} 将游戏窗口加载至 {2} 上的 X/Y {0}, {1}；大小保留（{4}）。</value></data>
+  <data name="K268" xml:space="preserve"><value>已加载保存的窗口位置和大小。{0} {1}</value></data>
+  <data name="K269" xml:space="preserve"><value>已加载保存的位置，但大小恢复失败：{0}</value></data>
+  <data name="K270" xml:space="preserve"><value>正在加载界面字体...</value></data>
+  <data name="K271" xml:space="preserve"><value>记录重定向纹理</value></data>
+  <data name="K272" xml:space="preserve"><value>登出例外</value></data>
+  <data name="K273" xml:space="preserve"><value>未安装</value></data>
+  <data name="K274" xml:space="preserve"><value>主界面</value></data>
+  <data name="K275" xml:space="preserve"><value>渲染钩子最大延迟：{0:0.0} ms</value></data>
+  <data name="K276" xml:space="preserve"><value>最大分钟数</value></data>
+  <data name="K277" xml:space="preserve"><value>最小化窗口</value></data>
+  <data name="K278" xml:space="preserve"><value>最小化窗口</value></data>
+  <data name="K279" xml:space="preserve"><value>最小分钟数</value></data>
+  <data name="K280" xml:space="preserve"><value>宠物</value></data>
+  <data name="K281" xml:space="preserve"><value>Miracast</value></data>
+  <data name="K282" xml:space="preserve"><value>窗口缺失</value></data>
+  <data name="K283" xml:space="preserve"><value>窗口缺失</value></data>
+  <data name="K284" xml:space="preserve"><value>显示器</value></data>
+  <data name="K285" xml:space="preserve"><value>显示器边界</value></data>
+  <data name="K286" xml:space="preserve"><value>已读取显示器信息。</value></data>
+  <data name="K287" xml:space="preserve"><value>显示器拓扑变化</value></data>
+  <data name="K288" xml:space="preserve"><value>显示器拓扑变化</value></data>
+  <data name="K289" xml:space="preserve"><value>将 FFXIV 窗口移至准确的 X/Y 位置，验证结果，并选择是否保存以用于位置／显示自动加载。此设置不会调整窗口大小。</value></data>
+  <data name="K290" xml:space="preserve"><value>将游戏客户端移至保存的位置和显示器。</value></data>
+  <data name="K291" xml:space="preserve"><value>将游戏客户端移至保存的位置／显示器，再应用保存的大小。</value></data>
+  <data name="K292" xml:space="preserve"><value>已将游戏窗口移至 {2} 上的 X/Y {0}, {1}；大小保留（{3}）。</value></data>
+  <data name="K293" xml:space="preserve"><value>已将游戏窗口移至准确的 X/Y {0}, {1}。</value></data>
+  <data name="K294" xml:space="preserve"><value>互斥</value></data>
+  <data name="K295" xml:space="preserve"><value>互斥失败：两种渲染模式均已启用。</value></data>
+  <data name="K296" xml:space="preserve"><value>否</value></data>
+  <data name="K297" xml:space="preserve"><value>无操作</value></data>
+  <data name="K298" xml:space="preserve"><value>正常</value></data>
+  <data name="K299" xml:space="preserve"><value>未初始化</value></data>
+  <data name="K300" xml:space="preserve"><value>未安装</value></data>
+  <data name="K301" xml:space="preserve"><value>未加载 / 不兼容</value></data>
+  <data name="K302" xml:space="preserve"><value>未使用</value></data>
+  <data name="K303" xml:space="preserve"><value>未配置点击操作。</value></data>
+  <data name="K304" xml:space="preserve"><value>无当前显示器</value></data>
+  <data name="K305" xml:space="preserve"><value>尚无显示快照。</value></data>
+  <data name="K306" xml:space="preserve"><value>无显示器</value></data>
+  <data name="K307" xml:space="preserve"><value>未保存游戏窗口位置。</value></data>
+  <data name="K308" xml:space="preserve"><value>未保存游戏窗口位置和大小。</value></data>
+  <data name="K309" xml:space="preserve"><value>未保存游戏窗口大小。</value></data>
+  <data name="K310" xml:space="preserve"><value>未找到可用于恢复窗口位置的显示器。</value></data>
+  <data name="K311" xml:space="preserve"><value>停止渲染</value></data>
+  <data name="K312" xml:space="preserve"><value>游戏窗口获得焦点时停止渲染。</value></data>
+  <data name="K313" xml:space="preserve"><value>游戏窗口失去焦点时停止渲染。</value></data>
+  <data name="K314" xml:space="preserve"><value>无当前显示器</value></data>
+  <data name="K315" xml:space="preserve"><value>无显示器</value></data>
+  <data name="K316" xml:space="preserve"><value>无</value></data>
+  <data name="K317" xml:space="preserve"><value>关闭</value></data>
+  <data name="K318" xml:space="preserve"><value>已请求关闭（{0}）</value></data>
+  <data name="K319" xml:space="preserve"><value>已请求关闭，等待插件启用</value></data>
+  <data name="K320" xml:space="preserve"><value>正常</value></data>
+  <data name="K321" xml:space="preserve"><value>开启</value></data>
+  <data name="K322" xml:space="preserve"><value>关闭时将游戏缩放设为 1.0x；开启时恢复上次保存的游戏缩放，并保留显示设置。</value></data>
+  <data name="K323" xml:space="preserve"><value>仅在最小化时</value></data>
+  <data name="K324" xml:space="preserve"><value>打开 Discord 社区链接。</value></data>
+  <data name="K325" xml:space="preserve"><value>打开 Ko-fi 支持页面。</value></data>
+  <data name="K326" xml:space="preserve"><value>打开插件安装器</value></data>
+  <data name="K327" xml:space="preserve"><value>打开自动渲染例外、恢复和限速控制。</value></data>
+  <data name="K328" xml:space="preserve"><value>打开快捷键绑定。</value></data>
+  <data name="K329" xml:space="preserve"><value>打开主窗口</value></data>
+  <data name="K330" xml:space="preserve"><value>打开全部关闭快捷键设置向导。</value></data>
+  <data name="K331" xml:space="preserve"><value>打开 X/Y 窗口位置设置向导。</value></data>
+  <data name="K332" xml:space="preserve"><value>原始位置</value></data>
+  <data name="K333" xml:space="preserve"><value>已请求恢复原始 X/Y {0}, {1}，但回读为 {2}, {3}。</value></data>
+  <data name="K334" xml:space="preserve"><value>已在 X/Y {0}, {1} 恢复原始窗口位置。</value></data>
+  <data name="K335" xml:space="preserve"><value>定期帧间隔（秒）</value></data>
+  <data name="K336" xml:space="preserve"><value>宠物</value></data>
+  <data name="K337" xml:space="preserve"><value>粉色</value></data>
+  <data name="K338" xml:space="preserve"><value>玩家</value></data>
+  <data name="K339" xml:space="preserve"><value>插件</value></data>
+  <data name="K340" xml:space="preserve"><value>轮询秒数</value></data>
+  <data name="K341" xml:space="preserve"><value>位置编辑器</value></data>
+  <data name="K342" xml:space="preserve"><value>按一个非修饰键，可同时按住 Ctrl、Alt 或 Shift。Escape 取消设置；Backspace 或 Delete 仅清除草稿。</value></data>
+  <data name="K343" xml:space="preserve"><value>预览：{0}</value></data>
+  <data name="K344" xml:space="preserve"><value>脉冲秒数</value></data>
+  <data name="K345" xml:space="preserve"><value>就绪</value></data>
+  <data name="K346" xml:space="preserve"><value>回读</value></data>
+  <data name="K347" xml:space="preserve"><value>重新准备倒计时</value></data>
+  <data name="K348" xml:space="preserve"><value>恢复</value></data>
+  <data name="K349" xml:space="preserve"><value>恢复暂停秒数</value></data>
+  <data name="K350" xml:space="preserve"><value>恢复脉冲</value></data>
+  <data name="K351" xml:space="preserve"><value>将所有跟踪纹理重定向至黑色 1x1 资源。</value></data>
+  <data name="K352" xml:space="preserve"><value>将角色纹理重定向至黑色 16x16 资源。</value></data>
+  <data name="K353" xml:space="preserve"><value>将特效纹理重定向至黑色 16x16 资源。</value></data>
+  <data name="K354" xml:space="preserve"><value>将世界纹理重定向至黑色 16x16 资源。</value></data>
+  <data name="K355" xml:space="preserve"><value>重定向纹理：{0}</value></data>
+  <data name="K356" xml:space="preserve"><value>渲染</value></data>
+  <data name="K357" xml:space="preserve"><value>区域切换时渲染</value></data>
+  <data name="K358" xml:space="preserve"><value>渲染门控钩子初始化失败。</value></data>
+  <data name="K359" xml:space="preserve"><value>退出登录时渲染</value></data>
+  <data name="K360" xml:space="preserve"><value>通过渲染标志隐藏非队伍角色。</value></data>
+  <data name="K361" xml:space="preserve"><value>Render.Manager.Instance() 返回了 null。</value></data>
+  <data name="K362" xml:space="preserve"><value>Render.Manager.Instance() 引发 {0}：{1}</value></data>
+  <data name="K363" xml:space="preserve"><value>控制渲染和人群显示，让运行更加流畅。</value></data>
+  <data name="K364" xml:space="preserve"><value>替换资源</value></data>
+  <data name="K365" xml:space="preserve"><value>替换路径：{0}</value></data>
+  <data name="K366" xml:space="preserve"><value>已请求游戏窗口大小 {0}x{1}，但回读失败：{2}</value></data>
+  <data name="K367" xml:space="preserve"><value>已请求游戏窗口大小 {0}x{1}，但回读为 {2}x{3}。</value></data>
+  <data name="K368" xml:space="preserve"><value>重置 DTR 默认值</value></data>
+  <data name="K369" xml:space="preserve"><value>重置此标签页</value></data>
+  <data name="K370" xml:space="preserve"><value>重置纹理重定向计数器。</value></data>
+  <data name="K371" xml:space="preserve"><value>将游戏客户端调整为保存的大小。</value></data>
+  <data name="K372" xml:space="preserve"><value>已将游戏窗口调整为 {0}x{1}。</value></data>
+  <data name="K373" xml:space="preserve"><value>分辨率</value></data>
+  <data name="K374" xml:space="preserve"><value>分辨率缩放：{0}</value></data>
+  <data name="K375" xml:space="preserve"><value>恢复后台</value></data>
+  <data name="K376" xml:space="preserve"><value>恢复前台</value></data>
+  <data name="K377" xml:space="preserve"><value>恢复后台渲染。</value></data>
+  <data name="K378" xml:space="preserve"><value>恢复默认 DTR 点击操作。</value></data>
+  <data name="K379" xml:space="preserve"><value>恢复前台渲染。</value></data>
+  <data name="K380" xml:space="preserve"><value>重试位置回读</value></data>
+  <data name="K381" xml:space="preserve"><value>重试窗口检测</value></data>
+  <data name="K382" xml:space="preserve"><value>运行</value></data>
+  <data name="K383" xml:space="preserve"><value>运行多个客户端或系统资源不足时，如遇崩溃或不稳定，可考虑关闭持续强制应用。关闭后渲染可能自动恢复。</value></data>
+  <data name="K384" xml:space="preserve"><value>SDI</value></data>
+  <data name="K385" xml:space="preserve"><value>SDTV</value></data>
+  <data name="K386" xml:space="preserve"><value>保存</value></data>
+  <data name="K387" xml:space="preserve"><value>保存当前窗口</value></data>
+  <data name="K388" xml:space="preserve"><value>保存当前游戏客户端的位置、大小和显示器。</value></data>
+  <data name="K389" xml:space="preserve"><value>保存时间 UTC</value></data>
+  <data name="K390" xml:space="preserve"><value>已保存窗口</value></data>
+  <data name="K391" xml:space="preserve"><value>已保存 {4} 上的游戏窗口：X/Y {0}, {1}，大小 {2}x{3}。</value></data>
+  <data name="K392" xml:space="preserve"><value>保存的游戏窗口大小不可用。</value></data>
+  <data name="K393" xml:space="preserve"><value>保存的游戏窗口大小不可用；已跳过大小自动加载。</value></data>
+  <data name="K394" xml:space="preserve"><value>保存的游戏窗口大小在 {0} 后恢复失败；已达重试上限。最后结果：{1}</value></data>
+  <data name="K395" xml:space="preserve"><value>已找到保存的显示器边界。</value></data>
+  <data name="K396" xml:space="preserve"><value>已找到保存的显示器设备。</value></data>
+  <data name="K397" xml:space="preserve"><value>已找到保存的显示器设备路径。</value></data>
+  <data name="K398" xml:space="preserve"><value>缩放</value></data>
+  <data name="K399" xml:space="preserve"><value>请在“The Dumpster Fire”频道讨论插件问题或建议。</value></data>
+  <data name="K400" xml:space="preserve"><value>请先选择已加载且兼容的分辨率插件。</value></data>
+  <data name="K401" xml:space="preserve"><value>设置</value></data>
+  <data name="K402" xml:space="preserve"><value>设置全部关闭快捷键</value></data>
+  <data name="K403" xml:space="preserve"><value>设置窗口位置</value></data>
+  <data name="K404" xml:space="preserve"><value>设置安全快捷键，关闭所有 DPS 模式、恢复渲染并重新显示隐藏的人群角色。</value></data>
+  <data name="K405" xml:space="preserve"><value>将游戏缩放设为 1.0x</value></data>
+  <data name="K406" xml:space="preserve"><value>Shift</value></data>
+  <data name="K407" xml:space="preserve"><value>全部显示</value></data>
+  <data name="K408" xml:space="preserve"><value>显示DTR栏条目</value></data>
+  <data name="K409" xml:space="preserve"><value>重新显示全部</value></data>
+  <data name="K410" xml:space="preserve"><value>显示本次会话的纹理诊断。</value></data>
+  <data name="K411" xml:space="preserve"><value>大小编辑器</value></data>
+  <data name="K412" xml:space="preserve"><value>稳定秒数</value></data>
+  <data name="K413" xml:space="preserve"><value>启动</value></data>
+  <data name="K414" xml:space="preserve"><value>启动 DPS 控制。</value></data>
+  <data name="K415" xml:space="preserve"><value>状态：{0}</value></data>
+  <data name="K416" xml:space="preserve"><value>停止</value></data>
+  <data name="K417" xml:space="preserve"><value>停止 DPS 并恢复可见性。</value></data>
+  <data name="K418" xml:space="preserve"><value>成功加载：{0}</value></data>
+  <data name="K419" xml:space="preserve"><value>隐藏处理: 已激活：当前没有隐藏对象。</value></data>
+  <data name="K420" xml:space="preserve"><value>隐藏处理: 已激活：已隐藏 {0} 个。</value></data>
+  <data name="K421" xml:space="preserve"><value>隐藏处理: 已禁用。</value></data>
+  <data name="K422" xml:space="preserve"><value>隐藏处理: 空闲。</value></data>
+  <data name="K423" xml:space="preserve"><value>隐藏处理: 正在等待本地玩家。</value></data>
+  <data name="K424" xml:space="preserve"><value>TTSL</value></data>
+  <data name="K425" xml:space="preserve"><value>青色</value></data>
+  <data name="K426" xml:space="preserve"><value>文本状态</value></data>
+  <data name="K427" xml:space="preserve"><value>纹理实验室</value></data>
+  <data name="K428" xml:space="preserve"><value>纹理钩子初始化失败：{0}</value></data>
+  <data name="K429" xml:space="preserve"><value>纹理钩子空闲。</value></data>
+  <data name="K430" xml:space="preserve"><value>纹理钩子已就绪。</value></data>
+  <data name="K431" xml:space="preserve"><value>纹理重定向已禁用。</value></data>
+  <data name="K432" xml:space="preserve"><value>纹理重定向运行中：通过原位 Texture.InitializeContents 执行 {0}</value></data>
+  <data name="K433" xml:space="preserve"><value>纹理重定向等待插件启用。</value></data>
+  <data name="K434" xml:space="preserve"><value>纹理范围</value></data>
+  <data name="K435" xml:space="preserve"><value>首次启用会应用 DPS 预设：禁用显示功能、游戏缩放 0.05x、Point 放大，以及原生快捷键未绑定。之后可调整下方原生设置。</value></data>
+  <data name="K436" xml:space="preserve"><value>保存的物理显示器当前不可用；窗口位置未改变。</value></data>
+  <data name="K437" xml:space="preserve"><value>所选显示器未提供 Windows 设备路径。</value></data>
+  <data name="K438" xml:space="preserve"><value>所选显示器已不可用；窗口位置未改变。</value></data>
+  <data name="K439" xml:space="preserve"><value>此组合键正由 {0} 使用。确认后将清除冲突的绑定。</value></data>
+  <data name="K440" xml:space="preserve"><value>此设置仅改变 FFXIV 窗口位置。位于主显示器左侧或上方的显示器可使用负坐标。窗口大小和大小自动加载保持不变。</value></data>
+  <data name="K441" xml:space="preserve"><value>门控期间限速等待（ms）</value></data>
+  <data name="K442" xml:space="preserve"><value>切换后台无渲染</value></data>
+  <data name="K443" xml:space="preserve"><value>切换人群隐藏</value></data>
+  <data name="K444" xml:space="preserve"><value>切换前台无渲染</value></data>
+  <data name="K445" xml:space="preserve"><value>切换快捷键</value></data>
+  <data name="K446" xml:space="preserve"><value>切换插件启用</value></data>
+  <data name="K447" xml:space="preserve"><value>切换 DPS 的 DTR 栏条目。</value></data>
+  <data name="K448" xml:space="preserve"><value>提示：{0} {1}。{2}</value></data>
+  <data name="K449" xml:space="preserve"><value>区域切换</value></data>
+  <data name="K450" xml:space="preserve"><value>区域切换例外</value></data>
+  <data name="K451" xml:space="preserve"><value>切换例外：{0}；退出登录例外：{1}；定期帧：{2}。</value></data>
+  <data name="K452" xml:space="preserve"><value>触发器</value></data>
+  <data name="K453" xml:space="preserve"><value>关闭全部</value></data>
+  <data name="K454" xml:space="preserve"><value>UDI</value></data>
+  <data name="K455" xml:space="preserve"><value>界面字体加载失败，请查看插件日志。</value></data>
+  <data name="K456" xml:space="preserve"><value>未绑定</value></data>
+  <data name="K457" xml:space="preserve"><value>未知接口</value></data>
+  <data name="K458" xml:space="preserve"><value>未知型号</value></data>
+  <data name="K459" xml:space="preserve"><value>使用旧版渲染字节方式并将前台画面置黑。</value></data>
+  <data name="K460" xml:space="preserve"><value>使用渲染门控方式并保留最后渲染的画面。</value></data>
+  <data name="K461" xml:space="preserve"><value>VFX</value></data>
+  <data name="K462" xml:space="preserve"><value>仅 VFX</value></data>
+  <data name="K463" xml:space="preserve"><value>VGA</value></data>
+  <data name="K464" xml:space="preserve"><value>VK {0}</value></data>
+  <data name="K465" xml:space="preserve"><value>版本</value></data>
+  <data name="K466" xml:space="preserve"><value>可见性</value></data>
+  <data name="K467" xml:space="preserve"><value>等待</value></data>
+  <data name="K468" xml:space="preserve"><value>宽度</value></data>
+  <data name="K469" xml:space="preserve"><value>窗口</value></data>
+  <data name="K470" xml:space="preserve"><value>窗口和大小加载</value></data>
+  <data name="K471" xml:space="preserve"><value>窗口和大小加载在恢复大小前失败：{0}</value></data>
+  <data name="K472" xml:space="preserve"><value>窗口位置设置</value></data>
+  <data name="K473" xml:space="preserve"><value>窗口 XY</value></data>
+  <data name="K474" xml:space="preserve"><value>窗口 XY 空闲。</value></data>
+  <data name="K475" xml:space="preserve"><value>已重置窗口 XY 标签页。已禁用自动加载并清除保存的位置和大小。</value></data>
+  <data name="K476" xml:space="preserve"><value>窗口移动</value></data>
+  <data name="K477" xml:space="preserve"><value>窗口位置回读：{2} 上的 X/Y {0}, {1}。</value></data>
+  <data name="K478" xml:space="preserve"><value>已读取窗口矩形。</value></data>
+  <data name="K479" xml:space="preserve"><value>窗口大小调整</value></data>
+  <data name="K480" xml:space="preserve"><value>窗口大小自动加载保持{0}。</value></data>
+  <data name="K481" xml:space="preserve"><value>窗口移动</value></data>
+  <data name="K482" xml:space="preserve"><value>窗口大小调整</value></data>
+  <data name="K483" xml:space="preserve"><value>世界</value></data>
+  <data name="K484" xml:space="preserve"><value>世界／地形</value></data>
+  <data name="K485" xml:space="preserve"><value>X</value></data>
+  <data name="K486" xml:space="preserve"><value>XA Slave</value></data>
+  <data name="K487" xml:space="preserve"><value>XA Slave（IPC）</value></data>
+  <data name="K488" xml:space="preserve"><value>XA Slave 游戏缩放</value></data>
+  <data name="K489" xml:space="preserve"><value>XA Slave 未返回响应。</value></data>
+  <data name="K490" xml:space="preserve"><value>XA Slave 开关遵循本次会话最后成功的 DPS 请求（{0}）。在 XA Slave 中更改缩放后，请使用这些启用／禁用按钮设置开关状态。</value></data>
+  <data name="K491" xml:space="preserve"><value>是</value></data>
+  <data name="K492" xml:space="preserve"><value>是</value></data>
+  <data name="K493" xml:space="preserve"><value>窗口尺寸为零或负数</value></data>
+  <data name="K494" xml:space="preserve"><value>回退至当前显示器</value></data>
+  <data name="K495" xml:space="preserve"><value>当前显示器缺失</value></data>
+  <data name="K496" xml:space="preserve"><value>当前显示器不可用</value></data>
+  <data name="K497" xml:space="preserve"><value>已启用，每 {0} 秒</value></data>
+  <data name="K498" xml:space="preserve"><value>枚举的进程窗口</value></data>
+  <data name="K499" xml:space="preserve"><value>游戏窗口句柄不可用</value></data>
+  <data name="K500" xml:space="preserve"><value>游戏窗口已读取</value></data>
+  <data name="K501" xml:space="preserve"><value>旧版黑屏</value></data>
+  <data name="K502" xml:space="preserve"><value>显示器信息已读取</value></data>
+  <data name="K503" xml:space="preserve"><value>显示器={0} [{1}]；窗口={2}（{3}）；当前显示器={4}（{5}）；有效={6}</value></data>
+  <data name="K504" xml:space="preserve"><value>未安排</value></data>
+  <data name="K505" xml:space="preserve"><value>待定</value></data>
+  <data name="K506" xml:space="preserve"><value>进程主窗口</value></data>
+  <data name="K507" xml:space="preserve"><value>渲染标志读取失败：{0}：{1}</value></data>
+  <data name="K508" xml:space="preserve"><value>渲染标志写入失败：{0}：{1}</value></data>
+  <data name="K509" xml:space="preserve"><value>安全定格画面</value></data>
+  <data name="K510" xml:space="preserve"><value>保存的显示器边界</value></data>
+  <data name="K511" xml:space="preserve"><value>保存的显示器设备</value></data>
+  <data name="K512" xml:space="preserve"><value>保存的显示器设备路径</value></data>
+  <data name="K513" xml:space="preserve"><value>切换插件</value></data>
+  <data name="K514" xml:space="preserve"><value>未知</value></data>
+  <data name="K515" xml:space="preserve"><value>未知显示器</value></data>
+  <data name="K516" xml:space="preserve"><value>等待已启用条件解除：{0}</value></data>
+  <data name="K517" xml:space="preserve"><value>窗口隐藏</value></data>
+  <data name="K518" xml:space="preserve"><value>窗口最小化</value></data>
+  <data name="K519" xml:space="preserve"><value>窗口缺失</value></data>
+  <data name="K520" xml:space="preserve"><value>窗口矩形为空</value></data>
+  <data name="K521" xml:space="preserve"><value>窗口矩形已读取</value></data>
+  <data name="K522" xml:space="preserve"><value>{0:0}分</value></data>
+  <data name="K523" xml:space="preserve"><value>{0:0}秒</value></data>
+  <data name="K524" xml:space="preserve"><value>{0} #{1}</value></data>
+  <data name="K525" xml:space="preserve"><value>{0} (0x{1:X2})</value></data>
+  <data name="K526" xml:space="preserve"><value>{0} - 高级</value></data>
+  <data name="K527" xml:space="preserve"><value>{0} DPS</value></data>
+  <data name="K528" xml:space="preserve"><value>{0} 未安排后续大小重试；将在 {1} 后达到重试上限。</value></data>
+  <data name="K529" xml:space="preserve"><value>{0} 将在 {1} 后重试保存的大小。</value></data>
+  <data name="K530" xml:space="preserve"><value>{0} 失败（Win32 {1}：{2}）。</value></data>
+  <data name="K531" xml:space="preserve"><value>正在监听 {0}</value></data>
+  <data name="K532" xml:space="preserve"><value>{0} {1}。{2}</value></data>
+  <data name="K533" xml:space="preserve"><value>{0} — {1} — {2} — {3}x{4}，位置 {5},{6} [{7}]</value></data>
+  <data name="K534" xml:space="preserve"><value>{0},{1} - {2},{3}</value></data>
+  <data name="K535" xml:space="preserve"><value>{0},{1} {2}x{3}；可见={4}；最小化={5}</value></data>
+  <data name="K536" xml:space="preserve"><value>{0}: {1}</value></data>
+  <data name="K537" xml:space="preserve"><value>{0}x{1}</value></data>
+  <data name="K538" xml:space="preserve"><value>已启用</value></data>
+  <data name="K539" xml:space="preserve"><value>已禁用</value></data>
+  <data name="K540" xml:space="preserve"><value>是</value></data>
+  <data name="K541" xml:space="preserve"><value>否</value></data>
+  <data name="K542" xml:space="preserve"><value>有效</value></data>
+  <data name="K543" xml:space="preserve"><value>(不可用)</value></data>
+  <data name="K544" xml:space="preserve"><value>(未知)</value></data>
+  <data name="K545" xml:space="preserve"><value>主显示器</value></data>
+  <data name="K546" xml:space="preserve"><value>左侧</value></data>
+  <data name="K547" xml:space="preserve"><value>右侧</value></data>
+  <data name="K548" xml:space="preserve"><value>内置</value></data>
+  <data name="K549" xml:space="preserve"><value>分量</value></data>
+  <data name="K550" xml:space="preserve"><value>复合</value></data>
+  <data name="K551" xml:space="preserve"><value>安全定格画面</value></data>
+  <data name="K552" xml:space="preserve"><value>旧版黑屏</value></data>
+  <data name="K553" xml:space="preserve"><value>；然后</value></data>
+  <data name="K554" xml:space="preserve"><value>DPS DLL={0}；模式={1}；请求={2}；门控={3}；显示恢复绕过={4}；ClientStructs DLL={5}；ClientStructs 版本={6}；Manager={7}；标志={8}；字节={9}；状态={10}</value></data>
+  <data name="K555" xml:space="preserve"><value>DPS DLL={0}；模式={1}；请求={2}；门控={3}；显示恢复绕过={4}；ClientStructs DLL={5}；ClientStructs 版本={6}；Manager={7}；标志={8}；字节={9}；状态={10}；错误={11}</value></data>
+  <data name="K556" xml:space="preserve"><value>未知错误</value></data>
+  <data name="K557" xml:space="preserve"><value>渲染门控钩子初始化失败</value></data>
+  <data xml:space="preserve" name="Status">
+    <value>状态</value>
+  </data>
+</root>

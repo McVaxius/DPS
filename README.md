@@ -14,6 +14,15 @@ An experimental Dalamud utility for weak machines. Hide non-party players, pets,
 - Display-change recovery and saved game-window position, display, and size controls.
 - Guided setup for the All Off hotkey and exact window X/Y placement.
 
+The main header and Advanced window share a language selector, theme colour
+swatch, and **C** compact-mode checkbox. English, German, French, Spanish,
+Italian, Russian, Japanese, Korean and Simplified Chinese are available across
+DPS controls, diagnostics and guided setup. Teal, blue, pink and custom RGB
+colours apply to the interface; rendering and recovery status colours retain
+their meanings. These preferences use the existing configuration save path.
+Compact mode reduces spacing while retaining the same controls and saved choices.
+Custom Resolution's embedded settings remain owned by that provider.
+
 ## Quick start
 
 1. Enter `/dps` to open the plugin window.

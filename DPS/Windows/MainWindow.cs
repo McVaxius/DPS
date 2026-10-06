@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.Numerics;
 using System.Reflection;
+using AethertekUI;
 using Dalamud.Bindings.ImGui;
 using Dalamud.Game.ClientState.Keys;
 using Dalamud.Interface.Windowing;
@@ -64,11 +65,14 @@ public sealed class MainWindow : Window
         : base($"{PluginInfo.DisplayName}##DPSMain")
     {
         this.plugin = plugin;
+        Flags |= ImGuiWindowFlags.HorizontalScrollbar;
         SizeConstraints = new WindowSizeConstraints
         {
             MinimumSize = new Vector2(560f, 390f),
-            MaximumSize = new Vector2(1120f, 900f),
+            MaximumSize = new Vector2(2280f, 1800f),
         };
+        Size = new Vector2(994f, 920f);
+        SizeCondition = ImGuiCond.FirstUseEver;
     }
 
     public void QueueTopLeftPlacement()
@@ -92,55 +96,56 @@ public sealed class MainWindow : Window
     public override void Draw()
     {
         ApplyPendingPlacement();
+        UiGui.Title(PluginInfo.DisplayName,UiText.T(PluginInfo.DisplayName)+" v"+Assembly.GetExecutingAssembly().GetName().Version);
         DrawTopBar();
 
         if (ImGui.BeginTabBar("##DpsMainTabs"))
         {
-            if (ImGui.BeginTabItem("Render"))
+            if (UiGui.BeginTabItem("Render"))
             {
                 DrawRenderTab();
                 ImGui.EndTabItem();
             }
 
-            if (ImGui.BeginTabItem("Crowd"))
+            if (UiGui.BeginTabItem("Crowd"))
             {
                 DrawCrowdTab();
                 ImGui.EndTabItem();
             }
 
-            if (ImGui.BeginTabItem("Resolution"))
+            if (UiGui.BeginTabItem("Resolution"))
             {
                 DrawResolutionTab();
                 ImGui.EndTabItem();
             }
 
             var hotkeyTabFlags = selectHotkeysTab ? ImGuiTabItemFlags.SetSelected : ImGuiTabItemFlags.None;
-            if (ImGui.BeginTabItem("Hotkeys", hotkeyTabFlags))
+            if (UiGui.BeginTabItem("Hotkeys", hotkeyTabFlags))
             {
                 selectHotkeysTab = false;
                 DrawHotkeysTab();
                 ImGui.EndTabItem();
             }
 
-            if (ImGui.BeginTabItem("DTR"))
+            if (UiGui.BeginTabItem("DTR"))
             {
                 DrawDtrTab();
                 ImGui.EndTabItem();
             }
 
-            if (ImGui.BeginTabItem("Window XY"))
+            if (UiGui.BeginTabItem("Window XY"))
             {
                 DrawWindowPlacementTab();
                 ImGui.EndTabItem();
             }
 
-            if (ImGui.BeginTabItem("Diagnostics"))
+            if (UiGui.BeginTabItem("Diagnostics"))
             {
                 DrawDiagnosticsTab();
                 ImGui.EndTabItem();
             }
 
-            if (ImGui.BeginTabItem("About"))
+            if (UiGui.BeginTabItem("About"))
             {
                 DrawAboutTab();
                 ImGui.EndTabItem();
@@ -180,17 +185,45 @@ public sealed class MainWindow : Window
         var cfg = plugin.Configuration;
         var version = Assembly.GetExecutingAssembly().GetName().Version?.ToString() ?? "0.0.0.0";
 
-        ImGui.TextUnformatted($"{PluginInfo.DisplayName} v{version}");
-        UiHelpers.SameLineIfFits(86f);
-        UiHelpers.StatusPill("Plugin", cfg.PluginEnabled);
-        UiHelpers.SameLineIfFits(92f);
-        UiHelpers.StatusPill("BG", cfg.BackgroundNoRenderEnabled, plugin.BackgroundRenderGateService.IsBackgroundNoRenderActive ? "ACTIVE" : "ARMED");
-        UiHelpers.SameLineIfFits(132f);
-        UiHelpers.ForegroundRenderStatus(plugin, includeIntent: false);
-        UiHelpers.SameLineIfFits(104f);
-        UiHelpers.StatusPill("Crowd", cfg.CrowdSuppressionEnabled);
+        var scale = MaterialTheme.Metrics.Scale;
+        var origin = ImGui.GetCursorScreenPos();
+        var width = ImGui.GetContentRegionAvail().X;
+        var right = origin.X + width;
+        var brandSize = cfg.UiCompact ? 66 : 82;
+        DpsPresentation.Brand(origin + new Vector2(4, 9) * scale, brandSize * scale);
+        ImGui.SetCursorScreenPos(origin + new Vector2(brandSize + 20, 6) * scale);
+        ImGui.BeginGroup();
+        using (UiText.Font(cfg.UiCompact ? UiFontRole.CompactTitle : UiFontRole.Title))
+            UiGui.TextUnformatted(PluginInfo.DisplayName);
+        var titleRight = ImGui.GetItemRectMax().X;
+        var selectorFits = right - titleRight >= 286 * scale;
+        var subtitleRight = selectorFits ? right - 286 * scale : right;
+        ImGui.PushTextWrapPos(ImGui.GetCursorPosX() + Math.Max(1, subtitleRight - ImGui.GetCursorScreenPos().X));
+        ImGui.TextColored(MaterialTheme.Current.Colors.OnSurfaceVariant, UiText.T("Rendering and crowd control utility for a smoother experience."));
+        ImGui.PopTextWrapPos();
+        UiGui.TextDisabled("DPS v" + version);
+        ImGui.EndGroup();
+        var titleBottom = ImGui.GetItemRectMax().Y;
+        ImGui.SetCursorScreenPos(selectorFits ? new(right - 276 * scale, origin.Y + 8 * scale)
+            : new(origin.X, Math.Max(titleBottom + 10 * scale, origin.Y + (brandSize + 12) * scale)));
+        ImGui.BeginGroup();
+        var compact = cfg.UiCompact;
+        if (UiGui.Checkbox("C##CompactMode", ref compact)) { cfg.UiCompact = compact; cfg.Save(); }
+        UiHelpers.Tooltip("Compact mode");
+        ImGui.SameLine();
+        plugin.Appearance.DrawSelector();
+        UiHelpers.LinkButton("Ko-fi", PluginInfo.SupportUrl, "Open Ko-fi support page.");
+        ButtonFlow("Discord", 70);
+        UiHelpers.LinkButton("Discord", PluginInfo.DiscordUrl, "Open Discord community link.");
+        ButtonFlow("Close", 58);
+        if (UiHelpers.SmallButton("Close", "Close this window.")) IsOpen = false;
+        ImGui.EndGroup();
+        var headerBottom = Math.Max(titleBottom, ImGui.GetItemRectMax().Y);
+        ImGui.SetCursorScreenPos(new(origin.X, Math.Max(origin.Y + DpsPresentation.HeaderHeight * scale, headerBottom + 12 * scale)));
 
-        ImGui.Spacing();
+        using var actions = UiText.Font(UiFontRole.Action);
+        ImGui.PushStyleColor(ImGuiCol.Button, cfg.PluginEnabled ? new Vector4(.48f, .12f, .24f, 1) : MaterialTheme.Current.Colors.PrimaryContainer);
+        ImGui.PushStyleColor(ImGuiCol.ButtonHovered, cfg.PluginEnabled ? new Vector4(.59f, .15f, .29f, 1) : MaterialTheme.Current.Colors.Primary);
         if (UiHelpers.CompactButton(
                 cfg.PluginEnabled ? "Stop" : "Run",
                 58f,
@@ -198,101 +231,143 @@ public sealed class MainWindow : Window
         {
             plugin.SetPluginEnabled(!cfg.PluginEnabled, "main window top bar", showAllOnDisable: cfg.PluginEnabled);
         }
+        ImGui.PopStyleColor(2);
 
-        UiHelpers.SameLineIfFits(78f);
+        ButtonFlow("All Off", 70);
         if (UiHelpers.CompactButton("All Off", 70f, "Disable foreground, background, and crowd suppression."))
             plugin.AllOff("main window top bar");
-        UiHelpers.SameLineIfFits(100f);
+        ButtonFlow("Restore FG", 92);
         if (UiHelpers.CompactButton("Restore FG", 92f, "Restore foreground rendering."))
             plugin.DisableForegroundNoRender("main window top bar");
-        UiHelpers.SameLineIfFits(100f);
+        ButtonFlow("Restore BG", 92);
         if (UiHelpers.CompactButton("Restore BG", 92f, "Restore background rendering."))
             plugin.DisableBackgroundNoRender("main window top bar");
-        UiHelpers.SameLineIfFits(94f);
+        ButtonFlow("Show All", 86);
         if (UiHelpers.CompactButton("Show All", 86f, "Disable DPS and restore all hidden visuals."))
             plugin.SetPluginEnabled(false, "main window top bar show all", showAllOnDisable: true);
-        UiHelpers.SameLineIfFits(80f);
+        ButtonFlow(cfg.DtrBarEnabled ? "DTR On" : "DTR Off", 72);
         if (UiHelpers.CompactButton(cfg.DtrBarEnabled ? "DTR On" : "DTR Off", 72f, "Toggle the DPS DTR bar entry."))
         {
             cfg.DtrBarEnabled = !cfg.DtrBarEnabled;
             cfg.Save();
             plugin.UpdateDtrBar();
         }
-        UiHelpers.SameLineIfFits(84f);
+        ButtonFlow("Hotkeys", 76);
         if (UiHelpers.CompactButton("Hotkeys", 76f, "Open hotkey bindings."))
             OpenHotkeysTab();
-        UiHelpers.SameLineIfFits(140f);
-        ImGui.Checkbox("Advanced options", ref showAdvancedOptions);
-        UiHelpers.SameLineIfFits(94f);
+        ButtonFlow("Advanced", 86);
         if (UiHelpers.CompactButton("Advanced", 86f, "Open automatic rendering exceptions, recovery, and throttle controls."))
             plugin.OpenAdvancedUi();
-        UiHelpers.SameLineIfFits(54f);
-        UiHelpers.LinkButton("Ko-fi", PluginInfo.SupportUrl, "Open Ko-fi support page.");
-        UiHelpers.SameLineIfFits(70f);
-        UiHelpers.LinkButton("Discord", PluginInfo.DiscordUrl, "Open Discord community link.");
-        UiHelpers.SameLineIfFits(58f);
-        if (UiHelpers.SmallButton("Close", "Close this window."))
-            IsOpen = false;
+        using (UiText.Font(UiFontRole.Body))
+        {
+            ImGui.Spacing();
+            DpsPresentation.Panel(() =>
+            {
+                UiHelpers.StatusPill("Plugin", cfg.PluginEnabled,filled:false);
+                UiHelpers.SameLineIfFits(132);
+                UiHelpers.ForegroundRenderStatus(plugin, includeIntent: false,filled:false);
+                UiHelpers.SameLineIfFits(150);
+                UiHelpers.StatusPill("BG",cfg.BackgroundNoRenderEnabled
+                    ? plugin.BackgroundRenderGateService.IsBackgroundNoRenderActive ? "ACTIVE" : "ARMED" : "OFF",
+                    cfg.BackgroundNoRenderEnabled ? plugin.BackgroundRenderGateService.IsBackgroundNoRenderActive ? UiHelpers.Good : UiHelpers.Warn : UiHelpers.Muted,filled:false);
+                UiHelpers.SameLineIfFits(130);
+                UiHelpers.StatusPill("Crowd", cfg.CrowdSuppressionEnabled,filled:false);
+            }, ImGui.GetID(""),inset:new Vector2(12,4));
+        }
+    }
 
-        ImGui.Separator();
+    private static void ButtonFlow(string label, float minimumWidth)
+    {
+        var s = MaterialTheme.Metrics.Scale;
+        var required = Math.Max(minimumWidth * s, ImGui.CalcTextSize(UiText.T(label)).X + 44 * s);
+        var right = ImGui.GetWindowPos().X + ImGui.GetWindowContentRegionMax().X;
+        if (ImGui.GetItemRectMax().X + ImGui.GetStyle().ItemSpacing.X + required <= right) ImGui.SameLine();
     }
 
     private void DrawRenderTab()
     {
         var cfg = plugin.Configuration;
 
-        DrawToggle("Continuously enforce black-screen mode", cfg.ContinuousBlackScreenEnforcementEnabled,
-            value => cfg.ContinuousBlackScreenEnforcementEnabled = value);
-        ImGui.PushStyleColor(ImGuiCol.Text, UiHelpers.Bad);
-        UiHelpers.Wrapped("Running many clients or low on system resources? If you experience crashes or instability, consider disabling continuous enforcement. Rendering may resume automatically when it is off.");
-        ImGui.PopStyleColor();
-
-        UiHelpers.SectionHeader("Foreground");
-        UiHelpers.HotkeyStatus("Hotkey", cfg.ForegroundToggleHotkey);
-        UiHelpers.ForegroundRenderOffCheckbox(plugin, "main render tab");
-        DrawForegroundNoRenderModeSelector();
-        UiHelpers.ForegroundRenderStatus(plugin);
-        UiHelpers.Wrapped(plugin.ForegroundRenderControlService.Status);
-
-        if (cfg.BackgroundNoRenderEnabled && cfg.ForegroundNoRenderEnabled)
-            UiHelpers.WarningStrip("Mutual exclusion failed: both render modes are enabled.", danger: true);
-        else
-            UiHelpers.StatusPill("Mutual exclusion", "OK", UiHelpers.Good);
-
-        ImGui.Spacing();
-        ImGui.Separator();
-
-        UiHelpers.SectionHeader("Background");
-        UiHelpers.HotkeyStatus("Hotkey", cfg.BackgroundToggleHotkey);
-        var backgroundEnabled = cfg.BackgroundNoRenderEnabled;
-        if (ImGui.Checkbox("Background no-render", ref backgroundEnabled))
+        var originalIdRoot = ImGui.GetID("");
+        var longest= new[] { "Enable foreground no-render", "Enable background no-render", "De-render with frozen frame",
+            "De-render with black screen", "Only while minimized/iconic", "Clean disable restores plugin state" }
+            .Max(label=>ImGui.CalcTextSize(UiText.T(label)).X);
+        var panelMinimum=longest+ImGui.GetFrameHeight()+ImGui.GetStyle().ItemInnerSpacing.X+(cfg.UiCompact?28:40)*MaterialTheme.Metrics.Scale;
+        var twoColumns = ImGui.GetContentRegionAvail().X >= Math.Max(820*MaterialTheme.Metrics.Scale,2*panelMinimum+ImGui.GetStyle().CellPadding.X*4);
+        if (ImGui.BeginTable("##DpsRenderLayout", twoColumns ? 2 : 1, ImGuiTableFlags.SizingStretchProp | ImGuiTableFlags.NoSavedSettings))
         {
-            if (backgroundEnabled)
-                plugin.ArmBackgroundNoRender("main render tab");
-            else
-                plugin.DisableBackgroundNoRender("main render tab");
+            ImGui.TableSetupColumn("Foreground", ImGuiTableColumnFlags.WidthStretch);
+            if (twoColumns) ImGui.TableSetupColumn("Background", ImGuiTableColumnFlags.WidthStretch);
+            ImGui.TableNextColumn();
+            DpsPresentation.Panel(() =>
+            {
+                using (UiText.Font(UiFontRole.PluginName)) UiGui.Text("Foreground");
+                UiGui.TextColored(MaterialTheme.Current.Colors.OnSurfaceVariant, "No-render while the game window is in focus.");
+                ImGui.Spacing();
+                UiHelpers.HotkeyStatus("Hotkey", cfg.ForegroundToggleHotkey);
+                UiHelpers.ForegroundRenderOffCheckbox(plugin, "main render tab");
+                DrawForegroundNoRenderModeSelector();
+                UiHelpers.ForegroundRenderStatus(plugin,filled:false);
+                UiHelpers.StatusHeading();
+                UiHelpers.StatusCell(plugin.ForegroundRenderControlService.Status,
+                    plugin.ForegroundRenderControlService.RenderDisabledByDps?UiHelpers.Warn:UiHelpers.Good);
+
+                if (cfg.BackgroundNoRenderEnabled && cfg.ForegroundNoRenderEnabled)
+                    UiHelpers.WarningStrip("Mutual exclusion failed: both render modes are enabled.", danger: true);
+                else
+                    UiHelpers.StatusPill("Mutual exclusion", "OK", UiHelpers.Good);
+            }, originalIdRoot, cfg.UiCompact ? 314 : 378);
+
+            ImGui.TableNextColumn();
+            DpsPresentation.Panel(() =>
+            {
+                using (UiText.Font(UiFontRole.PluginName)) UiGui.Text("Background");
+                UiGui.TextColored(MaterialTheme.Current.Colors.OnSurfaceVariant, "No-render while the game window is unfocused.");
+                ImGui.Spacing();
+                UiHelpers.HotkeyStatus("Hotkey", cfg.BackgroundToggleHotkey);
+                var backgroundEnabled = cfg.BackgroundNoRenderEnabled;
+                if (UiGui.Checkbox("Background no-render", ref backgroundEnabled, "Enable background no-render"))
+                {
+                    if (backgroundEnabled)
+                        plugin.ArmBackgroundNoRender("main render tab");
+                    else
+                        plugin.DisableBackgroundNoRender("main render tab");
+                }
+
+                var onlyWhenMinimized = cfg.BackgroundNoRenderOnlyWhenMinimized;
+                if (UiGui.Checkbox("Only while minimized/iconic", ref onlyWhenMinimized))
+                {
+                    cfg.BackgroundNoRenderOnlyWhenMinimized = onlyWhenMinimized;
+                    SaveAndApply();
+                }
+
+                var cleanDisable = cfg.CleanDisableExperimentalRenderHack;
+                if (UiGui.Checkbox("Clean disable restores plugin state", ref cleanDisable))
+                {
+                    cfg.CleanDisableExperimentalRenderHack = cleanDisable;
+                    SaveAndApply();
+                }
+
+                UiHelpers.StatusHeading();
+                UiHelpers.StatusPill("Hook", plugin.BackgroundRenderGateService.HooksActive, "READY", "IDLE");
+                UiHelpers.StatusPill("Gate",plugin.BackgroundRenderGateService.IsBackgroundNoRenderActive?"ACTIVE":"WAIT",
+                    plugin.BackgroundRenderGateService.IsBackgroundNoRenderActive?UiHelpers.Good:UiHelpers.Warn);
+                UiHelpers.StatusPill("Transition", !plugin.BackgroundRenderGateService.TransitionBypassActive, "NORMAL", "BYPASS");
+                UiHelpers.Wrapped(plugin.BackgroundRenderGateService.Status);
+            }, originalIdRoot, cfg.UiCompact ? 314 : 378);
+            ImGui.EndTable();
         }
 
-        var onlyWhenMinimized = cfg.BackgroundNoRenderOnlyWhenMinimized;
-        if (ImGui.Checkbox("Only while minimized/iconic", ref onlyWhenMinimized))
+        DpsPresentation.Panel(() =>
         {
-            cfg.BackgroundNoRenderOnlyWhenMinimized = onlyWhenMinimized;
-            SaveAndApply();
-        }
-
-        var cleanDisable = cfg.CleanDisableExperimentalRenderHack;
-        if (ImGui.Checkbox("Clean disable restores plugin state", ref cleanDisable))
-        {
-            cfg.CleanDisableExperimentalRenderHack = cleanDisable;
-            SaveAndApply();
-        }
-
-        UiHelpers.StatusPill("Hook", plugin.BackgroundRenderGateService.HooksActive, "READY", "IDLE");
-        ImGui.SameLine();
-        UiHelpers.StatusPill("Gate", plugin.BackgroundRenderGateService.IsBackgroundNoRenderActive, "ACTIVE", "WAIT");
-        ImGui.SameLine();
-        UiHelpers.StatusPill("Transition", !plugin.BackgroundRenderGateService.TransitionBypassActive, "NORMAL", "BYPASS");
-        UiHelpers.Wrapped(plugin.BackgroundRenderGateService.Status);
+            UiGui.TextWrapped("Do not enable foreground and background no-render simultaneously.");
+            DrawToggle("Continuously enforce black-screen mode", cfg.ContinuousBlackScreenEnforcementEnabled,
+                value => cfg.ContinuousBlackScreenEnforcementEnabled = value);
+            ImGui.PushStyleColor(ImGuiCol.Text, UiHelpers.Warn);
+            UiHelpers.Wrapped("Running many clients or low on system resources? If you experience crashes or instability, consider disabling continuous enforcement. Rendering may resume automatically when it is off.");
+            ImGui.PopStyleColor();
+            UiGui.Checkbox("Advanced options", ref showAdvancedOptions);
+        }, originalIdRoot);
     }
 
     private void DrawForegroundNoRenderModeSelector()
@@ -301,13 +376,13 @@ public sealed class MainWindow : Window
         if (showAdvancedOptions)
         {
             var safeMode = cfg.ForegroundNoRenderMode == ForegroundNoRenderMode.SafeFrozenFrame;
-            if (ImGui.RadioButton("De-render with frozen frame", safeMode))
+            if (UiGui.RadioButton("De-render with frozen frame", safeMode))
                 plugin.SetForegroundNoRenderMode(ForegroundNoRenderMode.SafeFrozenFrame, "main render tab");
             UiHelpers.Tooltip("Uses the render gate path and leaves the last rendered frame visible.");
         }
 
         var legacyMode = cfg.ForegroundNoRenderMode == ForegroundNoRenderMode.LegacyBlackScreen;
-        if (ImGui.RadioButton("De-render with black screen", legacyMode))
+        if (UiGui.RadioButton("De-render with black screen", legacyMode))
             plugin.SetForegroundNoRenderMode(ForegroundNoRenderMode.LegacyBlackScreen, "main render tab");
         UiHelpers.Tooltip("Uses the legacy render-byte path and blanks foreground rendering.");
     }
@@ -318,7 +393,7 @@ public sealed class MainWindow : Window
 
         UiHelpers.SectionHeader("Visibility");
         var crowdEnabled = cfg.CrowdSuppressionEnabled;
-        if (ImGui.Checkbox("Crowd suppression", ref crowdEnabled))
+        if (UiGui.Checkbox("Crowd suppression", ref crowdEnabled))
             plugin.SetCrowdSuppressionEnabled(crowdEnabled, "main crowd tab", enablePluginOnEnable: true);
         UiHelpers.HotkeyStatus("Hotkey", cfg.CrowdToggleHotkey);
         DrawToggle("Hide players", cfg.HideNonPartyPlayers, value => cfg.HideNonPartyPlayers = value);
@@ -348,13 +423,13 @@ public sealed class MainWindow : Window
         var resolution = plugin.ResolutionScalingService;
 
         ImGui.BeginDisabled(resolution.Installing);
-        if (ImGui.RadioButton("XA Slave (IPC)", cfg.ResolutionProvider == ResolutionProvider.XASlave))
+        if (UiGui.RadioButton("XA Slave (IPC)", cfg.ResolutionProvider == ResolutionProvider.XASlave))
         {
             cfg.ResolutionProvider = ResolutionProvider.XASlave;
             cfg.Save();
         }
         ImGui.SameLine();
-        if (ImGui.RadioButton("Custom Resolution (first-party)", cfg.ResolutionProvider == ResolutionProvider.CustomResolution))
+        if (UiGui.RadioButton("Custom Resolution (first-party)", cfg.ResolutionProvider == ResolutionProvider.CustomResolution))
         {
             cfg.ResolutionProvider = ResolutionProvider.CustomResolution;
             cfg.Save();
@@ -376,17 +451,17 @@ public sealed class MainWindow : Window
             var label = cfg.ResolutionProvider == ResolutionProvider.XASlave && !resolution.SlaveRepositoryEnabled()
                 ? "Add repo + install XA Slave"
                 : $"Install {resolution.ProviderName}";
-            if (ImGui.Button(label))
+            if (UiGui.Button(label))
                 _ = resolution.InstallAsync();
         }
-        else if (!resolution.Ready && ImGui.Button("Open Plugin Installer"))
+        else if (!resolution.Ready && UiGui.Button("Open Plugin Installer"))
         {
             Plugin.CommandManager.ProcessCommand("/xlplugins");
         }
         ImGui.EndDisabled();
 
         if (resolution.Installing)
-            ImGui.TextUnformatted("Installing...");
+            UiGui.TextUnformatted("Installing...");
         if (!string.IsNullOrEmpty(resolution.Status))
             UiHelpers.Wrapped(resolution.Status);
 
@@ -394,7 +469,7 @@ public sealed class MainWindow : Window
         {
             UiHelpers.SectionHeader("XA Slave gameplay scaling");
             var scale = cfg.ResolutionScale;
-            if (ImGui.SliderFloat("Scale", ref scale, 0.01f, 1f, "%.2fx"))
+            if (UiGui.SliderFloat("Scale", ref scale, 0.01f, 1f, "%.2fx"))
             {
                 cfg.ResolutionScale = Math.Clamp(float.IsFinite(scale) ? scale : 0.25f, 0.01f, 1f);
                 cfg.Save();
@@ -409,18 +484,18 @@ public sealed class MainWindow : Window
         }
 
         ImGui.BeginDisabled(!resolution.Ready || resolution.Installing);
-        if (ImGui.Button(cfg.ResolutionProvider == ResolutionProvider.XASlave ? "Enable / apply scale" : "Enable gameplay scaling"))
+        if (UiGui.Button(cfg.ResolutionProvider == ResolutionProvider.XASlave ? "Enable / apply scale" : "Enable gameplay scaling"))
             resolution.Apply(true);
         ImGui.SameLine();
-        if (ImGui.Button(cfg.ResolutionProvider == ResolutionProvider.XASlave ? "Disable scaling" : "Set gameplay to 1.0x"))
+        if (UiGui.Button(cfg.ResolutionProvider == ResolutionProvider.XASlave ? "Disable scaling" : "Set gameplay to 1.0x"))
             resolution.Apply(false);
         ImGui.EndDisabled();
 
         UiHelpers.HotkeyStatus("Toggle hotkey", cfg.ResolutionToggleHotkey);
-        if (ImGui.Button("Hotkey settings"))
+        if (UiGui.Button("Hotkey settings"))
             OpenHotkeysTab();
         if (cfg.ResolutionProvider == ResolutionProvider.XASlave)
-            UiHelpers.Wrapped($"XA Slave toggle follows the last successful DPS request this session ({(resolution.SlaveRequestEnabled ? "enabled" : "disabled")}). After changing scaling in XA Slave, use these enable/disable buttons to set the toggle state.");
+            UiHelpers.Wrapped(UiText.F("XA Slave toggle follows the last successful DPS request this session ({0}). After changing scaling in XA Slave, use these enable/disable buttons to set the toggle state.", resolution.SlaveRequestEnabled ? "enabled" : "disabled"));
         else if (resolution.Ready && !resolution.Installing)
         {
             UiHelpers.SectionHeader("Custom Resolution settings");
@@ -453,7 +528,7 @@ public sealed class MainWindow : Window
             ImGui.TableSetupColumn("Binding");
             ImGui.TableSetupColumn("Set");
             ImGui.TableSetupColumn("Clear");
-            ImGui.TableHeadersRow();
+            UiGui.TableHeadersRow();
 
             DrawHotkeyRow("Foreground", HotkeyTarget.Foreground, plugin.Configuration.ForegroundToggleHotkey);
             DrawHotkeyRow("Background", HotkeyTarget.Background, plugin.Configuration.BackgroundToggleHotkey);
@@ -468,7 +543,7 @@ public sealed class MainWindow : Window
         if (hotkeyCaptureTarget is { } target)
         {
             ImGui.Spacing();
-            UiHelpers.StatusPill("Capture", $"{HotkeyTargetLabel(target)} listening", UiHelpers.Info);
+            UiHelpers.StatusPill("Capture", UiText.F("{0} listening", HotkeyTargetLabel(target)), UiHelpers.Info);
         }
     }
 
@@ -489,7 +564,7 @@ public sealed class MainWindow : Window
             allOffHotkeySetupRequested = false;
         }
 
-        if (!allOffHotkeySetupOpen || !ImGui.BeginPopupModal(AllOffHotkeySetupPopup, ImGuiWindowFlags.AlwaysAutoResize))
+        if (!allOffHotkeySetupOpen || !UiGui.BeginPopupModal(AllOffHotkeySetupPopup, ImGuiWindowFlags.AlwaysAutoResize))
             return;
 
         if (Plugin.IsVirtualKeyPressed((int)VirtualKey.ESCAPE))
@@ -500,7 +575,7 @@ public sealed class MainWindow : Window
         }
 
         ImGui.PushTextWrapPos(ImGui.GetFontSize() * 34f);
-        ImGui.TextUnformatted("All Off is the safety action: it disables foreground and background no-render modes, turns crowd suppression off, restores normal rendering, and makes hidden actors visible again.");
+        UiGui.TextUnformatted("All Off is the safety action: it disables foreground and background no-render modes, turns crowd suppression off, restores normal rendering, and makes hidden actors visible again.");
         ImGui.PopTextWrapPos();
         ImGui.Spacing();
 
@@ -530,17 +605,17 @@ public sealed class MainWindow : Window
                 allOffHotkeySetupListening = false;
             }
         }
-        else if (ImGui.Button(allOffHotkeySetupDraft.HasChord ? "Capture Again" : "Capture Hotkey"))
+        else if (UiGui.Button(allOffHotkeySetupDraft.HasChord ? "Capture Again" : "Capture Hotkey"))
         {
             allOffHotkeySetupListening = true;
         }
 
         var conflicts = GetHotkeyConflictLabels(HotkeyTarget.AllOff, allOffHotkeySetupDraft);
         if (!string.IsNullOrEmpty(conflicts))
-            UiHelpers.WarningStrip($"This chord is currently used by {conflicts}. Confirming will clear those conflicting bindings.");
+            UiHelpers.WarningStrip(UiText.F("This chord is currently used by {0}. Confirming will clear those conflicting bindings.", conflicts));
 
         ImGui.Spacing();
-        if (allOffHotkeySetupDraft.HasChord && ImGui.Button("Confirm All Off Hotkey"))
+        if (allOffHotkeySetupDraft.HasChord && UiGui.Button("Confirm All Off Hotkey"))
         {
             AssignHotkey(HotkeyTarget.AllOff, allOffHotkeySetupDraft);
             SaveAndApply();
@@ -549,7 +624,7 @@ public sealed class MainWindow : Window
 
         if (allOffHotkeySetupDraft.HasChord)
             ImGui.SameLine();
-        if (ImGui.Button("Cancel Setup"))
+        if (UiGui.Button("Cancel Setup"))
             CloseAllOffHotkeySetupWizard();
 
         ImGui.EndPopup();
@@ -583,11 +658,11 @@ public sealed class MainWindow : Window
     {
         ImGui.TableNextRow();
         ImGui.TableSetColumnIndex(0);
-        ImGui.TextUnformatted(label);
+        UiGui.TextUnformatted(label);
 
         ImGui.TableSetColumnIndex(1);
         var enabled = binding.Enabled;
-        if (ImGui.Checkbox($"##{target}Enabled", ref enabled))
+        if (UiGui.Checkbox($"##{target}Enabled", ref enabled))
         {
             binding.Enabled = enabled;
             if (enabled)
@@ -596,18 +671,18 @@ public sealed class MainWindow : Window
         }
 
         ImGui.TableSetColumnIndex(2);
-        ImGui.TextUnformatted(UiHelpers.HotkeyStatusText(binding));
+        UiGui.TextUnformatted(UiHelpers.HotkeyStatusText(binding));
 
         ImGui.TableSetColumnIndex(3);
         if (UiHelpers.SmallButton(
                 hotkeyCaptureTarget == target ? $"...##{target}Set" : $"Set##{target}",
-                $"Capture a new hotkey for {label}."))
+                UiText.F("Capture a new hotkey for {0}.", label)))
         {
             hotkeyCaptureTarget = target;
         }
 
         ImGui.TableSetColumnIndex(4);
-        if (UiHelpers.SmallButton($"Clear##{target}", $"Clear the {label} hotkey."))
+        if (UiHelpers.SmallButton($"Clear##{target}", UiText.F("Clear the {0} hotkey.", label)))
         {
             binding.Clear();
             if (hotkeyCaptureTarget == target)
@@ -754,10 +829,10 @@ public sealed class MainWindow : Window
         {
             if (ImGui.BeginTable("##DpsCurrentGameWindowPlacement", 2, ImGuiTableFlags.SizingStretchProp))
             {
-                DrawInfoRow("X", current.X.ToString());
-                DrawInfoRow("Y", current.Y.ToString());
-                DrawInfoRow("Width", current.Width.ToString());
-                DrawInfoRow("Height", current.Height.ToString());
+                DrawInfoRow("X", current.X.ToString(UiText.Current.Culture));
+                DrawInfoRow("Y", current.Y.ToString(UiText.Current.Culture));
+                DrawInfoRow("Width", current.Width.ToString(UiText.Current.Culture));
+                DrawInfoRow("Height", current.Height.ToString(UiText.Current.Culture));
                 DrawInfoRow("Monitor", WindowPlacementService.FormatMonitor(current.MonitorDeviceName));
                 DrawInfoRow("Monitor bounds", WindowPlacementService.FormatBounds(current.MonitorLeft, current.MonitorTop, current.MonitorRight, current.MonitorBottom));
                 ImGui.EndTable();
@@ -790,27 +865,27 @@ public sealed class MainWindow : Window
         {
             savedMonitorDeviceNameEditing = false;
             savedMonitorDeviceNameDraft = string.Empty;
-            ImGui.TextDisabled("No saved game window placement/size.");
+            UiGui.TextDisabled("No saved game window placement/size.");
         }
         else if (ImGui.BeginTable("##DpsSavedGameWindowPlacement", 2, ImGuiTableFlags.SizingStretchProp))
         {
-            DrawInfoRow("X", saved.X.ToString());
-            DrawInfoRow("Y", saved.Y.ToString());
+            DrawInfoRow("X", saved.X.ToString(UiText.Current.Culture));
+            DrawInfoRow("Y", saved.Y.ToString(UiText.Current.Culture));
             DrawInfoRow("Width", FormatSavedWindowDimension(saved.Width));
             DrawInfoRow("Height", FormatSavedWindowDimension(saved.Height));
             DrawSavedMonitorEditor(saved);
             DrawInfoRow("Monitor bounds", WindowPlacementService.FormatBounds(saved.MonitorLeft, saved.MonitorTop, saved.MonitorRight, saved.MonitorBottom));
-            DrawInfoRow("Saved UTC", saved.SavedUtc == default ? "unknown" : saved.SavedUtc.ToString("u"));
+            DrawInfoRow("Saved UTC", saved.SavedUtc == default ? "unknown" : saved.SavedUtc.ToString("g", UiText.Current.Culture));
             ImGui.EndTable();
         }
 
         UiHelpers.SectionHeader("Load");
         var autoLoad = cfg.WindowPlacementAutoLoadEnabled;
-        if (ImGui.Checkbox("Load saved window position + display on client load", ref autoLoad))
+        if (UiGui.Checkbox("Load saved window position + display on client load", ref autoLoad))
             plugin.SetWindowPlacementAutoLoadEnabled(autoLoad, "main window xy tab");
 
         var sizeAutoLoad = cfg.WindowSizeAutoLoadEnabled;
-        if (ImGui.Checkbox("Load saved window size on client load", ref sizeAutoLoad))
+        if (UiGui.Checkbox("Load saved window size on client load", ref sizeAutoLoad))
             plugin.SetWindowSizeAutoLoadEnabled(sizeAutoLoad, "main window xy tab");
 
         if (UiHelpers.CompactButton("Save Current Window", 164f, "Save the current game client position, size, and monitor."))
@@ -836,15 +911,15 @@ public sealed class MainWindow : Window
     {
         ImGui.TableNextRow();
         ImGui.TableSetColumnIndex(0);
-        ImGui.TextUnformatted("Monitor");
+        UiGui.TextUnformatted("Monitor");
         ImGui.TableSetColumnIndex(1);
 
         if (savedMonitorDeviceNameEditing)
         {
             ImGui.SetNextItemWidth(Math.Max(120f, ImGui.GetContentRegionAvail().X - 104f));
-            ImGui.InputText("##DpsSavedMonitorDeviceName", ref savedMonitorDeviceNameDraft, 32);
+            UiGui.InputText("##DpsSavedMonitorDeviceName", ref savedMonitorDeviceNameDraft, 32);
             ImGui.SameLine();
-            if (ImGui.SmallButton("Save##DpsSavedMonitorDeviceName"))
+            if (UiGui.SmallButton("Save##DpsSavedMonitorDeviceName"))
             {
                 saved.MonitorDeviceName = savedMonitorDeviceNameDraft;
                 saved.MonitorDevicePath = null;
@@ -854,7 +929,7 @@ public sealed class MainWindow : Window
             }
 
             ImGui.SameLine();
-            if (ImGui.SmallButton("Cancel##DpsSavedMonitorDeviceName"))
+            if (UiGui.SmallButton("Cancel##DpsSavedMonitorDeviceName"))
             {
                 savedMonitorDeviceNameEditing = false;
                 savedMonitorDeviceNameDraft = string.Empty;
@@ -871,14 +946,14 @@ public sealed class MainWindow : Window
                 string.Equals(saved.MonitorDeviceName, monitor.GdiDeviceName, StringComparison.OrdinalIgnoreCase));
 
         ImGui.SetNextItemWidth(Math.Max(120f, ImGui.GetContentRegionAvail().X - 48f));
-        if (ImGui.BeginCombo("##DpsSavedMonitorDeviceName", selectedMonitor?.DisplayLabel ?? WindowPlacementService.FormatMonitor(saved.MonitorDeviceName)))
+        if (UiGui.BeginCombo("##DpsSavedMonitorDeviceName", selectedMonitor?.DisplayLabel ?? WindowPlacementService.FormatMonitor(saved.MonitorDeviceName)))
         {
             foreach (var monitor in availableMonitors)
             {
                 var selected = !string.IsNullOrWhiteSpace(saved.MonitorDevicePath)
                     ? string.Equals(saved.MonitorDevicePath, monitor.MonitorDevicePath, StringComparison.OrdinalIgnoreCase)
                     : string.Equals(saved.MonitorDeviceName, monitor.GdiDeviceName, StringComparison.OrdinalIgnoreCase);
-                if (ImGui.Selectable(monitor.DisplayLabel, selected))
+                if (UiGui.Selectable(monitor.DisplayLabel, selected))
                     plugin.SelectWindowPlacementMonitor(monitor, "main window xy monitor picker");
 
                 if (selected)
@@ -889,7 +964,7 @@ public sealed class MainWindow : Window
         }
 
         ImGui.SameLine();
-        if (ImGui.SmallButton("Edit##DpsSavedMonitorDeviceName"))
+        if (UiGui.SmallButton("Edit##DpsSavedMonitorDeviceName"))
         {
             savedMonitorDeviceNameDraft = saved.MonitorDeviceName ?? string.Empty;
             savedMonitorDeviceNameEditing = true;
@@ -917,21 +992,21 @@ public sealed class MainWindow : Window
             windowPositionSetupRequested = false;
         }
 
-        if (!windowPositionSetupOpen || !ImGui.BeginPopupModal(WindowPositionSetupPopup, ImGuiWindowFlags.AlwaysAutoResize))
+        if (!windowPositionSetupOpen || !UiGui.BeginPopupModal(WindowPositionSetupPopup, ImGuiWindowFlags.AlwaysAutoResize))
             return;
 
         ImGui.PushTextWrapPos(ImGui.GetFontSize() * 38f);
-        ImGui.TextUnformatted("This setup changes only the FFXIV window position. Negative coordinates are valid on monitors arranged left of or above the primary display. Window size and size auto-load are left unchanged.");
+        UiGui.TextUnformatted("This setup changes only the FFXIV window position. Negative coordinates are valid on monitors arranged left of or above the primary display. Window size and size auto-load are left unchanged.");
         ImGui.PopTextWrapPos();
         ImGui.Spacing();
 
         if (windowPositionSetupStage == WindowPositionSetupStage.DetectWindow)
         {
             UiHelpers.WarningStrip(plugin.WindowPlacementService.Status);
-            if (ImGui.Button("Retry Window Detection"))
+            if (UiGui.Button("Retry Window Detection"))
                 TryDetectWindowForPositionSetup();
             ImGui.SameLine();
-            if (ImGui.Button("Cancel Setup"))
+            if (UiGui.Button("Cancel Setup"))
                 CloseWindowPositionSetupWizard();
 
             ImGui.EndPopup();
@@ -954,35 +1029,35 @@ public sealed class MainWindow : Window
         {
             UiHelpers.SectionHeader("Draft Position");
             ImGui.SetNextItemWidth(140f);
-            ImGui.InputInt("X##DpsWindowPositionSetupX", ref windowPositionSetupDraftX, 0, 0);
+            UiGui.InputInt("X##DpsWindowPositionSetupX", ref windowPositionSetupDraftX, 0, 0);
             ImGui.SetNextItemWidth(140f);
-            ImGui.InputInt("Y##DpsWindowPositionSetupY", ref windowPositionSetupDraftY, 0, 0);
+            UiGui.InputInt("Y##DpsWindowPositionSetupY", ref windowPositionSetupDraftY, 0, 0);
 
-            if (ImGui.Button("Apply Position"))
+            if (UiGui.Button("Apply Position"))
                 ApplyWindowPositionSetupDraft();
             ImGui.SameLine();
-            if (ImGui.Button("Cancel Setup"))
+            if (UiGui.Button("Cancel Setup"))
                 CloseWindowPositionSetupWizard();
         }
         else if (windowPositionSetupStage == WindowPositionSetupStage.AwaitReadback)
         {
             UiHelpers.WarningStrip(plugin.WindowPlacementService.Status);
-            if (ImGui.Button("Retry Position Readback"))
+            if (UiGui.Button("Retry Position Readback"))
                 TryReadBackWindowPositionSetup();
             ImGui.SameLine();
-            if (ImGui.Button("Cancel and Restore Original"))
+            if (UiGui.Button("Cancel and Restore Original"))
                 RestoreOriginalWindowPositionAndClose();
         }
         else
         {
             UiHelpers.SectionHeader("Finish");
-            ImGui.Checkbox("Enable position/display auto-load", ref windowPositionSetupAutoLoad);
-            ImGui.TextDisabled($"Window size auto-load remains {(plugin.Configuration.WindowSizeAutoLoadEnabled ? "enabled" : "disabled")}.");
+            UiGui.Checkbox("Enable position/display auto-load", ref windowPositionSetupAutoLoad);
+            UiGui.TextDisabled(UiText.F("Window size auto-load remains {0}.", plugin.Configuration.WindowSizeAutoLoadEnabled ? "enabled" : "disabled"));
 
-            if (ImGui.Button("Cancel and Restore Original"))
+            if (UiGui.Button("Cancel and Restore Original"))
                 RestoreOriginalWindowPositionAndClose();
             ImGui.SameLine();
-            if (ImGui.Button("Close and Keep Current Position"))
+            if (UiGui.Button("Close and Keep Current Position"))
                 SaveWindowPositionSetupAndClose();
         }
 
@@ -1083,8 +1158,8 @@ public sealed class MainWindow : Window
         DrawInfoRow("Window", "FINAL FANTASY XIV");
         DrawInfoRow("Monitor", WindowPlacementService.FormatMonitor(snapshot.MonitorDeviceName));
         DrawInfoRow("Monitor bounds", WindowPlacementService.FormatBounds(snapshot.MonitorLeft, snapshot.MonitorTop, snapshot.MonitorRight, snapshot.MonitorBottom));
-        DrawInfoRow("X", snapshot.X.ToString());
-        DrawInfoRow("Y", snapshot.Y.ToString());
+        DrawInfoRow("X", snapshot.X.ToString(UiText.Current.Culture));
+        DrawInfoRow("Y", snapshot.Y.ToString(UiText.Current.Culture));
         ImGui.EndTable();
     }
 
@@ -1100,20 +1175,20 @@ public sealed class MainWindow : Window
     private void DrawWindowScalarEditor(string label, ref int value, Func<int, bool> applyValue, bool positiveOnly)
     {
         ImGui.AlignTextToFramePadding();
-        ImGui.TextUnformatted(label);
-        ImGui.SameLine(78f);
+        UiGui.TextUnformatted(label);
+        ImGui.SameLine(Math.Max(78f * MaterialTheme.Metrics.Scale, ImGui.CalcTextSize(UiText.T(label)).X + ImGui.GetStyle().ItemInnerSpacing.X));
 
         var inputValue = value;
         ImGui.SetNextItemWidth(110f);
-        if (ImGui.InputInt($"##DpsWindow{label}", ref inputValue, 0, 0))
+        if (UiGui.InputInt($"##DpsWindow{label}", ref inputValue, 0, 0))
             ApplyWindowScalarValue(ref value, inputValue, applyValue, positiveOnly);
 
         ImGui.SameLine();
-        if (UiHelpers.SmallButton($"[-]##DpsWindow{label}Minus", $"Decrease {label} by 1."))
+        if (UiHelpers.SmallButton($"[-]##DpsWindow{label}Minus", UiText.F("Decrease {0} by 1.", label)))
             ApplyWindowScalarValue(ref value, value - 1, applyValue, positiveOnly);
 
         ImGui.SameLine();
-        if (UiHelpers.SmallButton($"[+]##DpsWindow{label}Plus", $"Increase {label} by 1."))
+        if (UiHelpers.SmallButton($"[+]##DpsWindow{label}Plus", UiText.F("Increase {0} by 1.", label)))
             ApplyWindowScalarValue(ref value, value + 1, applyValue, positiveOnly);
     }
 
@@ -1133,7 +1208,7 @@ public sealed class MainWindow : Window
     }
 
     private static string FormatSavedWindowDimension(int value)
-        => value > 0 ? value.ToString() : "unknown";
+        => value > 0 ? value.ToString(UiText.Current.Culture) : "unknown";
 
     private void DrawDiagnosticsTab()
     {
@@ -1148,11 +1223,11 @@ public sealed class MainWindow : Window
         UiHelpers.StatusPill("Bypass", plugin.ForegroundRenderControlService.DisplayRecoveryBypassActive, "ON", "OFF");
         if (ImGui.BeginTable("##DpsDisplayRecoveryDiagnostics", 2, ImGuiTableFlags.SizingStretchProp))
         {
-            DrawInfoRow("Trigger", plugin.DisplayRecoveryService.TriggerReason);
-            DrawInfoRow("Enabled exceptions", DisplayRecoveryService.GetEnabledCauses(plugin.Configuration).ToString());
-            DrawInfoRow("Last change UTC", plugin.DisplayRecoveryService.LastChangeText);
+            DrawInfoRow("Trigger", UiText.Causes(plugin.DisplayRecoveryService.TriggerReason));
+            DrawInfoRow("Enabled exceptions", UiText.Causes(DisplayRecoveryService.GetEnabledCauses(plugin.Configuration).ToString()));
+            DrawInfoRow("Last change UTC", plugin.DisplayRecoveryService.LastChangeUtc?.ToString("g", UiText.Current.Culture) ?? UiText.T("none"));
             DrawInfoRow("Rearm ETA", plugin.DisplayRecoveryService.RearmEtaText);
-            DrawInfoRow("Poll seconds", plugin.DisplayRecoveryService.PollInterval.ToString());
+            DrawInfoRow("Poll seconds", plugin.DisplayRecoveryService.PollInterval.ToString(UiText.Current.Culture));
             ImGui.EndTable();
         }
         UiHelpers.Wrapped(plugin.DisplayRecoveryService.Status);
@@ -1167,10 +1242,13 @@ public sealed class MainWindow : Window
         UiHelpers.StatusPill("Logged-out bypass", plugin.BackgroundRenderGateService.LoggedOutBypassActive, "YES", "NO");
         ImGui.SameLine();
         UiHelpers.StatusPill("Recovery pulse", plugin.BackgroundRenderGateService.BackgroundRecoveryBypassActive, "ACTIVE", "IDLE");
-        UiHelpers.Wrapped($"Transition exception: {(plugin.Configuration.RenderDuringAreaTransitions ? "enabled" : "disabled")}; logged-out exception: {(plugin.Configuration.RenderWhileLoggedOut ? "enabled" : "disabled")}; periodic frames: {(plugin.Configuration.PeriodicRenderFramesEnabled ? $"enabled, every {plugin.BackgroundRenderGateService.SafetyFrameIntervalMs / 1000}s" : "disabled")}.");
-        UiHelpers.Wrapped($"Automatic AutoRetainer conflict resolution: {(plugin.Configuration.AutoRetainerRenderConflictResolutionEnabled ? "enabled" : "disabled")}.");
+        UiHelpers.Wrapped(UiText.F("Transition exception: {0}; logged-out exception: {1}; periodic frames: {2}.",
+            plugin.Configuration.RenderDuringAreaTransitions ? "enabled" : "disabled",
+            plugin.Configuration.RenderWhileLoggedOut ? "enabled" : "disabled",
+            plugin.Configuration.PeriodicRenderFramesEnabled ? UiText.F("enabled, every {0}s", plugin.BackgroundRenderGateService.SafetyFrameIntervalMs / 1000) : "disabled"));
+        UiHelpers.Wrapped(UiText.F("Automatic AutoRetainer conflict resolution: {0}.", plugin.Configuration.AutoRetainerRenderConflictResolutionEnabled ? "enabled" : "disabled"));
         UiHelpers.Wrapped(plugin.BackgroundRenderGateService.Status);
-        UiHelpers.Wrapped($"Max render-hook delay: {plugin.BackgroundRenderGateService.MaxRenderHookDelayMs:0.0} ms");
+        UiHelpers.Wrapped(UiText.F("Max render-hook delay: {0:0.0} ms", plugin.BackgroundRenderGateService.MaxRenderHookDelayMs));
 
         UiHelpers.SectionHeader("Recovery");
         UiHelpers.Wrapped(plugin.BackgroundRecoveryStatus);
@@ -1184,7 +1262,7 @@ public sealed class MainWindow : Window
             DrawTextureLab("Main");
         else
         {
-            ImGui.TextDisabled("Debug texture lab hidden for this session.");
+            UiGui.TextDisabled("Debug texture lab hidden for this session.");
             if (UiHelpers.CompactButton("Enable Debug", 112f, "Show texture diagnostics for this session."))
                 plugin.SetDebugMode(true);
         }
@@ -1201,23 +1279,23 @@ public sealed class MainWindow : Window
         UiHelpers.Wrapped(PluginInfo.DiscordFeedbackNote);
 
         UiHelpers.SectionHeader("Version");
-        ImGui.TextUnformatted($"{PluginInfo.DisplayName} {version}");
-        ImGui.TextUnformatted(PluginInfo.Summary);
+        UiGui.TextUnformatted($"{PluginInfo.DisplayName} {version}");
+        UiGui.TextUnformatted(PluginInfo.Summary);
 
         UiHelpers.SectionHeader("Commands");
-        ImGui.TextUnformatted("/dps");
-        ImGui.TextUnformatted("/dps roff    arm background no-render");
-        ImGui.TextUnformatted("/dps ron     restore background no-render");
-        ImGui.TextUnformatted("/dps foff    foreground render OFF");
-        ImGui.TextUnformatted("/dps fon     foreground render ON");
-        ImGui.TextUnformatted("/dps ws      move plugin UI window to 1,1");
-        ImGui.TextUnformatted("/dps j       randomize plugin UI window in viewport");
-        ImGui.TextUnformatted("/dps wsave   save game window X/Y + size + monitor");
-        ImGui.TextUnformatted("/dps wload   load saved game window X/Y + monitor");
-        ImGui.TextUnformatted("/dps wloadall load saved game window X/Y + monitor + size");
-        ImGui.TextUnformatted("/dps wreset  reset saved game window position/size");
-        ImGui.TextUnformatted("/dps debug   show texture lab");
-        ImGui.TextUnformatted("/dps debug off");
+        UiGui.TextUnformatted("/dps");
+        UiGui.TextUnformatted("/dps roff    arm background no-render");
+        UiGui.TextUnformatted("/dps ron     restore background no-render");
+        UiGui.TextUnformatted("/dps foff    foreground render OFF");
+        UiGui.TextUnformatted("/dps fon     foreground render ON");
+        UiGui.TextUnformatted("/dps ws      move plugin UI window to 1,1");
+        UiGui.TextUnformatted("/dps j       randomize plugin UI window in viewport");
+        UiGui.TextUnformatted("/dps wsave   save game window X/Y + size + monitor");
+        UiGui.TextUnformatted("/dps wload   load saved game window X/Y + monitor");
+        UiGui.TextUnformatted("/dps wloadall load saved game window X/Y + monitor + size");
+        UiGui.TextUnformatted("/dps wreset  reset saved game window position/size");
+        UiGui.TextUnformatted("/dps debug   show texture lab");
+        UiGui.TextUnformatted("/dps debug off");
     }
 
     private void DrawDtrTab()
@@ -1236,19 +1314,19 @@ public sealed class MainWindow : Window
 
         UiHelpers.SectionHeader("Display");
         var dtrEnabled = cfg.DtrBarEnabled;
-        if (ImGui.Checkbox("Show DTR bar entry", ref dtrEnabled))
+        if (UiGui.Checkbox("Show DTR bar entry", ref dtrEnabled))
         {
             cfg.DtrBarEnabled = dtrEnabled;
             SaveAndApply(updateDtr: true);
         }
 
         var mode = cfg.DtrBarMode;
-        if (ImGui.BeginCombo("DTR mode", DtrModeLabel(mode)))
+        if (UiGui.BeginCombo("DTR mode", DtrModeLabel(mode)))
         {
             for (var value = 0; value <= 2; value++)
             {
                 var selected = value == mode;
-                if (ImGui.Selectable(DtrModeLabel(value), selected))
+                if (UiGui.Selectable(DtrModeLabel(value), selected))
                 {
                     cfg.DtrBarMode = value;
                     SaveAndApply(updateDtr: true);
@@ -1262,14 +1340,14 @@ public sealed class MainWindow : Window
         }
 
         var enabledIcon = cfg.DtrIconEnabled;
-        if (ImGui.InputText("Enabled icon", ref enabledIcon, 16))
+        if (UiGui.InputText("Enabled icon", ref enabledIcon, 16))
         {
             cfg.DtrIconEnabled = enabledIcon;
             SaveAndApply(updateDtr: true);
         }
 
         var disabledIcon = cfg.DtrIconDisabled;
-        if (ImGui.InputText("Disabled icon", ref disabledIcon, 16))
+        if (UiGui.InputText("Disabled icon", ref disabledIcon, 16))
         {
             cfg.DtrIconDisabled = disabledIcon;
             SaveAndApply(updateDtr: true);
@@ -1280,8 +1358,8 @@ public sealed class MainWindow : Window
         UiHelpers.StatusPill("DTR", cfg.DtrBarEnabled);
         ImGui.SameLine();
         UiHelpers.StatusPill("Click", HasAnyDtrClickAction(cfg), "CONFIGURED", "NOOP");
-        UiHelpers.Wrapped($"Preview: {DtrPreviewText(cfg)}");
-        UiHelpers.Wrapped($"Tooltip: {PluginInfo.DisplayName} {(cfg.PluginEnabled ? "On" : "Off")}. {plugin.GetDtrClickActionSummary()}");
+        UiHelpers.Wrapped(UiText.F("Preview: {0}", DtrPreviewText(cfg)));
+        UiHelpers.Wrapped(UiText.F("Tooltip: {0} {1}. {2}", PluginInfo.DisplayName, cfg.PluginEnabled ? "On" : "Off", plugin.GetDtrClickActionSummary()));
     }
 
     private void DrawDtrClickActionsSection()
@@ -1313,7 +1391,7 @@ public sealed class MainWindow : Window
     private void DrawDtrClickActionToggle(string label, bool value, Action<bool> setValue)
     {
         var current = value;
-        if (ImGui.Checkbox(label, ref current))
+        if (UiGui.Checkbox(label, ref current))
         {
             setValue(current);
             SaveAndApply(updateDtr: true);
@@ -1336,7 +1414,7 @@ public sealed class MainWindow : Window
         {
             1 => $"{icon} DPS",
             2 => icon,
-            _ => $"DPS: {status}",
+            _ => UiText.F("DPS: {0}", status),
         };
     }
 
@@ -1345,19 +1423,19 @@ public sealed class MainWindow : Window
         var cfg = plugin.Configuration;
 
         var textureEnabled = cfg.TextureRedirectEnabled;
-        if (ImGui.Checkbox($"Enable texture redirect##{id}", ref textureEnabled))
+        if (UiGui.Checkbox($"Enable texture redirect##{id}", ref textureEnabled))
         {
             cfg.TextureRedirectEnabled = textureEnabled;
             SaveAndApply();
         }
 
         var scope = cfg.TextureRedirectScope;
-        if (ImGui.BeginCombo($"Texture scope##{id}", TextureRedirectService.ScopeLabel(scope)))
+        if (UiGui.BeginCombo($"Texture scope##{id}", TextureRedirectService.ScopeLabel(scope)))
         {
             foreach (var value in Enum.GetValues<TextureRedirectScope>())
             {
                 var selected = value == scope;
-                if (ImGui.Selectable(TextureRedirectService.ScopeLabel(value), selected))
+                if (UiGui.Selectable(TextureRedirectService.ScopeLabel(value), selected))
                 {
                     cfg.TextureRedirectScope = value;
                     SaveAndApply();
@@ -1371,12 +1449,12 @@ public sealed class MainWindow : Window
         }
 
         var asset = cfg.TextureReplacementAsset;
-        if (ImGui.BeginCombo($"Replacement asset##{id}", TextureRedirectService.AssetLabel(asset)))
+        if (UiGui.BeginCombo($"Replacement asset##{id}", TextureRedirectService.AssetLabel(asset)))
         {
             foreach (var value in Enum.GetValues<TextureReplacementAsset>())
             {
                 var selected = value == asset;
-                if (ImGui.Selectable(TextureRedirectService.AssetLabel(value), selected))
+                if (UiGui.Selectable(TextureRedirectService.AssetLabel(value), selected))
                 {
                     cfg.TextureReplacementAsset = value;
                     SaveAndApply();
@@ -1390,7 +1468,7 @@ public sealed class MainWindow : Window
         }
 
         var logRedirects = cfg.LogTextureRedirects;
-        if (ImGui.Checkbox($"Log redirected textures##{id}", ref logRedirects))
+        if (UiGui.Checkbox($"Log redirected textures##{id}", ref logRedirects))
         {
             cfg.LogTextureRedirects = logRedirects;
             SaveAndApply();
@@ -1408,12 +1486,12 @@ public sealed class MainWindow : Window
         if (UiHelpers.CompactButton($"Global##{id}", 76f, "Redirect all tracked textures to the black 1x1 asset."))
             ApplyTexturePreset(TextureRedirectScope.EverythingTex, TextureReplacementAsset.Black1x1);
 
-        ImGui.TextUnformatted($"Status: {plugin.TextureRedirectService.Status}");
-        ImGui.TextUnformatted($"Redirected textures: {plugin.TextureRedirectService.RedirectedTextures}");
-        ImGui.TextUnformatted($"Successful loads: {plugin.TextureRedirectService.SuccessfulRedirectLoads}");
-        ImGui.TextUnformatted($"Failed loads: {plugin.TextureRedirectService.FailedRedirectLoads}");
-        UiHelpers.Wrapped($"Last game path: {plugin.TextureRedirectService.LastGameTexturePath}");
-        UiHelpers.Wrapped($"Replacement path: {plugin.TextureRedirectService.LastReplacementPath}");
+        UiGui.TextUnformatted(UiText.F("Status: {0}", plugin.TextureRedirectService.Status));
+        UiGui.TextUnformatted(UiText.F("Redirected textures: {0}", plugin.TextureRedirectService.RedirectedTextures));
+        UiGui.TextUnformatted(UiText.F("Successful loads: {0}", plugin.TextureRedirectService.SuccessfulRedirectLoads));
+        UiGui.TextUnformatted(UiText.F("Failed loads: {0}", plugin.TextureRedirectService.FailedRedirectLoads));
+        UiHelpers.Wrapped(UiText.F("Last game path: {0}", plugin.TextureRedirectService.LastGameTexturePath));
+        UiHelpers.Wrapped(UiText.F("Replacement path: {0}", plugin.TextureRedirectService.LastReplacementPath));
         if (UiHelpers.SmallButton($"Clear Texture Stats##{id}", "Reset texture redirect counters."))
             plugin.TextureRedirectService.ResetStats();
     }
@@ -1421,7 +1499,7 @@ public sealed class MainWindow : Window
     private void DrawToggle(string label, bool value, Action<bool> setValue)
     {
         var current = value;
-        if (ImGui.Checkbox(label, ref current))
+        if (UiGui.Checkbox(label, ref current))
         {
             setValue(current);
             SaveAndApply();
@@ -1432,18 +1510,18 @@ public sealed class MainWindow : Window
     {
         ImGui.TableNextRow();
         ImGui.TableSetColumnIndex(0);
-        ImGui.TextUnformatted(label);
+        UiGui.TextUnformatted(label);
         ImGui.TableSetColumnIndex(1);
-        ImGui.TextUnformatted(value.ToString());
+        UiGui.TextUnformatted(value.ToString(UiText.Current.Culture));
     }
 
     private static void DrawInfoRow(string label, string value)
     {
         ImGui.TableNextRow();
         ImGui.TableSetColumnIndex(0);
-        ImGui.TextUnformatted(label);
+        UiGui.TextUnformatted(label);
         ImGui.TableSetColumnIndex(1);
-        ImGui.TextUnformatted(value);
+        UiGui.TextUnformatted(value);
     }
 
     private static void DrawHelperStatus(string label, bool loaded)

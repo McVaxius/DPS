@@ -46,6 +46,7 @@ public sealed class Plugin : IDalamudPlugin
 
     public static Plugin PluginInstance { get; private set; } = null!;
     public Configuration Configuration { get; }
+    internal DpsAppearance Appearance { get; }
     public ActorSuppressionService ActorSuppressionService { get; }
     public TextureRedirectService TextureRedirectService { get; }
     public BackgroundRenderGateService BackgroundRenderGateService { get; }
@@ -85,6 +86,7 @@ public sealed class Plugin : IDalamudPlugin
         PluginInstance = this;
         Configuration = PluginInterface.GetPluginConfig() as Configuration ?? new Configuration();
         MigrateConfiguration();
+        Appearance = new DpsAppearance(this);
         ActorSuppressionService = new ActorSuppressionService();
         TextureRedirectService = new TextureRedirectService();
         BackgroundRenderGateService = new BackgroundRenderGateService();
@@ -103,7 +105,7 @@ public sealed class Plugin : IDalamudPlugin
             HelpMessage = $"Open {PluginInfo.DisplayName}. Use '/dps roff' and '/dps ron' for background no-render, '/dps foff' and '/dps fon' for foreground render, '/dps ws' and '/dps j' for the plugin UI window, '/dps wsave', '/dps wload', '/dps wloadall', and '/dps wreset' for game window position/size, and '/dps debug' to expose the paused experimental texture lab for this session.",
         });
 
-        PluginInterface.UiBuilder.Draw += WindowSystem.Draw;
+        PluginInterface.UiBuilder.Draw += Appearance.Draw;
         PluginInterface.UiBuilder.OpenConfigUi += ToggleConfigUi;
         PluginInterface.UiBuilder.OpenMainUi += ToggleMainUi;
         Framework.Update += OnFrameworkUpdate;
@@ -240,7 +242,8 @@ public sealed class Plugin : IDalamudPlugin
         BackgroundRenderGateService.Dispose();
         TextureRedirectService.Dispose();
         ActorSuppressionService.ShowAll();
-        PluginInterface.UiBuilder.Draw -= WindowSystem.Draw;
+        PluginInterface.UiBuilder.Draw -= Appearance.Draw;
+        Appearance.Dispose();
         PluginInterface.UiBuilder.OpenConfigUi -= ToggleConfigUi;
         PluginInterface.UiBuilder.OpenMainUi -= ToggleMainUi;
         CommandManager.RemoveHandler(PluginInfo.Command);
