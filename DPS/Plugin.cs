@@ -51,6 +51,7 @@ public sealed class Plugin : IDalamudPlugin
     public TextureRedirectService TextureRedirectService { get; }
     public BackgroundRenderGateService BackgroundRenderGateService { get; }
     public ForegroundRenderControlService ForegroundRenderControlService { get; }
+    public RenderTrimService RenderTrimService { get; }
     public WindowPlacementService WindowPlacementService { get; }
     public DisplayRecoveryService DisplayRecoveryService { get; }
     public ResolutionScalingService ResolutionScalingService { get; }
@@ -72,6 +73,10 @@ public sealed class Plugin : IDalamudPlugin
     private bool allOffHotkeyDown;
     private bool windowPlacementAndSizeLoadHotkeyDown;
     private bool resolutionToggleHotkeyDown;
+    private bool renderTrimMasterHotkeyDown;
+    private bool renderTrimRevertHotkeyDown;
+    private readonly bool[] renderTrimHotkeyDown = new bool[Services.RenderTrimService.Controls.Count];
+    private readonly Action[] renderTrimHotkeyActions;
     private StartupWindowRestoreState startupWindowPositionRestoreState;
     private StartupWindowRestoreState startupWindowSizeRestoreState;
     private DateTime? startupWindowSizeRestoreStartedUtc;
@@ -91,6 +96,9 @@ public sealed class Plugin : IDalamudPlugin
         TextureRedirectService = new TextureRedirectService();
         BackgroundRenderGateService = new BackgroundRenderGateService();
         ForegroundRenderControlService = new ForegroundRenderControlService(BackgroundRenderGateService);
+        RenderTrimService = new RenderTrimService(Configuration, BackgroundRenderGateService, ForegroundRenderControlService);
+        BackgroundRenderGateService.NormalRenderFrame = RenderTrimService.AdmitNormalRenderFrame;
+        renderTrimHotkeyActions = Services.RenderTrimService.Controls.Select(control => (Action)(() => RenderTrimService.Toggle(control.Option))).ToArray();
         WindowPlacementService = new WindowPlacementService();
         DisplayRecoveryService = new DisplayRecoveryService();
         ResolutionScalingService = new ResolutionScalingService(Configuration);
@@ -119,6 +127,9 @@ public sealed class Plugin : IDalamudPlugin
     private void MigrateConfiguration()
     {
         var changed = false;
+        Configuration.RenderTrim ??= new RenderTrimConfiguration();
+        if (!Enum.IsDefined(Configuration.RenderTrim.MainViewMode))
+            Configuration.RenderTrim.MainViewMode = RenderTrimMainViewMode.BytePatch;
 
         if (Configuration.Version < 2)
         {
@@ -236,6 +247,8 @@ public sealed class Plugin : IDalamudPlugin
     public void Dispose()
     {
         Framework.Update -= OnFrameworkUpdate;
+        BackgroundRenderGateService.NormalRenderFrame = null;
+        RenderTrimService.Dispose();
         ResetBackgroundRecoveryState("Automatic recovery pulse cancelled on unload.");
         ApplyForegroundDisplayRecoveryBypass(false);
         ForegroundRenderControlService.Dispose();
@@ -487,6 +500,9 @@ public sealed class Plugin : IDalamudPlugin
         {
             Log.Warning(ex, "[DPS] Texture redirect refresh failed.");
         }
+
+        try { RenderTrimService.RefreshState(); }
+        catch (Exception ex) { Log.Warning(ex, "[DPS] RenderTrim refresh failed."); }
 
         Framework.RunOnTick(() =>
         {
@@ -801,6 +817,7 @@ public sealed class Plugin : IDalamudPlugin
 
     public void AllOff(string source)
     {
+        RenderTrimService.RevertAll(save: false);
         CancelBackgroundRecovery(source);
         Configuration.PluginEnabled = false;
         Configuration.BackgroundNoRenderEnabled = false;
@@ -818,6 +835,7 @@ public sealed class Plugin : IDalamudPlugin
     {
         if (!enabled)
         {
+            RenderTrimService.RevertAll(save: false);
             CancelBackgroundRecovery(source);
             Configuration.BackgroundNoRenderEnabled = false;
             Configuration.ForegroundNoRenderEnabled = false;
@@ -987,6 +1005,11 @@ public sealed class Plugin : IDalamudPlugin
             });
 
             Measure("background-recovery", TickBackgroundRecoveryLoop);
+            Measure("render-trim", () =>
+            {
+                try { RenderTrimService.Tick(); }
+                catch (Exception ex) { Log.Warning(ex, "[DPS] RenderTrim tick failed."); }
+            });
         }
         Measure("dtr", UpdateDtrBar);
 
@@ -1285,6 +1308,11 @@ public sealed class Plugin : IDalamudPlugin
         TickHotkey(Configuration.AllOffHotkey, ref allOffHotkeyDown, () => AllOff("all off hotkey"), inputCaptured);
         TickHotkey(Configuration.WindowPlacementAndSizeLoadHotkey, ref windowPlacementAndSizeLoadHotkeyDown, () => LoadSavedWindowPlacementAndSize("window + size load hotkey"), inputCaptured);
         TickHotkey(Configuration.ResolutionToggleHotkey, ref resolutionToggleHotkeyDown, ResolutionScalingService.Toggle, inputCaptured);
+        var trims = Configuration.RenderTrim;
+        TickHotkey(trims.MasterHotkey, ref renderTrimMasterHotkeyDown, () => RenderTrimService.SetMaster(!RenderTrimService.MasterRequested), inputCaptured);
+        TickHotkey(trims.RevertAllHotkey, ref renderTrimRevertHotkeyDown, () => RenderTrimService.RevertAll(), inputCaptured);
+        for (var index = 0; index < Services.RenderTrimService.Controls.Count; index++)
+            TickHotkey(trims.GetHotkey(Services.RenderTrimService.Controls[index].Option), ref renderTrimHotkeyDown[index], renderTrimHotkeyActions[index], inputCaptured);
     }
 
     private void TickHotkey(HotkeyBinding binding, ref bool wasDown, Action action, bool inputCaptured)

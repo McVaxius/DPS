@@ -565,4 +565,84 @@
   <data xml:space="preserve" name="Status">
     <value>状態</value>
   </data>
+  <data name="K558" xml:space="preserve"><value>RenderTrim</value></data>
+  <data name="K559" xml:space="preserve"><value>このDPS／ゲームプロセス内のみで動作します。新しい設定とホットキーはすべて初期状態でオフです。</value></data>
+  <data name="K560" xml:space="preserve"><value>RenderTrimを有効にする</value></data>
+  <data name="K561" xml:space="preserve"><value>RenderTrimにはDPS本体の有効化が必要です。起動時の復元を明示的に有効にしない限り、保存した選択は再読み込み後も停止状態です。</value></data>
+  <data name="K562" xml:space="preserve"><value>選択したトリムを有効化</value></data>
+  <data name="K563" xml:space="preserve"><value>すべてのトリムを解除</value></data>
+  <data name="K564" xml:space="preserve"><value>解除しても選択は保持されます。「すべてオフ」と「停止」は有効化要求を消去し、DPSが変更した箇所を解放します。</value></data>
+  <data name="K565" xml:space="preserve"><value>起動時に選択したトリムを復元</value></data>
+  <data name="K566" xml:space="preserve"><value>起動時にトリムの利用可否をログ出力</value></data>
+  <data name="K567" xml:space="preserve"><value>メインビューの実装方式</value></data>
+  <data name="K568" xml:space="preserve"><value>BytePatch（命令）</value></data>
+  <data name="K569" xml:space="preserve"><value>DirectFieldWrite（初期化フラグ）</value></data>
+  <data name="K570" xml:space="preserve"><value>これらの設定は、DPSの従来の黒画面バイトや静止フレームゲートとは別のネイティブ操作を使用します。</value></data>
+  <data name="K571" xml:space="preserve"><value>「安全」「トレードオフ」「高リスク」は上流の分類です。CPU・GPU・メモリの削減効果は上流の主張であり、このクライアントでは未測定です。</value></data>
+  <data name="K572" xml:space="preserve"><value>上流の分類: {0}</value></data>
+  <data name="K573" xml:space="preserve"><value>要求: {0}／実際: {1}</value></data>
+  <data name="K574" xml:space="preserve"><value>利用可否: {0}</value></data>
+  <data name="K575" xml:space="preserve"><value>理由: {0}</value></data>
+  <data name="K576" xml:space="preserve"><value>ネイティブ詳細: {0}</value></data>
+  <data name="K577" xml:space="preserve"><value>前回の退避: {0}</value></data>
+  <data name="K578" xml:space="preserve"><value>RenderTrimのホットキー</value></data>
+  <data name="K579" xml:space="preserve"><value>RenderTrimのクレジット</value></data>
+  <data name="K580" xml:space="preserve"><value>提案: Montigrom。thesupporthero/Rendertrimに着想を得て、独自に動作を実装しました。</value></data>
+  <data name="K581" xml:space="preserve"><value>Rendertrimのソース</value></data>
+  <data name="K582" xml:space="preserve"><value>確認したRendertrimリポジトリを開きます。</value></data>
+  <data name="K583" xml:space="preserve"><value>RenderTrimの全体スイッチ</value></data>
+  <data name="K584" xml:space="preserve"><value>メインビュー描画を省略</value></data>
+  <data name="K585" xml:space="preserve"><value>メインビューの処理を省略します。BytePatchは命令を変更し、DirectFieldWriteは毎フレーム初期化フラグを消去するため、ゲーム側の書き込みと競合する場合があります。</value></data>
+  <data name="K586" xml:space="preserve"><value>ポストエフェクト描画を省略</value></data>
+  <data name="K587" xml:space="preserve"><value>ポストエフェクト処理の判定を省略します。DirectFieldWriteはすでにこの判定をカバーするため、その方式では個別のパッチは重複します。</value></data>
+  <data name="K588" xml:space="preserve"><value>キャラクターのアニメーション更新</value></data>
+  <data name="K589" xml:space="preserve"><value>スケルトンのアニメーション処理を省略します。キャラクターの見た目が停止し、省略した状態の更新にエリア移動が必要な場合があります。</value></data>
+  <data name="K590" xml:space="preserve"><value>モデルレンダラー</value></data>
+  <data name="K591" xml:space="preserve"><value>モデルの描画送信を省略します。モデルが消えたり、古い見た目の状態が残ったりする場合があります。</value></data>
+  <data name="K592" xml:space="preserve"><value>人型レンダラー</value></data>
+  <data name="K593" xml:space="preserve"><value>人型の描画準備を省略します。上流ではCPUとGPUのトレードオフが報告されており、GPUがボトルネックの環境では遅くなる場合があります。</value></data>
+  <data name="K594" xml:space="preserve"><value>キャラクター基底</value></data>
+  <data name="K595" xml:space="preserve"><value>キャラクターの基底描画を省略します。更新されるまで古い見た目が残る場合があります。</value></data>
+  <data name="K596" xml:space="preserve"><value>キャラクターマテリアル</value></data>
+  <data name="K597" xml:space="preserve"><value>キャラクターのマテリアル更新を省略します。更新されるまでマテリアルや視覚効果が古い状態で残る場合があります。</value></data>
+  <data name="K598" xml:space="preserve"><value>VFXオブジェクト</value></data>
+  <data name="K599" xml:space="preserve"><value>VFXの変換と境界の更新を省略します。効果が古い状態で残ったり、更新にエリア移動が必要になったりする場合があります。</value></data>
+  <data name="K600" xml:space="preserve"><value>地形レンダラー</value></data>
+  <data name="K601" xml:space="preserve"><value>地形の描画処理を省略します。抑制中は地形が消える場合があります。</value></data>
+  <data name="K602" xml:space="preserve"><value>水面レンダラー</value></data>
+  <data name="K603" xml:space="preserve"><value>水面の描画パスを省略します。抑制中は水面が消える場合があります。</value></data>
+  <data name="K604" xml:space="preserve"><value>動的ライト</value></data>
+  <data name="K605" xml:space="preserve"><value>動的な照明を省略します。照明やシーンの見た目が変わる場合があります。</value></data>
+  <data name="K606" xml:space="preserve"><value>ジオメトリレンダラー</value></data>
+  <data name="K607" xml:space="preserve"><value>ジオメトリの描画処理を省略します。抑制中はシーンのジオメトリが消える場合があります。</value></data>
+  <data name="K608" xml:space="preserve"><value>カメラ行列</value></data>
+  <data name="K609" xml:space="preserve"><value>カメラ行列を省略します。可視性、距離、視野円錐の計算が不正になる場合があります。</value></data>
+  <data name="K610" xml:space="preserve"><value>ワーキングセットの退避</value></data>
+  <data name="K611" xml:space="preserve"><value>メモリページを直ちに、その後60秒ごとに退避します。メモリ割り当ては残り、ページの再読み込みで引っかかる場合があります。オフにしても退避は元に戻せません。</value></data>
+  <data name="K612" xml:space="preserve"><value>安全</value></data>
+  <data name="K613" xml:space="preserve"><value>トレードオフ</value></data>
+  <data name="K614" xml:space="preserve"><value>高リスク</value></data>
+  <data name="K615" xml:space="preserve"><value>ネイティブ操作に失敗しました。</value></data>
+  <data name="K616" xml:space="preserve"><value>このクライアントではネイティブ関数の正確な契約を確認できていません。</value></data>
+  <data name="K617" xml:space="preserve"><value>外部のRenderTrimが読み込まれています。DPSのトリムを使う前に無効にしてください。</value></data>
+  <data name="K618" xml:space="preserve"><value>従来の黒画面モードが描画を制御している間は利用できません。</value></data>
+  <data name="K619" xml:space="preserve"><value>有効化時に確認します。</value></data>
+  <data name="K620" xml:space="preserve"><value>DPSが変更した箇所の後処理が保留中です。</value></data>
+  <data name="K621" xml:space="preserve"><value>選択済み・停止中</value></data>
+  <data name="K622" xml:space="preserve"><value>DPS本体の有効化を待機中です。</value></data>
+  <data name="K623" xml:space="preserve"><value>通常描画のため一時停止中です。</value></data>
+  <data name="K624" xml:space="preserve"><value>DPSが管理していたネイティブ操作が外部から変更されました。</value></data>
+  <data name="K625" xml:space="preserve"><value>現在の描画マネージャーを利用できません。</value></data>
+  <data name="K626" xml:space="preserve"><value>初期化フラグはすでにゼロのため、DPSはフィールドを管理対象にしませんでした。</value></data>
+  <data name="K627" xml:space="preserve"><value>シグネチャが文書化されたシーンメソッドと一致しません。</value></data>
+  <data name="K628" xml:space="preserve"><value>DPSがフィールドを管理している間に描画マネージャーが変わりました。</value></data>
+  <data name="K629" xml:space="preserve"><value>DPSが管理していた命令が外部から変更されたため、上書きしませんでした。</value></data>
+  <data name="K630" xml:space="preserve"><value>現在の処理判定は互換性がありません。</value></data>
+  <data name="K631" xml:space="preserve"><value>ネイティブ命令がゲームのコードセクション外にあります。</value></data>
+  <data name="K632" xml:space="preserve"><value>ネイティブバイトがすでに変更されているか、互換性がありません。</value></data>
+  <data name="K633" xml:space="preserve"><value>EmptyWorkingSetに失敗しました。</value></data>
+  <data name="K634" xml:space="preserve"><value>VirtualProtectに失敗しました。</value></data>
+  <data name="K635" xml:space="preserve"><value>FlushInstructionCacheに失敗しました。</value></data>
+  <data name="K636" xml:space="preserve"><value>命令の保護設定の復元に失敗しました。</value></data>
+  <data name="K637" xml:space="preserve"><value>ネイティブ操作を完了できませんでした。</value></data>
 </root>

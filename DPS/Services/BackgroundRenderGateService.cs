@@ -50,6 +50,8 @@ public sealed unsafe class BackgroundRenderGateService : IDisposable
     private double maxRenderHookDelayMs;
     private int safetyFrameIntervalMs = 5_000;
     private int backgroundThrottleSleepMs;
+    private bool trimSafetyFramePrepared;
+    private bool trimSafetyFrameDue;
 
     public bool HooksActive => initialized && deviceDx11PostTickHook?.IsEnabled == true;
     public bool IsNoRenderActive => activeMode != RenderGateMode.None;
@@ -69,6 +71,24 @@ public sealed unsafe class BackgroundRenderGateService : IDisposable
     public bool BackgroundRecoveryBypassActive => backgroundRecoveryBypass;
     public double MaxRenderHookDelayMs => maxRenderHookDelayMs;
     public string ActiveGateMode => activeMode.ToString();
+    public Action? NormalRenderFrame { get; set; }
+
+    public bool ShouldAdmitNormalRendering()
+    {
+        if (!backgroundArmed && !foregroundArmed)
+            return false;
+
+        // Choose the safety frame before scene updates, so every new trim is released for it.
+        trimSafetyFramePrepared = true;
+        trimSafetyFrameDue = periodicFramesEnabled && nextSafetyRenderTick - Environment.TickCount64 < 0;
+        var framework = Framework.Instance();
+        return framework == null
+            || (renderDuringAreaTransitions && IsAreaTransitionActive())
+            || (renderWhileLoggedOut && !Plugin.ClientState.IsLoggedIn)
+            || (foregroundArmed ? foregroundDisplayRecoveryBypass
+                : backgroundRecoveryBypass || !ShouldSuppressRender(framework))
+            || trimSafetyFrameDue;
+    }
 
     public void RefreshState(Configuration configuration)
     {
@@ -191,6 +211,7 @@ public sealed unsafe class BackgroundRenderGateService : IDisposable
         TransitionBypassActive = false;
         LoggedOutBypassActive = false;
         backgroundRecoveryBypass = false;
+        trimSafetyFramePrepared = false;
     }
 
     private void DeviceDx11PostTickDetour(nint instance)
@@ -207,14 +228,14 @@ public sealed unsafe class BackgroundRenderGateService : IDisposable
             if ((!backgroundArmed && !foregroundArmed) || framework == null || LoggedOutBypassActive)
             {
                 SetNoRenderActive(RenderGateMode.None);
-                deviceDx11PostTickHook!.Original(instance);
+                DrawNormalFrame(instance);
                 return;
             }
 
             if (transitionBypass)
             {
                 SetNoRenderActive(RenderGateMode.None);
-                deviceDx11PostTickHook!.Original(instance);
+                DrawNormalFrame(instance);
                 return;
             }
 
@@ -223,7 +244,7 @@ public sealed unsafe class BackgroundRenderGateService : IDisposable
                 if (foregroundDisplayRecoveryBypass)
                 {
                     SetNoRenderActive(RenderGateMode.None);
-                    deviceDx11PostTickHook!.Original(instance);
+                    DrawNormalFrame(instance);
                     return;
                 }
 
@@ -235,7 +256,7 @@ public sealed unsafe class BackgroundRenderGateService : IDisposable
             if (backgroundRecoveryBypass || !ShouldSuppressRender(framework))
             {
                 SetNoRenderActive(RenderGateMode.None);
-                deviceDx11PostTickHook!.Original(instance);
+                DrawNormalFrame(instance);
                 return;
             }
 
@@ -250,6 +271,7 @@ public sealed unsafe class BackgroundRenderGateService : IDisposable
         }
         finally
         {
+            trimSafetyFramePrepared = false;
             RecordHookDelay(startTimestamp, transitionBypass);
         }
     }
@@ -276,12 +298,19 @@ public sealed unsafe class BackgroundRenderGateService : IDisposable
             return false;
 
         var currentTick = Environment.TickCount64;
-        if (nextSafetyRenderTick - currentTick >= 0)
+        if (trimSafetyFramePrepared ? !trimSafetyFrameDue : nextSafetyRenderTick - currentTick >= 0)
             return false;
 
         nextSafetyRenderTick = currentTick + safetyFrameIntervalMs;
-        deviceDx11PostTickHook!.Original(instance);
+        DrawNormalFrame(instance);
         return true;
+    }
+
+    private void DrawNormalFrame(nint instance)
+    {
+        try { NormalRenderFrame?.Invoke(); }
+        catch (Exception ex) { Plugin.Log.Warning(ex, "[DPS] RenderTrim release for a normal frame failed."); }
+        deviceDx11PostTickHook!.Original(instance);
     }
 
     private static bool IsAreaTransitionActive()

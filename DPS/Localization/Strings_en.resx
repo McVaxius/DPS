@@ -565,4 +565,84 @@
   <data xml:space="preserve" name="Status">
     <value>Status</value>
   </data>
+  <data name="K558" xml:space="preserve"><value>RenderTrim</value></data>
+  <data name="K559" xml:space="preserve"><value>Local to this DPS/game process. All new options and hotkeys start off.</value></data>
+  <data name="K560" xml:space="preserve"><value>Enable RenderTrim</value></data>
+  <data name="K561" xml:space="preserve"><value>RenderTrim requires the DPS master. Saved selections stay inactive after reload unless startup restoration is enabled.</value></data>
+  <data name="K562" xml:space="preserve"><value>Activate selected trims</value></data>
+  <data name="K563" xml:space="preserve"><value>Revert all trims</value></data>
+  <data name="K564" xml:space="preserve"><value>Revert preserves selections. All Off and Stop clear activation requests and release DPS-owned changes.</value></data>
+  <data name="K565" xml:space="preserve"><value>Restore selected trims on startup</value></data>
+  <data name="K566" xml:space="preserve"><value>Log trim availability on startup</value></data>
+  <data name="K567" xml:space="preserve"><value>Main-view implementation</value></data>
+  <data name="K568" xml:space="preserve"><value>BytePatch (instruction)</value></data>
+  <data name="K569" xml:space="preserve"><value>DirectFieldWrite (initialization flags)</value></data>
+  <data name="K570" xml:space="preserve"><value>These controls use separate native operations from DPS&apos;s legacy black-screen byte and frozen-frame gate.</value></data>
+  <data name="K571" xml:space="preserve"><value>Safe, Tradeoff and Risky are upstream labels. CPU, GPU and memory savings are source claims; this client has not been measured.</value></data>
+  <data name="K572" xml:space="preserve"><value>Upstream label: {0}</value></data>
+  <data name="K573" xml:space="preserve"><value>Requested: {0}; actual: {1}</value></data>
+  <data name="K574" xml:space="preserve"><value>Availability: {0}</value></data>
+  <data name="K575" xml:space="preserve"><value>Reason: {0}</value></data>
+  <data name="K576" xml:space="preserve"><value>Native detail: {0}</value></data>
+  <data name="K577" xml:space="preserve"><value>Last eviction: {0}</value></data>
+  <data name="K578" xml:space="preserve"><value>RenderTrim hotkeys</value></data>
+  <data name="K579" xml:space="preserve"><value>RenderTrim credits</value></data>
+  <data name="K580" xml:space="preserve"><value>Suggestion by Montigrom. Independently implemented behavior inspired by thesupporthero/Rendertrim.</value></data>
+  <data name="K581" xml:space="preserve"><value>Rendertrim source</value></data>
+  <data name="K582" xml:space="preserve"><value>Open the reviewed Rendertrim repository.</value></data>
+  <data name="K583" xml:space="preserve"><value>RenderTrim master</value></data>
+  <data name="K584" xml:space="preserve"><value>Main-view render skip</value></data>
+  <data name="K585" xml:space="preserve"><value>Skips main-view dispatch. BytePatch changes an instruction; DirectFieldWrite clears initialization flags each frame and may race with game writes.</value></data>
+  <data name="K586" xml:space="preserve"><value>Post-effect render skip</value></data>
+  <data name="K587" xml:space="preserve"><value>Skips the post-effect dispatch check. DirectFieldWrite already covers this check, so this separate patch is redundant in that mode.</value></data>
+  <data name="K588" xml:space="preserve"><value>Character animation updates</value></data>
+  <data name="K589" xml:space="preserve"><value>Skips skeleton animation work. Characters freeze visually; skipped state may need a transition to refresh.</value></data>
+  <data name="K590" xml:space="preserve"><value>Model renderer</value></data>
+  <data name="K591" xml:space="preserve"><value>Skips model render submission. Models may disappear or retain stale visual state.</value></data>
+  <data name="K592" xml:space="preserve"><value>Human renderer</value></data>
+  <data name="K593" xml:space="preserve"><value>Skips humanoid render setup. Upstream reports a CPU/GPU tradeoff; GPU-bound clients may become slower.</value></data>
+  <data name="K594" xml:space="preserve"><value>Character base</value></data>
+  <data name="K595" xml:space="preserve"><value>Skips base character rendering. Character visuals may remain stale until refreshed.</value></data>
+  <data name="K596" xml:space="preserve"><value>Character materials</value></data>
+  <data name="K597" xml:space="preserve"><value>Skips character material updates. Materials and visual effects may remain stale until refreshed.</value></data>
+  <data name="K598" xml:space="preserve"><value>VFX objects</value></data>
+  <data name="K599" xml:space="preserve"><value>Skips VFX transform and bounds updates. Effects may remain stale or require a transition to refresh.</value></data>
+  <data name="K600" xml:space="preserve"><value>Terrain renderer</value></data>
+  <data name="K601" xml:space="preserve"><value>Skips terrain render dispatch. Terrain can disappear while suppression is active.</value></data>
+  <data name="K602" xml:space="preserve"><value>Water renderer</value></data>
+  <data name="K603" xml:space="preserve"><value>Skips water render passes. Water visuals can disappear while suppression is active.</value></data>
+  <data name="K604" xml:space="preserve"><value>Dynamic lights</value></data>
+  <data name="K605" xml:space="preserve"><value>Skips dynamic lighting. Lighting and scene appearance can change.</value></data>
+  <data name="K606" xml:space="preserve"><value>Geometry renderer</value></data>
+  <data name="K607" xml:space="preserve"><value>Skips geometry render dispatch. Scene geometry can disappear while suppression is active.</value></data>
+  <data name="K608" xml:space="preserve"><value>Camera matrices</value></data>
+  <data name="K609" xml:space="preserve"><value>Skips camera matrices. Visibility, distance and cone calculations can become incorrect.</value></data>
+  <data name="K610" xml:space="preserve"><value>Working-set eviction</value></data>
+  <data name="K611" xml:space="preserve"><value>Evicts pages immediately and every sixty seconds. Allocations remain; returning pages can hitch. Turning this off cannot undo an eviction.</value></data>
+  <data name="K612" xml:space="preserve"><value>Safe</value></data>
+  <data name="K613" xml:space="preserve"><value>Tradeoff</value></data>
+  <data name="K614" xml:space="preserve"><value>Risky</value></data>
+  <data name="K615" xml:space="preserve"><value>Native operation failed.</value></data>
+  <data name="K616" xml:space="preserve"><value>The exact native function contract is unverified for this client.</value></data>
+  <data name="K617" xml:space="preserve"><value>External RenderTrim is loaded. Disable it before using DPS trims.</value></data>
+  <data name="K618" xml:space="preserve"><value>Unavailable while legacy black-screen mode owns rendering.</value></data>
+  <data name="K619" xml:space="preserve"><value>Checked when activated.</value></data>
+  <data name="K620" xml:space="preserve"><value>Owned cleanup is pending.</value></data>
+  <data name="K621" xml:space="preserve"><value>Selected, inactive</value></data>
+  <data name="K622" xml:space="preserve"><value>Waiting for the DPS master.</value></data>
+  <data name="K623" xml:space="preserve"><value>Paused for normal rendering.</value></data>
+  <data name="K624" xml:space="preserve"><value>The owned native operation changed externally.</value></data>
+  <data name="K625" xml:space="preserve"><value>The current render manager is unavailable.</value></data>
+  <data name="K626" xml:space="preserve"><value>Initialization flags are already zero; DPS did not claim the field.</value></data>
+  <data name="K627" xml:space="preserve"><value>The signature does not match the documented scene method.</value></data>
+  <data name="K628" xml:space="preserve"><value>The render manager changed while DPS owned the field.</value></data>
+  <data name="K629" xml:space="preserve"><value>The owned instruction was changed externally; DPS did not overwrite it.</value></data>
+  <data name="K630" xml:space="preserve"><value>The current dispatch comparison is incompatible.</value></data>
+  <data name="K631" xml:space="preserve"><value>The native instruction is outside the game&apos;s code section.</value></data>
+  <data name="K632" xml:space="preserve"><value>The native bytes are already changed or incompatible.</value></data>
+  <data name="K633" xml:space="preserve"><value>EmptyWorkingSet failed.</value></data>
+  <data name="K634" xml:space="preserve"><value>VirtualProtect failed.</value></data>
+  <data name="K635" xml:space="preserve"><value>FlushInstructionCache failed.</value></data>
+  <data name="K636" xml:space="preserve"><value>Restoring instruction protection failed.</value></data>
+  <data name="K637" xml:space="preserve"><value>The native operation could not be completed.</value></data>
 </root>

@@ -565,4 +565,84 @@
   <data xml:space="preserve" name="Status">
     <value>Состояние</value>
   </data>
+  <data name="K558" xml:space="preserve"><value>RenderTrim</value></data>
+  <data name="K559" xml:space="preserve"><value>Только для текущего процесса DPS/игры. Все новые параметры и горячие клавиши изначально отключены.</value></data>
+  <data name="K560" xml:space="preserve"><value>Включить RenderTrim</value></data>
+  <data name="K561" xml:space="preserve"><value>RenderTrim требует общего включения DPS. Сохранённый выбор остаётся неактивным после перезагрузки, если восстановление при запуске явно не включено.</value></data>
+  <data name="K562" xml:space="preserve"><value>Активировать выбранные оптимизации</value></data>
+  <data name="K563" xml:space="preserve"><value>Отменить все оптимизации</value></data>
+  <data name="K564" xml:space="preserve"><value>Отмена сохраняет выбор. «Всё выключить» и «Стоп» сбрасывают запросы активации и освобождают изменения, принадлежащие DPS.</value></data>
+  <data name="K565" xml:space="preserve"><value>Восстанавливать выбранные оптимизации при запуске</value></data>
+  <data name="K566" xml:space="preserve"><value>Записывать доступность оптимизаций в журнал при запуске</value></data>
+  <data name="K567" xml:space="preserve"><value>Реализация основного вида</value></data>
+  <data name="K568" xml:space="preserve"><value>BytePatch (инструкция)</value></data>
+  <data name="K569" xml:space="preserve"><value>DirectFieldWrite (флаги инициализации)</value></data>
+  <data name="K570" xml:space="preserve"><value>Эти элементы используют нативные операции, отдельные от прежнего байта чёрного экрана и блокировки застывшего кадра DPS.</value></data>
+  <data name="K571" xml:space="preserve"><value>Безопасно, Компромисс и Рискованно — метки исходного проекта. Экономия CPU, GPU и памяти заявлена источником; этот клиент не измерялся.</value></data>
+  <data name="K572" xml:space="preserve"><value>Метка исходного проекта: {0}</value></data>
+  <data name="K573" xml:space="preserve"><value>Запрошено: {0}; фактически: {1}</value></data>
+  <data name="K574" xml:space="preserve"><value>Доступность: {0}</value></data>
+  <data name="K575" xml:space="preserve"><value>Причина: {0}</value></data>
+  <data name="K576" xml:space="preserve"><value>Нативные подробности: {0}</value></data>
+  <data name="K577" xml:space="preserve"><value>Последнее вытеснение: {0}</value></data>
+  <data name="K578" xml:space="preserve"><value>Горячие клавиши RenderTrim</value></data>
+  <data name="K579" xml:space="preserve"><value>Благодарности RenderTrim</value></data>
+  <data name="K580" xml:space="preserve"><value>Предложение Montigrom. Поведение реализовано независимо по мотивам thesupporthero/Rendertrim.</value></data>
+  <data name="K581" xml:space="preserve"><value>Исходный код Rendertrim</value></data>
+  <data name="K582" xml:space="preserve"><value>Открыть изученный репозиторий Rendertrim.</value></data>
+  <data name="K583" xml:space="preserve"><value>Общий переключатель RenderTrim</value></data>
+  <data name="K584" xml:space="preserve"><value>Пропуск отрисовки основного вида</value></data>
+  <data name="K585" xml:space="preserve"><value>Пропускает обработку основного вида. BytePatch меняет инструкцию; DirectFieldWrite обнуляет флаги инициализации каждый кадр и может конкурировать с записью игры.</value></data>
+  <data name="K586" xml:space="preserve"><value>Пропуск отрисовки постэффектов</value></data>
+  <data name="K587" xml:space="preserve"><value>Пропускает проверку обработки постэффектов. DirectFieldWrite уже охватывает эту проверку, поэтому отдельный патч в этом режиме избыточен.</value></data>
+  <data name="K588" xml:space="preserve"><value>Обновления анимации персонажей</value></data>
+  <data name="K589" xml:space="preserve"><value>Пропускает анимацию скелета. Персонажи визуально замирают; для обновления пропущенного состояния может потребоваться смена зоны.</value></data>
+  <data name="K590" xml:space="preserve"><value>Отрисовка моделей</value></data>
+  <data name="K591" xml:space="preserve"><value>Пропускает отправку моделей на отрисовку. Модели могут исчезнуть или сохранить устаревшее визуальное состояние.</value></data>
+  <data name="K592" xml:space="preserve"><value>Отрисовка гуманоидов</value></data>
+  <data name="K593" xml:space="preserve"><value>Пропускает подготовку отрисовки гуманоидов. Исходный проект сообщает о компромиссе CPU/GPU; клиенты с упором в GPU могут замедлиться.</value></data>
+  <data name="K594" xml:space="preserve"><value>Основа персонажей</value></data>
+  <data name="K595" xml:space="preserve"><value>Пропускает базовую отрисовку персонажей. Их внешний вид может оставаться устаревшим до обновления.</value></data>
+  <data name="K596" xml:space="preserve"><value>Материалы персонажей</value></data>
+  <data name="K597" xml:space="preserve"><value>Пропускает обновления материалов персонажей. Материалы и визуальные эффекты могут оставаться устаревшими до обновления.</value></data>
+  <data name="K598" xml:space="preserve"><value>Объекты VFX</value></data>
+  <data name="K599" xml:space="preserve"><value>Пропускает обновления преобразований и границ VFX. Эффекты могут устареть или потребовать смены зоны для обновления.</value></data>
+  <data name="K600" xml:space="preserve"><value>Отрисовка ландшафта</value></data>
+  <data name="K601" xml:space="preserve"><value>Пропускает обработку отрисовки ландшафта. Ландшафт может исчезнуть при активном подавлении.</value></data>
+  <data name="K602" xml:space="preserve"><value>Отрисовка воды</value></data>
+  <data name="K603" xml:space="preserve"><value>Пропускает проходы отрисовки воды. Изображение воды может исчезнуть при активном подавлении.</value></data>
+  <data name="K604" xml:space="preserve"><value>Динамическое освещение</value></data>
+  <data name="K605" xml:space="preserve"><value>Пропускает динамическое освещение. Освещение и внешний вид сцены могут измениться.</value></data>
+  <data name="K606" xml:space="preserve"><value>Отрисовка геометрии</value></data>
+  <data name="K607" xml:space="preserve"><value>Пропускает обработку отрисовки геометрии. Геометрия сцены может исчезнуть при активном подавлении.</value></data>
+  <data name="K608" xml:space="preserve"><value>Матрицы камеры</value></data>
+  <data name="K609" xml:space="preserve"><value>Пропускает матрицы камеры. Расчёты видимости, расстояния и конуса могут стать неверными.</value></data>
+  <data name="K610" xml:space="preserve"><value>Вытеснение рабочего набора</value></data>
+  <data name="K611" xml:space="preserve"><value>Вытесняет страницы сразу и каждые шестьдесят секунд. Выделенная память остаётся; возврат страниц может вызвать рывки. Отключение не отменяет вытеснение.</value></data>
+  <data name="K612" xml:space="preserve"><value>Безопасно</value></data>
+  <data name="K613" xml:space="preserve"><value>Компромисс</value></data>
+  <data name="K614" xml:space="preserve"><value>Рискованно</value></data>
+  <data name="K615" xml:space="preserve"><value>Нативная операция завершилась ошибкой.</value></data>
+  <data name="K616" xml:space="preserve"><value>Точный нативный контракт функции для этого клиента не проверен.</value></data>
+  <data name="K617" xml:space="preserve"><value>Внешний RenderTrim загружен. Отключите его перед использованием оптимизаций DPS.</value></data>
+  <data name="K618" xml:space="preserve"><value>Недоступно, пока прежний режим чёрного экрана управляет отрисовкой.</value></data>
+  <data name="K619" xml:space="preserve"><value>Проверяется при активации.</value></data>
+  <data name="K620" xml:space="preserve"><value>Очистка принадлежащих DPS изменений ожидает завершения.</value></data>
+  <data name="K621" xml:space="preserve"><value>Выбрано, неактивно</value></data>
+  <data name="K622" xml:space="preserve"><value>Ожидание общего включения DPS.</value></data>
+  <data name="K623" xml:space="preserve"><value>Приостановлено для обычной отрисовки.</value></data>
+  <data name="K624" xml:space="preserve"><value>Принадлежащая DPS нативная операция изменена извне.</value></data>
+  <data name="K625" xml:space="preserve"><value>Текущий менеджер отрисовки недоступен.</value></data>
+  <data name="K626" xml:space="preserve"><value>Флаги инициализации уже нулевые; DPS не стал управлять полем.</value></data>
+  <data name="K627" xml:space="preserve"><value>Сигнатура не соответствует документированному методу сцены.</value></data>
+  <data name="K628" xml:space="preserve"><value>Менеджер отрисовки изменился, пока DPS управлял полем.</value></data>
+  <data name="K629" xml:space="preserve"><value>Принадлежащая DPS инструкция изменена извне; DPS не перезаписал её.</value></data>
+  <data name="K630" xml:space="preserve"><value>Текущее сравнение обработки несовместимо.</value></data>
+  <data name="K631" xml:space="preserve"><value>Нативная инструкция находится вне секции кода игры.</value></data>
+  <data name="K632" xml:space="preserve"><value>Нативные байты уже изменены или несовместимы.</value></data>
+  <data name="K633" xml:space="preserve"><value>Ошибка EmptyWorkingSet.</value></data>
+  <data name="K634" xml:space="preserve"><value>Ошибка VirtualProtect.</value></data>
+  <data name="K635" xml:space="preserve"><value>Ошибка FlushInstructionCache.</value></data>
+  <data name="K636" xml:space="preserve"><value>Не удалось восстановить защиту инструкции.</value></data>
+  <data name="K637" xml:space="preserve"><value>Не удалось завершить нативную операцию.</value></data>
 </root>

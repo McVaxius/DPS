@@ -1,3 +1,11 @@
+Unreleased - RenderTrim
+
+- Added a local RenderTrim tab with the full fourteen-control catalogue, requested/actual status, availability and failure reasons, individual selections and configurable master/option/revert hotkeys. All new preferences and startup behavior begin off; every new binding begins disabled and unbound. Saved selections activate on reload only when startup restoration is explicitly enabled.
+- Independently implemented guarded main-view BytePatch/DirectFieldWrite, the separate post-effect patch, documented scene-method hooks and opt-in working-set eviction through DPS's existing configuration/framework lifecycle. Eight unverified native contracts remain unavailable rather than exposing unchecked hooks.
+- Revert preserves selections; All Off, Stop and unload release owned operations and prevent reapplication. Enabled transition/logged-out exceptions, safety frames and recovery pulses temporarily admit normal rendering. Conflicting external RenderTrim and legacy black-screen ownership block new suppressive operations. Native game visuals, recovery and performance remain unverified.
+- Working-set eviction runs immediately and every sixty seconds while requested. It does not free allocations, can cause page-return hitches and cannot be undone. Localized new controls and authored failure reasons in the existing nine catalogues while preserving raw native details.
+- Suggestion by Montigrom; behavior inspired by thesupporthero/Rendertrim: https://github.com/thesupporthero/Rendertrim. Independently implemented without copied upstream source or a RenderTrim dependency; no broadcast or cross-client control.
+
 Unreleased - AethertekUI interface
 
 - Render the approved filled status rows with semantic dots and a compact status strip. Keep controls on one line, reflow complete controls, and preserve readable fields and native IDs across translations and scales.

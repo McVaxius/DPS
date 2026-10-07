@@ -9,6 +9,7 @@ An experimental Dalamud utility for weak machines. Hide non-party players, pets,
 - Party-aware actor suppression for non-party players, pets, chocobos, and minions.
 - Optional current-target visibility while crowd suppression is active.
 - Foreground and background no-render modes with recovery controls.
+- Local RenderTrim controls with individually selected operations and optional hotkeys; all start off.
 - Configurable safety and mode hotkeys plus DTR status/actions.
 - Resolution controls through optional XA Slave IPC or first-party Custom Resolution's native Display, Gameplay, and Common settings, with provider install buttons and a toggle hotkey.
 - Display-change recovery and saved game-window position, display, and size controls.
@@ -40,6 +41,14 @@ Custom Resolution embeds the installed plugin's **Display**, **Gameplay**, and *
 Bind **Resolution** in **Hotkeys** for the DPS gameplay toggle. With Custom Resolution, Off sets gameplay to 1.0x and keeps native gameplay scaling enabled so that value takes effect. On restores the last saved gameplay scale remembered during this session. If a new session starts at 1.0x, On uses 0.05x. Display settings stay untouched by the toggle after the initial preset. Use the native **Save and apply** button to commit edits before toggling.
 
 **Advanced options** at the top reveals the non-default foreground frozen-frame choice without changing your saved render mode.
+
+Open **RenderTrim**, select the individual operations you want, then use **Activate selected trims** while DPS is running. Its master, selections, startup restoration/diagnostics and hotkeys are off or unbound by default. Saved selections remain inactive after reload unless you explicitly enable startup restoration. **Revert all trims** preserves selections; **All Off** and **Stop** clear activation requests and release DPS-owned changes. Configure the master, individual-option and revert hotkeys in the tab or **Hotkeys**.
+
+The fourteen-control catalogue shows requested and actual state, availability and failure reasons. Eight native contracts are unverified and remain unavailable: animation, model, VFX, terrain, water, lights, geometry and camera. Supported native operations still require activation checks. Main-view suppression offers **BytePatch** and **DirectFieldWrite**; the separate post-effect patch is redundant under DirectFieldWrite. Suppressive trims pause for the enabled transition/logged-out exceptions, safety frames and recovery pulses. External RenderTrim blocks activation; legacy foreground black-screen mode blocks suppressive trims.
+
+**Working-set eviction** is separately opt-in. It evicts pages immediately and every sixty seconds without freeing allocations; returning pages can hitch, and switching it off cannot reverse an eviction. The upstream Safe/Tradeoff/Risky labels and claimed savings have not been measured on this client. Native visual recovery and performance require user-controlled game acceptance.
+
+Suggestion by **Montigrom**; independently implemented behavior inspired by [thesupporthero/Rendertrim](https://github.com/thesupporthero/Rendertrim). This feature operates only in the current DPS/game process.
 
 ## Safety
 

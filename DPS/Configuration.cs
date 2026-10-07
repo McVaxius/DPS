@@ -82,6 +82,7 @@ public class Configuration : IPluginConfiguration
     public ResolutionProvider ResolutionProvider { get; set; }
     public float ResolutionScale { get; set; } = 0.25f;
     public HotkeyBinding ResolutionToggleHotkey { get; set; } = new();
+    public RenderTrimConfiguration RenderTrim { get; set; } = new();
     public bool CustomResolutionDefaultsApplied { get; set; }
     public bool WindowPlacementAutoLoadEnabled { get; set; }
     public bool WindowSizeAutoLoadEnabled { get; set; }
@@ -89,6 +90,78 @@ public class Configuration : IPluginConfiguration
 
     public void Save()
         => Plugin.PluginInterface.SavePluginConfig(this);
+}
+
+[Flags]
+public enum RenderTrimOption
+{
+    None = 0,
+    MainView = 1 << 0,
+    PostEffects = 1 << 1,
+    CharacterAnimations = 1 << 2,
+    ModelRenderer = 1 << 3,
+    HumanRenderer = 1 << 4,
+    CharacterBase = 1 << 5,
+    CharacterMaterials = 1 << 6,
+    VfxObjects = 1 << 7,
+    Terrain = 1 << 8,
+    Water = 1 << 9,
+    Lights = 1 << 10,
+    Geometry = 1 << 11,
+    CameraMatrices = 1 << 12,
+    WorkingSet = 1 << 13,
+}
+
+public enum RenderTrimMainViewMode
+{
+    BytePatch,
+    DirectFieldWrite,
+}
+
+[Serializable]
+public sealed class RenderTrimConfiguration
+{
+    public bool Enabled { get; set; }
+    public bool RestoreOnStartup { get; set; }
+    public bool StartupDiagnostics { get; set; }
+    public RenderTrimOption SelectedOptions { get; set; }
+    public RenderTrimMainViewMode MainViewMode { get; set; }
+    public HotkeyBinding MasterHotkey { get; set; } = new();
+    public HotkeyBinding MainViewHotkey { get; set; } = new();
+    public HotkeyBinding PostEffectsHotkey { get; set; } = new();
+    public HotkeyBinding CharacterAnimationsHotkey { get; set; } = new();
+    public HotkeyBinding ModelRendererHotkey { get; set; } = new();
+    public HotkeyBinding HumanRendererHotkey { get; set; } = new();
+    public HotkeyBinding CharacterBaseHotkey { get; set; } = new();
+    public HotkeyBinding CharacterMaterialsHotkey { get; set; } = new();
+    public HotkeyBinding VfxObjectsHotkey { get; set; } = new();
+    public HotkeyBinding TerrainHotkey { get; set; } = new();
+    public HotkeyBinding WaterHotkey { get; set; } = new();
+    public HotkeyBinding LightsHotkey { get; set; } = new();
+    public HotkeyBinding GeometryHotkey { get; set; } = new();
+    public HotkeyBinding CameraMatricesHotkey { get; set; } = new();
+    public HotkeyBinding WorkingSetHotkey { get; set; } = new();
+    public HotkeyBinding RevertAllHotkey { get; set; } = new();
+
+    public HotkeyBinding GetHotkey(RenderTrimOption option)
+        => option switch
+        {
+            RenderTrimOption.MainView => MainViewHotkey,
+            RenderTrimOption.PostEffects => PostEffectsHotkey,
+            RenderTrimOption.CharacterAnimations => CharacterAnimationsHotkey,
+            RenderTrimOption.ModelRenderer => ModelRendererHotkey,
+            RenderTrimOption.HumanRenderer => HumanRendererHotkey,
+            RenderTrimOption.CharacterBase => CharacterBaseHotkey,
+            RenderTrimOption.CharacterMaterials => CharacterMaterialsHotkey,
+            RenderTrimOption.VfxObjects => VfxObjectsHotkey,
+            RenderTrimOption.Terrain => TerrainHotkey,
+            RenderTrimOption.Water => WaterHotkey,
+            RenderTrimOption.Lights => LightsHotkey,
+            RenderTrimOption.Geometry => GeometryHotkey,
+            RenderTrimOption.CameraMatrices => CameraMatricesHotkey,
+            RenderTrimOption.WorkingSet => WorkingSetHotkey,
+            _ => throw new ArgumentOutOfRangeException(nameof(option)),
+        };
 }
 
 [Serializable]

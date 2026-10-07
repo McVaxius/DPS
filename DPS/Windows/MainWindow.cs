@@ -26,6 +26,22 @@ public sealed class MainWindow : Window
         AllOff,
         WindowPlacementAndSizeLoad,
         Resolution,
+        RenderTrimMaster,
+        RenderTrimMainView,
+        RenderTrimPostEffects,
+        RenderTrimCharacterAnimations,
+        RenderTrimModelRenderer,
+        RenderTrimHumanRenderer,
+        RenderTrimCharacterBase,
+        RenderTrimCharacterMaterials,
+        RenderTrimVfxObjects,
+        RenderTrimTerrain,
+        RenderTrimWater,
+        RenderTrimLights,
+        RenderTrimGeometry,
+        RenderTrimCameraMatrices,
+        RenderTrimWorkingSet,
+        RenderTrimRevertAll,
     }
 
     private enum WindowPositionSetupStage
@@ -99,7 +115,7 @@ public sealed class MainWindow : Window
         UiGui.Title(PluginInfo.DisplayName,UiText.T(PluginInfo.DisplayName)+" v"+Assembly.GetExecutingAssembly().GetName().Version);
         DrawTopBar();
 
-        if (ImGui.BeginTabBar("##DpsMainTabs"))
+        if (ImGui.BeginTabBar("##DpsMainTabs", ImGuiTabBarFlags.FittingPolicyScroll))
         {
             if (UiGui.BeginTabItem("Render"))
             {
@@ -110,6 +126,12 @@ public sealed class MainWindow : Window
             if (UiGui.BeginTabItem("Crowd"))
             {
                 DrawCrowdTab();
+                ImGui.EndTabItem();
+            }
+
+            if (UiGui.BeginTabItem("RenderTrim"))
+            {
+                DrawRenderTrimTab();
                 ImGui.EndTabItem();
             }
 
@@ -545,6 +567,99 @@ public sealed class MainWindow : Window
             ImGui.Spacing();
             UiHelpers.StatusPill("Capture", UiText.F("{0} listening", HotkeyTargetLabel(target)), UiHelpers.Info);
         }
+
+        if (UiGui.CollapsingHeader("RenderTrim hotkeys##DpsRenderTrimBindings"))
+            DrawRenderTrimHotkeys();
+    }
+
+    private void DrawRenderTrimTab()
+    {
+        ProcessHotkeyCapture();
+        var settings = plugin.Configuration.RenderTrim;
+        var service = plugin.RenderTrimService;
+        UiHelpers.SectionHeader("RenderTrim");
+        UiHelpers.Wrapped("Local to this DPS/game process. All new options and hotkeys start off.");
+        var master = service.MasterRequested;
+        if (UiGui.Checkbox("Enable RenderTrim##DpsRenderTrimMaster", ref master)) service.SetMaster(master);
+        UiHelpers.Wrapped("RenderTrim requires the DPS master. Saved selections stay inactive after reload unless startup restoration is enabled.");
+        if (UiHelpers.CompactButton("Activate selected trims##DpsRenderTrimApply", 184)) service.ActivateSelected();
+        UiHelpers.SameLineIfFits(170);
+        if (UiHelpers.CompactButton("Revert all trims##DpsRenderTrimRevert", 170)) service.RevertAll();
+        UiHelpers.Wrapped("Revert preserves selections. All Off and Stop clear activation requests and release DPS-owned changes.");
+
+        var restore = settings.RestoreOnStartup;
+        if (UiGui.Checkbox("Restore selected trims on startup##DpsRenderTrimStartup", ref restore))
+        {
+            settings.RestoreOnStartup = restore;
+            plugin.Configuration.Save();
+        }
+        var diagnostics = settings.StartupDiagnostics;
+        if (UiGui.Checkbox("Log trim availability on startup##DpsRenderTrimDiagnostics", ref diagnostics))
+        {
+            settings.StartupDiagnostics = diagnostics;
+            plugin.Configuration.Save();
+        }
+        UiHelpers.SectionHeader("Main-view implementation");
+        if (UiGui.RadioButton("BytePatch (instruction)", settings.MainViewMode == RenderTrimMainViewMode.BytePatch))
+        {
+            settings.MainViewMode = RenderTrimMainViewMode.BytePatch;
+            SaveAndApply();
+        }
+        if (UiGui.RadioButton("DirectFieldWrite (initialization flags)", settings.MainViewMode == RenderTrimMainViewMode.DirectFieldWrite))
+        {
+            settings.MainViewMode = RenderTrimMainViewMode.DirectFieldWrite;
+            SaveAndApply();
+        }
+        UiHelpers.Wrapped("These controls use separate native operations from DPS's legacy black-screen byte and frozen-frame gate.");
+        UiHelpers.Wrapped("Safe, Tradeoff and Risky are upstream labels. CPU, GPU and memory savings are source claims; this client has not been measured.");
+        foreach (var control in RenderTrimService.Controls)
+        {
+            ImGui.PushID(control.Id);
+            ImGui.Separator();
+            var selected = settings.SelectedOptions.HasFlag(control.Option);
+            ImGui.BeginDisabled(!service.CanRequest(control.Option) && !selected);
+            if (UiGui.Checkbox(control.Name + "##DpsRenderTrimSelection", ref selected)) service.Select(control.Option, selected);
+            ImGui.EndDisabled();
+            UiHelpers.Wrapped(control.Description);
+            UiGui.TextUnformatted(UiText.F("Upstream label: {0}", UiText.T(control.Risk)));
+            UiGui.TextUnformatted(UiText.F("Requested: {0}; actual: {1}", UiText.T(service.IsRequested(control.Option) ? "ON" : "OFF"), UiText.T(service.State(control.Option))));
+            UiHelpers.Wrapped(UiText.F("Availability: {0}", UiText.T(service.Availability(control.Option))));
+            if (service.Failure(control.Option) is { } failure)
+            {
+                UiHelpers.Wrapped(UiText.F("Reason: {0}", UiText.T(failure.Reason)));
+                if (failure.Detail is { } detail) UiHelpers.Wrapped(UiText.F("Native detail: {0}", detail));
+            }
+            if (control.Option == RenderTrimOption.WorkingSet)
+                UiGui.TextUnformatted(UiText.F("Last eviction: {0}", UiText.Date(service.LastWorkingSetEviction)));
+            ImGui.PopID();
+        }
+        if (UiGui.CollapsingHeader("RenderTrim hotkeys##DpsRenderTrimBindings")) DrawRenderTrimHotkeys();
+        DrawRenderTrimCredits();
+    }
+
+    private void DrawRenderTrimHotkeys()
+    {
+        var targets = Enum.GetValues<HotkeyTarget>().Where(target => (int)target >= (int)HotkeyTarget.RenderTrimMaster).ToArray();
+        var scale = MaterialTheme.Metrics.Scale;
+        var actionWidth = targets.Max(target => ImGui.CalcTextSize(UiText.T(HotkeyTargetLabel(target))).X) + 24 * scale;
+        var height = Math.Min(500 * scale, Math.Max(180 * scale, ImGui.GetContentRegionAvail().Y - 60 * scale));
+        if (!ImGui.BeginTable("##DpsRenderTrimHotkeyTable", 5, ImGuiTableFlags.BordersInnerH | ImGuiTableFlags.RowBg |
+                ImGuiTableFlags.ScrollX | ImGuiTableFlags.ScrollY | ImGuiTableFlags.SizingFixedFit, new(0, height), actionWidth + 380 * scale)) return;
+        ImGui.TableSetupColumn("Action", ImGuiTableColumnFlags.WidthFixed, actionWidth);
+        ImGui.TableSetupColumn("Enable", ImGuiTableColumnFlags.WidthFixed, 70 * scale);
+        ImGui.TableSetupColumn("Binding", ImGuiTableColumnFlags.WidthFixed, 150 * scale);
+        ImGui.TableSetupColumn("Set", ImGuiTableColumnFlags.WidthFixed, 70 * scale);
+        ImGui.TableSetupColumn("Clear", ImGuiTableColumnFlags.WidthFixed, 90 * scale);
+        UiGui.TableHeadersRow();
+        foreach (var target in targets) DrawHotkeyRow(HotkeyTargetLabel(target), target, GetHotkeyBinding(target));
+        ImGui.EndTable();
+    }
+
+    private static void DrawRenderTrimCredits()
+    {
+        UiHelpers.SectionHeader("RenderTrim credits");
+        UiHelpers.Wrapped("Suggestion by Montigrom. Independently implemented behavior inspired by thesupporthero/Rendertrim.");
+        UiHelpers.LinkButton("Rendertrim source", "https://github.com/thesupporthero/Rendertrim", "Open the reviewed Rendertrim repository.");
     }
 
     private void OpenAllOffHotkeySetupWizard()
@@ -799,6 +914,10 @@ public sealed class MainWindow : Window
             HotkeyTarget.AllOff => plugin.Configuration.AllOffHotkey,
             HotkeyTarget.WindowPlacementAndSizeLoad => plugin.Configuration.WindowPlacementAndSizeLoadHotkey,
             HotkeyTarget.Resolution => plugin.Configuration.ResolutionToggleHotkey,
+            HotkeyTarget.RenderTrimMaster => plugin.Configuration.RenderTrim.MasterHotkey,
+            HotkeyTarget.RenderTrimRevertAll => plugin.Configuration.RenderTrim.RevertAllHotkey,
+            _ when (int)target >= (int)HotkeyTarget.RenderTrimMainView && (int)target <= (int)HotkeyTarget.RenderTrimWorkingSet => plugin.Configuration.RenderTrim.GetHotkey(
+                (RenderTrimOption)(1 << ((int)target - (int)HotkeyTarget.RenderTrimMainView))),
             _ => plugin.Configuration.AllOffHotkey,
         };
 
@@ -811,6 +930,10 @@ public sealed class MainWindow : Window
             HotkeyTarget.AllOff => "All Off",
             HotkeyTarget.WindowPlacementAndSizeLoad => "Window + Size Load",
             HotkeyTarget.Resolution => "Resolution",
+            HotkeyTarget.RenderTrimMaster => "RenderTrim master",
+            HotkeyTarget.RenderTrimRevertAll => "Revert all trims",
+            _ when (int)target >= (int)HotkeyTarget.RenderTrimMainView && (int)target <= (int)HotkeyTarget.RenderTrimWorkingSet => RenderTrimService.Controls[
+                (int)target - (int)HotkeyTarget.RenderTrimMainView].Name,
             _ => "Hotkey",
         };
 
@@ -1277,6 +1400,7 @@ public sealed class MainWindow : Window
         ImGui.SameLine();
         UiHelpers.LinkButton("Discord", PluginInfo.DiscordUrl, "Open Discord community link.");
         UiHelpers.Wrapped(PluginInfo.DiscordFeedbackNote);
+        DrawRenderTrimCredits();
 
         UiHelpers.SectionHeader("Version");
         UiGui.TextUnformatted($"{PluginInfo.DisplayName} {version}");

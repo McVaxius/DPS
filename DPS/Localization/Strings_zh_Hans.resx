@@ -565,4 +565,84 @@
   <data xml:space="preserve" name="Status">
     <value>状态</value>
   </data>
+  <data name="K558" xml:space="preserve"><value>RenderTrim</value></data>
+  <data name="K559" xml:space="preserve"><value>仅用于当前 DPS／游戏进程。所有新选项和热键默认关闭。</value></data>
+  <data name="K560" xml:space="preserve"><value>启用 RenderTrim</value></data>
+  <data name="K561" xml:space="preserve"><value>RenderTrim 需要启用 DPS 总开关。除非明确开启启动时恢复，否则已保存的选择在重新加载后仍保持停用。</value></data>
+  <data name="K562" xml:space="preserve"><value>激活选中的精简项</value></data>
+  <data name="K563" xml:space="preserve"><value>还原所有精简项</value></data>
+  <data name="K564" xml:space="preserve"><value>还原会保留选择。“全部关闭”和“停止”会清除激活请求，并释放 DPS 自己做出的更改。</value></data>
+  <data name="K565" xml:space="preserve"><value>启动时恢复选中的精简项</value></data>
+  <data name="K566" xml:space="preserve"><value>启动时记录精简项可用性</value></data>
+  <data name="K567" xml:space="preserve"><value>主视图实现方式</value></data>
+  <data name="K568" xml:space="preserve"><value>BytePatch（指令）</value></data>
+  <data name="K569" xml:space="preserve"><value>DirectFieldWrite（初始化标志）</value></data>
+  <data name="K570" xml:space="preserve"><value>这些控件使用的原生操作与 DPS 旧版黑屏字节和冻结帧门控互相独立。</value></data>
+  <data name="K571" xml:space="preserve"><value>安全、权衡和高风险是上游标签。CPU、GPU 和内存节省是来源中的宣称，本客户端尚未测量。</value></data>
+  <data name="K572" xml:space="preserve"><value>上游标签：{0}</value></data>
+  <data name="K573" xml:space="preserve"><value>请求：{0}；实际：{1}</value></data>
+  <data name="K574" xml:space="preserve"><value>可用性：{0}</value></data>
+  <data name="K575" xml:space="preserve"><value>原因：{0}</value></data>
+  <data name="K576" xml:space="preserve"><value>原生详情：{0}</value></data>
+  <data name="K577" xml:space="preserve"><value>上次驱逐：{0}</value></data>
+  <data name="K578" xml:space="preserve"><value>RenderTrim 热键</value></data>
+  <data name="K579" xml:space="preserve"><value>RenderTrim 致谢</value></data>
+  <data name="K580" xml:space="preserve"><value>建议来自 Montigrom。参考 thesupporthero/Rendertrim 的行为独立实现。</value></data>
+  <data name="K581" xml:space="preserve"><value>Rendertrim 源代码</value></data>
+  <data name="K582" xml:space="preserve"><value>打开已审阅的 Rendertrim 仓库。</value></data>
+  <data name="K583" xml:space="preserve"><value>RenderTrim 总开关</value></data>
+  <data name="K584" xml:space="preserve"><value>跳过主视图渲染</value></data>
+  <data name="K585" xml:space="preserve"><value>跳过主视图调度。BytePatch 修改一条指令；DirectFieldWrite 每帧清零初始化标志，可能与游戏写入发生竞争。</value></data>
+  <data name="K586" xml:space="preserve"><value>跳过后期效果渲染</value></data>
+  <data name="K587" xml:space="preserve"><value>跳过后期效果调度检查。DirectFieldWrite 已涵盖此检查，因此在该模式下单独应用此补丁是重复操作。</value></data>
+  <data name="K588" xml:space="preserve"><value>角色动画更新</value></data>
+  <data name="K589" xml:space="preserve"><value>跳过骨骼动画处理。角色在视觉上冻结，被跳过的状态可能需要切换区域才能刷新。</value></data>
+  <data name="K590" xml:space="preserve"><value>模型渲染器</value></data>
+  <data name="K591" xml:space="preserve"><value>跳过模型渲染提交。模型可能消失或保留过时的视觉状态。</value></data>
+  <data name="K592" xml:space="preserve"><value>人形渲染器</value></data>
+  <data name="K593" xml:space="preserve"><value>跳过人形渲染准备。上游指出存在 CPU／GPU 权衡，受 GPU 限制的客户端可能变慢。</value></data>
+  <data name="K594" xml:space="preserve"><value>角色基础渲染</value></data>
+  <data name="K595" xml:space="preserve"><value>跳过角色基础渲染。角色外观可能在刷新前保持过时状态。</value></data>
+  <data name="K596" xml:space="preserve"><value>角色材质</value></data>
+  <data name="K597" xml:space="preserve"><value>跳过角色材质更新。材质和视觉效果可能在刷新前保持过时状态。</value></data>
+  <data name="K598" xml:space="preserve"><value>VFX 对象</value></data>
+  <data name="K599" xml:space="preserve"><value>跳过 VFX 变换和边界更新。效果可能保持过时状态，或需要切换区域才能刷新。</value></data>
+  <data name="K600" xml:space="preserve"><value>地形渲染器</value></data>
+  <data name="K601" xml:space="preserve"><value>跳过地形渲染调度。抑制启用期间，地形可能消失。</value></data>
+  <data name="K602" xml:space="preserve"><value>水体渲染器</value></data>
+  <data name="K603" xml:space="preserve"><value>跳过水体渲染通道。抑制启用期间，水体外观可能消失。</value></data>
+  <data name="K604" xml:space="preserve"><value>动态光源</value></data>
+  <data name="K605" xml:space="preserve"><value>跳过动态照明。照明和场景外观可能改变。</value></data>
+  <data name="K606" xml:space="preserve"><value>几何渲染器</value></data>
+  <data name="K607" xml:space="preserve"><value>跳过几何渲染调度。抑制启用期间，场景几何可能消失。</value></data>
+  <data name="K608" xml:space="preserve"><value>相机矩阵</value></data>
+  <data name="K609" xml:space="preserve"><value>跳过相机矩阵。可见性、距离和锥体计算可能出错。</value></data>
+  <data name="K610" xml:space="preserve"><value>工作集页面驱逐</value></data>
+  <data name="K611" xml:space="preserve"><value>立即驱逐页面，之后每六十秒执行一次。内存分配仍然保留，页面重新载入可能造成卡顿。关闭此项不能撤销驱逐。</value></data>
+  <data name="K612" xml:space="preserve"><value>安全</value></data>
+  <data name="K613" xml:space="preserve"><value>权衡</value></data>
+  <data name="K614" xml:space="preserve"><value>高风险</value></data>
+  <data name="K615" xml:space="preserve"><value>原生操作失败。</value></data>
+  <data name="K616" xml:space="preserve"><value>尚未验证此客户端上原生函数的准确契约。</value></data>
+  <data name="K617" xml:space="preserve"><value>外部 RenderTrim 已加载。使用 DPS 精简项前请将其禁用。</value></data>
+  <data name="K618" xml:space="preserve"><value>旧版黑屏模式控制渲染时不可用。</value></data>
+  <data name="K619" xml:space="preserve"><value>激活时检查。</value></data>
+  <data name="K620" xml:space="preserve"><value>DPS 自有更改的清理尚未完成。</value></data>
+  <data name="K621" xml:space="preserve"><value>已选择，未激活</value></data>
+  <data name="K622" xml:space="preserve"><value>等待启用 DPS 总开关。</value></data>
+  <data name="K623" xml:space="preserve"><value>为正常渲染而暂停。</value></data>
+  <data name="K624" xml:space="preserve"><value>DPS 管理的原生操作被外部更改。</value></data>
+  <data name="K625" xml:space="preserve"><value>当前渲染管理器不可用。</value></data>
+  <data name="K626" xml:space="preserve"><value>初始化标志已为零；DPS 未接管此字段。</value></data>
+  <data name="K627" xml:space="preserve"><value>签名与文档中的场景方法不匹配。</value></data>
+  <data name="K628" xml:space="preserve"><value>DPS 管理字段期间，渲染管理器发生了变化。</value></data>
+  <data name="K629" xml:space="preserve"><value>DPS 管理的指令被外部更改；DPS 未将其覆盖。</value></data>
+  <data name="K630" xml:space="preserve"><value>当前调度比较不兼容。</value></data>
+  <data name="K631" xml:space="preserve"><value>原生指令位于游戏代码段之外。</value></data>
+  <data name="K632" xml:space="preserve"><value>原生字节已被更改或不兼容。</value></data>
+  <data name="K633" xml:space="preserve"><value>EmptyWorkingSet 失败。</value></data>
+  <data name="K634" xml:space="preserve"><value>VirtualProtect 失败。</value></data>
+  <data name="K635" xml:space="preserve"><value>FlushInstructionCache 失败。</value></data>
+  <data name="K636" xml:space="preserve"><value>恢复指令保护失败。</value></data>
+  <data name="K637" xml:space="preserve"><value>无法完成原生操作。</value></data>
 </root>

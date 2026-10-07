@@ -565,4 +565,84 @@
   <data xml:space="preserve" name="Status">
     <value>Estado</value>
   </data>
+  <data name="K558" xml:space="preserve"><value>RenderTrim</value></data>
+  <data name="K559" xml:space="preserve"><value>Solo para este proceso de DPS/juego. Todas las opciones y teclas nuevas empiezan desactivadas.</value></data>
+  <data name="K560" xml:space="preserve"><value>Activar RenderTrim</value></data>
+  <data name="K561" xml:space="preserve"><value>RenderTrim requiere la activación general de DPS. Las selecciones guardadas permanecen inactivas tras recargar, salvo que esté activada la restauración al iniciar.</value></data>
+  <data name="K562" xml:space="preserve"><value>Activar los ajustes seleccionados</value></data>
+  <data name="K563" xml:space="preserve"><value>Revertir todos los ajustes</value></data>
+  <data name="K564" xml:space="preserve"><value>Revertir conserva las selecciones. Desactivar todo y Detener borran las solicitudes de activación y liberan los cambios propios de DPS.</value></data>
+  <data name="K565" xml:space="preserve"><value>Restaurar los ajustes seleccionados al iniciar</value></data>
+  <data name="K566" xml:space="preserve"><value>Registrar la disponibilidad de ajustes al iniciar</value></data>
+  <data name="K567" xml:space="preserve"><value>Implementación de la vista principal</value></data>
+  <data name="K568" xml:space="preserve"><value>BytePatch (instrucción)</value></data>
+  <data name="K569" xml:space="preserve"><value>DirectFieldWrite (indicadores de inicialización)</value></data>
+  <data name="K570" xml:space="preserve"><value>Estos controles usan operaciones nativas distintas del byte de pantalla negra antiguo y del bloqueo de imagen congelada de DPS.</value></data>
+  <data name="K571" xml:space="preserve"><value>Seguro, Compromiso y Arriesgado son etiquetas del proyecto original. El ahorro de CPU, GPU y memoria son afirmaciones de esa fuente; este cliente no se ha medido.</value></data>
+  <data name="K572" xml:space="preserve"><value>Etiqueta del proyecto original: {0}</value></data>
+  <data name="K573" xml:space="preserve"><value>Solicitado: {0}; real: {1}</value></data>
+  <data name="K574" xml:space="preserve"><value>Disponibilidad: {0}</value></data>
+  <data name="K575" xml:space="preserve"><value>Motivo: {0}</value></data>
+  <data name="K576" xml:space="preserve"><value>Detalle nativo: {0}</value></data>
+  <data name="K577" xml:space="preserve"><value>Última expulsión: {0}</value></data>
+  <data name="K578" xml:space="preserve"><value>Teclas de RenderTrim</value></data>
+  <data name="K579" xml:space="preserve"><value>Créditos de RenderTrim</value></data>
+  <data name="K580" xml:space="preserve"><value>Sugerencia de Montigrom. Comportamiento implementado de forma independiente, inspirado en thesupporthero/Rendertrim.</value></data>
+  <data name="K581" xml:space="preserve"><value>Código fuente de Rendertrim</value></data>
+  <data name="K582" xml:space="preserve"><value>Abrir el repositorio de Rendertrim revisado.</value></data>
+  <data name="K583" xml:space="preserve"><value>Activación general de RenderTrim</value></data>
+  <data name="K584" xml:space="preserve"><value>Omitir el renderizado de la vista principal</value></data>
+  <data name="K585" xml:space="preserve"><value>Omite el procesamiento de la vista principal. BytePatch cambia una instrucción; DirectFieldWrite borra los indicadores de inicialización cada fotograma y puede competir con las escrituras del juego.</value></data>
+  <data name="K586" xml:space="preserve"><value>Omitir el renderizado de efectos posteriores</value></data>
+  <data name="K587" xml:space="preserve"><value>Omite la comprobación de procesamiento de efectos posteriores. DirectFieldWrite ya cubre esa comprobación, así que este parche separado es redundante en ese modo.</value></data>
+  <data name="K588" xml:space="preserve"><value>Actualizaciones de animaciones de personajes</value></data>
+  <data name="K589" xml:space="preserve"><value>Omite la animación del esqueleto. Los personajes se congelan visualmente; el estado omitido puede necesitar un cambio de zona para actualizarse.</value></data>
+  <data name="K590" xml:space="preserve"><value>Renderizador de modelos</value></data>
+  <data name="K591" xml:space="preserve"><value>Omite el envío de modelos para renderizar. Los modelos pueden desaparecer o conservar un estado visual obsoleto.</value></data>
+  <data name="K592" xml:space="preserve"><value>Renderizador de humanoides</value></data>
+  <data name="K593" xml:space="preserve"><value>Omite la preparación del renderizado de humanoides. El proyecto original indica un compromiso entre CPU y GPU; los clientes limitados por GPU pueden ralentizarse.</value></data>
+  <data name="K594" xml:space="preserve"><value>Base de personajes</value></data>
+  <data name="K595" xml:space="preserve"><value>Omite el renderizado base de personajes. Su apariencia puede quedar obsoleta hasta que se actualice.</value></data>
+  <data name="K596" xml:space="preserve"><value>Materiales de personajes</value></data>
+  <data name="K597" xml:space="preserve"><value>Omite las actualizaciones de materiales de personajes. Los materiales y efectos visuales pueden quedar obsoletos hasta que se actualicen.</value></data>
+  <data name="K598" xml:space="preserve"><value>Objetos VFX</value></data>
+  <data name="K599" xml:space="preserve"><value>Omite las actualizaciones de transformaciones y límites de VFX. Los efectos pueden quedar obsoletos o necesitar un cambio de zona para actualizarse.</value></data>
+  <data name="K600" xml:space="preserve"><value>Renderizador de terreno</value></data>
+  <data name="K601" xml:space="preserve"><value>Omite el procesamiento del renderizado de terreno. El terreno puede desaparecer mientras la supresión esté activa.</value></data>
+  <data name="K602" xml:space="preserve"><value>Renderizador de agua</value></data>
+  <data name="K603" xml:space="preserve"><value>Omite las pasadas de renderizado de agua. El agua puede desaparecer mientras la supresión esté activa.</value></data>
+  <data name="K604" xml:space="preserve"><value>Luces dinámicas</value></data>
+  <data name="K605" xml:space="preserve"><value>Omite la iluminación dinámica. La iluminación y la apariencia de la escena pueden cambiar.</value></data>
+  <data name="K606" xml:space="preserve"><value>Renderizador de geometría</value></data>
+  <data name="K607" xml:space="preserve"><value>Omite el procesamiento del renderizado de geometría. La geometría de la escena puede desaparecer mientras la supresión esté activa.</value></data>
+  <data name="K608" xml:space="preserve"><value>Matrices de cámara</value></data>
+  <data name="K609" xml:space="preserve"><value>Omite las matrices de cámara. Los cálculos de visibilidad, distancia y cono pueden ser incorrectos.</value></data>
+  <data name="K610" xml:space="preserve"><value>Expulsión del conjunto de trabajo</value></data>
+  <data name="K611" xml:space="preserve"><value>Expulsa páginas de memoria de inmediato y cada sesenta segundos. Las asignaciones permanecen; recuperar páginas puede causar tirones. Desactivarlo no deshace una expulsión.</value></data>
+  <data name="K612" xml:space="preserve"><value>Seguro</value></data>
+  <data name="K613" xml:space="preserve"><value>Compromiso</value></data>
+  <data name="K614" xml:space="preserve"><value>Arriesgado</value></data>
+  <data name="K615" xml:space="preserve"><value>La operación nativa falló.</value></data>
+  <data name="K616" xml:space="preserve"><value>El contrato exacto de la función nativa no está verificado para este cliente.</value></data>
+  <data name="K617" xml:space="preserve"><value>RenderTrim externo está cargado. Desactívalo antes de usar los ajustes de DPS.</value></data>
+  <data name="K618" xml:space="preserve"><value>No disponible mientras el modo antiguo de pantalla negra controle el renderizado.</value></data>
+  <data name="K619" xml:space="preserve"><value>Se comprueba al activar.</value></data>
+  <data name="K620" xml:space="preserve"><value>La limpieza de cambios propios está pendiente.</value></data>
+  <data name="K621" xml:space="preserve"><value>Seleccionado, inactivo</value></data>
+  <data name="K622" xml:space="preserve"><value>Esperando la activación general de DPS.</value></data>
+  <data name="K623" xml:space="preserve"><value>En pausa para el renderizado normal.</value></data>
+  <data name="K624" xml:space="preserve"><value>La operación nativa propia se modificó externamente.</value></data>
+  <data name="K625" xml:space="preserve"><value>El gestor de renderizado actual no está disponible.</value></data>
+  <data name="K626" xml:space="preserve"><value>Los indicadores de inicialización ya son cero; DPS no tomó el control del campo.</value></data>
+  <data name="K627" xml:space="preserve"><value>La firma no coincide con el método de escena documentado.</value></data>
+  <data name="K628" xml:space="preserve"><value>El gestor de renderizado cambió mientras DPS controlaba el campo.</value></data>
+  <data name="K629" xml:space="preserve"><value>La instrucción propia se modificó externamente; DPS no la sobrescribió.</value></data>
+  <data name="K630" xml:space="preserve"><value>La comparación de procesamiento actual es incompatible.</value></data>
+  <data name="K631" xml:space="preserve"><value>La instrucción nativa está fuera de la sección de código del juego.</value></data>
+  <data name="K632" xml:space="preserve"><value>Los bytes nativos ya están modificados o son incompatibles.</value></data>
+  <data name="K633" xml:space="preserve"><value>EmptyWorkingSet falló.</value></data>
+  <data name="K634" xml:space="preserve"><value>VirtualProtect falló.</value></data>
+  <data name="K635" xml:space="preserve"><value>FlushInstructionCache falló.</value></data>
+  <data name="K636" xml:space="preserve"><value>No se pudo restaurar la protección de la instrucción.</value></data>
+  <data name="K637" xml:space="preserve"><value>No se pudo completar la operación nativa.</value></data>
 </root>
