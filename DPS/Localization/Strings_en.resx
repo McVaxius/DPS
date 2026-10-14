@@ -645,4 +645,16 @@
   <data name="K635" xml:space="preserve"><value>FlushInstructionCache failed.</value></data>
   <data name="K636" xml:space="preserve"><value>Restoring instruction protection failed.</value></data>
   <data name="K637" xml:space="preserve"><value>The native operation could not be completed.</value></data>
+  <data name="I560_0" xml:space="preserve"><value>Appearance</value></data>
+  <data name="I560_1" xml:space="preserve"><value>Theme and language</value></data>
+  <data name="I560_2" xml:space="preserve"><value>Titlebar</value></data>
+  <data name="I560_3" xml:space="preserve"><value>Show titlebar status</value></data>
+  <data name="I560_4" xml:space="preserve"><value>Detailed titlebar status</value></data>
+  <data name="I560_5" xml:space="preserve"><value>Transparency</value></data>
+  <data name="I560_6" xml:space="preserve"><value>Window opacity</value></data>
+  <data name="I560_7" xml:space="preserve"><value>FG: {0} | BG: {1} | Crowd: {2}</value></data>
+  <data name="I560_8" xml:space="preserve"><value>Rendering off</value></data>
+  <data name="I560_9" xml:space="preserve"><value>Rendering on</value></data>
+  <data name="I560_10" xml:space="preserve"><value>{0} hidden</value></data>
+  <data name="I560_11" xml:space="preserve"><value>RenderTrim requested: {0}</value></data>
 </root>

@@ -6,9 +6,9 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <Version>2.0.0.5</Version>
-    <FileVersion>2.0.0.5</FileVersion>
-    <AssemblyVersion>2.0.0.5</AssemblyVersion>
+    <Version>2.0.0.6</Version>
+    <FileVersion>2.0.0.6</FileVersion>
+    <AssemblyVersion>2.0.0.6</AssemblyVersion>
     <PackageLicenseExpression>AGPL-3.0-or-later</PackageLicenseExpression>
     <IsPackable>false</IsPackable>
     <RootNamespace>DPS</RootNamespace>
@@ -19,10 +19,12 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\aethertekUI\src\AethertekUI\AethertekUI.csproj" />
+    <ProjectReference Include="..\..\aethertekUI\src\AethertekUI.Dalamud\AethertekUI.Dalamud.csproj" />
   </ItemGroup>
   <ItemGroup>
     <None Include="DPS.json" CopyToOutputDirectory="PreserveNewest" />
     <None Include="images\icon.png" CopyToOutputDirectory="PreserveNewest" />
+    <EmbeddedResource Include="images\icon.png" LogicalName="DPS.images.icon.png" />
     <None Include="Resources\**" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 </Project>

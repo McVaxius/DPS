@@ -645,4 +645,16 @@
   <data name="K635" xml:space="preserve"><value>FlushInstructionCache 失败。</value></data>
   <data name="K636" xml:space="preserve"><value>恢复指令保护失败。</value></data>
   <data name="K637" xml:space="preserve"><value>无法完成原生操作。</value></data>
+  <data name="I560_0" xml:space="preserve"><value>外观</value></data>
+  <data name="I560_1" xml:space="preserve"><value>主题与语言</value></data>
+  <data name="I560_2" xml:space="preserve"><value>标题栏</value></data>
+  <data name="I560_3" xml:space="preserve"><value>在标题栏显示状态</value></data>
+  <data name="I560_4" xml:space="preserve"><value>在标题栏显示详细状态</value></data>
+  <data name="I560_5" xml:space="preserve"><value>透明度</value></data>
+  <data name="I560_6" xml:space="preserve"><value>窗口不透明度</value></data>
+  <data name="I560_7" xml:space="preserve"><value>前台：{0} | 后台：{1} | 人群：{2}</value></data>
+  <data name="I560_8" xml:space="preserve"><value>渲染关闭</value></data>
+  <data name="I560_9" xml:space="preserve"><value>渲染开启</value></data>
+  <data name="I560_10" xml:space="preserve"><value>已隐藏 {0} 个</value></data>
+  <data name="I560_11" xml:space="preserve"><value>RenderTrim 请求：{0}</value></data>
 </root>

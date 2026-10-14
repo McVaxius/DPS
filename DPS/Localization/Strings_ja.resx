@@ -645,4 +645,16 @@
   <data name="K635" xml:space="preserve"><value>FlushInstructionCacheに失敗しました。</value></data>
   <data name="K636" xml:space="preserve"><value>命令の保護設定の復元に失敗しました。</value></data>
   <data name="K637" xml:space="preserve"><value>ネイティブ操作を完了できませんでした。</value></data>
+  <data name="I560_0" xml:space="preserve"><value>外観</value></data>
+  <data name="I560_1" xml:space="preserve"><value>テーマと言語</value></data>
+  <data name="I560_2" xml:space="preserve"><value>タイトルバー</value></data>
+  <data name="I560_3" xml:space="preserve"><value>タイトルバーに状態を表示</value></data>
+  <data name="I560_4" xml:space="preserve"><value>タイトルバーに詳細な状態を表示</value></data>
+  <data name="I560_5" xml:space="preserve"><value>透明度</value></data>
+  <data name="I560_6" xml:space="preserve"><value>ウィンドウの不透明度</value></data>
+  <data name="I560_7" xml:space="preserve"><value>前面: {0} | 背面: {1} | 周囲: {2}</value></data>
+  <data name="I560_8" xml:space="preserve"><value>描画オフ</value></data>
+  <data name="I560_9" xml:space="preserve"><value>描画オン</value></data>
+  <data name="I560_10" xml:space="preserve"><value>非表示: {0}</value></data>
+  <data name="I560_11" xml:space="preserve"><value>RenderTrim の要求: {0}</value></data>
 </root>

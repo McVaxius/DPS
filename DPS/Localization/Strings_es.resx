@@ -645,4 +645,16 @@
   <data name="K635" xml:space="preserve"><value>FlushInstructionCache falló.</value></data>
   <data name="K636" xml:space="preserve"><value>No se pudo restaurar la protección de la instrucción.</value></data>
   <data name="K637" xml:space="preserve"><value>No se pudo completar la operación nativa.</value></data>
+  <data name="I560_0" xml:space="preserve"><value>Apariencia</value></data>
+  <data name="I560_1" xml:space="preserve"><value>Tema e idioma</value></data>
+  <data name="I560_2" xml:space="preserve"><value>Barra de título</value></data>
+  <data name="I560_3" xml:space="preserve"><value>Mostrar estado en la barra de título</value></data>
+  <data name="I560_4" xml:space="preserve"><value>Estado detallado en la barra de título</value></data>
+  <data name="I560_5" xml:space="preserve"><value>Transparencia</value></data>
+  <data name="I560_6" xml:space="preserve"><value>Opacidad de la ventana</value></data>
+  <data name="I560_7" xml:space="preserve"><value>Primer plano: {0} | Segundo plano: {1} | Multitud: {2}</value></data>
+  <data name="I560_8" xml:space="preserve"><value>Renderizado desactivado</value></data>
+  <data name="I560_9" xml:space="preserve"><value>Renderizado activado</value></data>
+  <data name="I560_10" xml:space="preserve"><value>{0} ocultos</value></data>
+  <data name="I560_11" xml:space="preserve"><value>RenderTrim solicitado: {0}</value></data>
 </root>

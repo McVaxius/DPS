@@ -24,6 +24,9 @@ public class Configuration : IPluginConfiguration
     public bool UiCompact { get; set; }
     public string UiLanguage { get; set; } = "en";
     public uint UiAccentRgb { get; set; } = 0x00BCD4;
+    public bool UiShowTitlebarStatus { get; set; } = true;
+    public bool UiDetailedTitlebarStatus { get; set; } = true;
+    public float UiOpacity { get; set; } = 1f;
     public bool PluginEnabled { get; set; }
     public bool DtrBarEnabled { get; set; } = true;
     public int DtrBarMode { get; set; } = 1;

@@ -1,6 +1,6 @@
 using System.Numerics;
-using System.Reflection;
 using AethertekUI;
+using AethertekUI.Dalamud;
 using Dalamud.Bindings.ImGui;
 using Dalamud.Interface.Windowing;
 using DPS.Services;
@@ -10,6 +10,7 @@ namespace DPS.Windows;
 public sealed class AdvancedWindow : Window
 {
     private readonly Plugin plugin;
+    private readonly MaterialWindowMotion titlebarMotion = new();
 
     public AdvancedWindow(Plugin plugin)
         : base($"{PluginInfo.DisplayName} Advanced##DPSAdvanced")
@@ -23,18 +24,18 @@ public sealed class AdvancedWindow : Window
         };
         Size = new Vector2(500f, 920f);
         SizeCondition = ImGuiCond.FirstUseEver;
+        plugin.Appearance.Register(this, advanced: true);
     }
+
+    public override void PreDraw() => titlebarMotion.Prepare(this, reducedMotion: true, roundedCorners: false);
+
+    public override void PostDraw() => titlebarMotion.Restore(this);
 
     public override void Draw()
     {
-        UiGui.Title($"{PluginInfo.DisplayName} Advanced",UiText.T($"{PluginInfo.DisplayName} Advanced")+" v"+Assembly.GetExecutingAssembly().GetName().Version);
+        titlebarMotion.DrawChrome();
         var cfg = plugin.Configuration;
         var originalIdRoot = ImGui.GetID("");
-        var compact = cfg.UiCompact;
-        if (UiGui.Checkbox("C##CompactMode", ref compact)) { cfg.UiCompact = compact; cfg.Save(); }
-        UiHelpers.Tooltip("Compact mode");
-        ImGui.SameLine();
-        plugin.Appearance.DrawSelector();
         UiHelpers.Wrapped("Automatic rendering exceptions are opt-in. Changes save and apply immediately.");
 
         DpsPresentation.Panel(() =>

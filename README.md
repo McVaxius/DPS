@@ -15,8 +15,12 @@ An experimental Dalamud utility for weak machines. Hide non-party players, pets,
 - Display-change recovery and saved game-window position, display, and size controls.
 - Guided setup for the All Off hotkey and exact window X/Y placement.
 
-The main header and Advanced window share a language selector, theme colour
-swatch, and **C** compact-mode checkbox. English, German, French, Spanish,
+The main and Advanced titlebars have Language, Compact, Transparency and Color
+shortcuts beside the packaged DPS icon. The main window's **Appearance** tab
+also contains these settings and the **C** compact-mode checkbox. Status and
+detailed status are independently saved, both on by default; turning status
+off retains the detailed choice. Window opacity defaults to 100%.
+English, German, French, Spanish,
 Italian, Russian, Japanese, Korean and Simplified Chinese are available across
 DPS controls, diagnostics and guided setup. Teal, blue, pink and custom RGB
 colours apply to the interface; rendering and recovery status colours retain

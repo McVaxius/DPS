@@ -2,6 +2,7 @@ using System.Diagnostics;
 using System.Numerics;
 using System.Reflection;
 using AethertekUI;
+using AethertekUI.Dalamud;
 using Dalamud.Bindings.ImGui;
 using Dalamud.Game.ClientState.Keys;
 using Dalamud.Interface.Windowing;
@@ -56,6 +57,7 @@ public sealed class MainWindow : Window
     private const string WindowPositionSetupPopup = "Window Position Setup##DpsWindowPositionSetup";
 
     private readonly Plugin plugin;
+    private readonly MaterialWindowMotion titlebarMotion = new();
     private PendingPlacement pendingPlacement;
     private HotkeyTarget? hotkeyCaptureTarget;
     private bool selectHotkeysTab;
@@ -89,6 +91,7 @@ public sealed class MainWindow : Window
         };
         Size = new Vector2(994f, 920f);
         SizeCondition = ImGuiCond.FirstUseEver;
+        plugin.Appearance.Register(this);
     }
 
     public void QueueTopLeftPlacement()
@@ -109,10 +112,14 @@ public sealed class MainWindow : Window
         IsOpen = true;
     }
 
+    public override void PreDraw() => titlebarMotion.Prepare(this, reducedMotion: true, roundedCorners: false);
+
+    public override void PostDraw() => titlebarMotion.Restore(this);
+
     public override void Draw()
     {
+        titlebarMotion.DrawChrome();
         ApplyPendingPlacement();
-        UiGui.Title(PluginInfo.DisplayName,UiText.T(PluginInfo.DisplayName)+" v"+Assembly.GetExecutingAssembly().GetName().Version);
         DrawTopBar();
 
         if (ImGui.BeginTabBar("##DpsMainTabs", ImGuiTabBarFlags.FittingPolicyScroll))
@@ -164,6 +171,12 @@ public sealed class MainWindow : Window
             if (UiGui.BeginTabItem("Diagnostics"))
             {
                 DrawDiagnosticsTab();
+                ImGui.EndTabItem();
+            }
+
+            if (UiGui.BeginTabItem("Appearance"))
+            {
+                plugin.Appearance.DrawSettings();
                 ImGui.EndTabItem();
             }
 
@@ -229,11 +242,6 @@ public sealed class MainWindow : Window
         ImGui.SetCursorScreenPos(selectorFits ? new(right - 276 * scale, origin.Y + 8 * scale)
             : new(origin.X, Math.Max(titleBottom + 10 * scale, origin.Y + (brandSize + 12) * scale)));
         ImGui.BeginGroup();
-        var compact = cfg.UiCompact;
-        if (UiGui.Checkbox("C##CompactMode", ref compact)) { cfg.UiCompact = compact; cfg.Save(); }
-        UiHelpers.Tooltip("Compact mode");
-        ImGui.SameLine();
-        plugin.Appearance.DrawSelector();
         UiHelpers.LinkButton("Ko-fi", PluginInfo.SupportUrl, "Open Ko-fi support page.");
         ButtonFlow("Discord", 70);
         UiHelpers.LinkButton("Discord", PluginInfo.DiscordUrl, "Open Discord community link.");

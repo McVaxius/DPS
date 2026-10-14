@@ -645,4 +645,16 @@
   <data name="K635" xml:space="preserve"><value>FlushInstructionCache에 실패했습니다.</value></data>
   <data name="K636" xml:space="preserve"><value>명령 보호 설정 복원에 실패했습니다.</value></data>
   <data name="K637" xml:space="preserve"><value>네이티브 작업을 완료하지 못했습니다.</value></data>
+  <data name="I560_0" xml:space="preserve"><value>모양</value></data>
+  <data name="I560_1" xml:space="preserve"><value>테마 및 언어</value></data>
+  <data name="I560_2" xml:space="preserve"><value>제목 표시줄</value></data>
+  <data name="I560_3" xml:space="preserve"><value>제목 표시줄에 상태 표시</value></data>
+  <data name="I560_4" xml:space="preserve"><value>제목 표시줄에 자세한 상태 표시</value></data>
+  <data name="I560_5" xml:space="preserve"><value>투명도</value></data>
+  <data name="I560_6" xml:space="preserve"><value>창 불투명도</value></data>
+  <data name="I560_7" xml:space="preserve"><value>전경: {0} | 배경: {1} | 군중: {2}</value></data>
+  <data name="I560_8" xml:space="preserve"><value>렌더링 꺼짐</value></data>
+  <data name="I560_9" xml:space="preserve"><value>렌더링 켜짐</value></data>
+  <data name="I560_10" xml:space="preserve"><value>{0}개 숨김</value></data>
+  <data name="I560_11" xml:space="preserve"><value>RenderTrim 요청: {0}</value></data>
 </root>

@@ -39,6 +39,7 @@ public sealed class Plugin : IDalamudPlugin
     [PluginService] internal static IDtrBar DtrBar { get; private set; } = null!;
     [PluginService] internal static IKeyState KeyState { get; private set; } = null!;
     [PluginService] internal static IPluginLog Log { get; private set; } = null!;
+    [PluginService] internal static ITextureProvider TextureProvider { get; private set; } = null!;
     [PluginService] internal static IGameInteropProvider GameInteropProvider { get; private set; } = null!;
     [PluginService] internal static ISigScanner SigScanner { get; private set; } = null!;
     [PluginService] internal static IGameGui GameGui { get; private set; } = null!;
@@ -121,7 +122,7 @@ public sealed class Plugin : IDalamudPlugin
         SetupDtrBar();
         DisplayRecoveryService.LogStartupConfig(Configuration);
         UpdateDtrBar();
-        Log.Information("[DPS] Plugin loaded.");
+        Log.Information("[DPS] Plugin loaded. Build marker: devhub-I560-titlebars-20261014-01.");
     }
 
     private void MigrateConfiguration()

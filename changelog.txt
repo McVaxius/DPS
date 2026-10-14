@@ -1,3 +1,9 @@
+Unreleased - Standard titlebar controls
+
+- Added the packaged DPS icon and Language, Compact, Transparency and Color shortcuts to both native window titlebars. Appearance settings retain their existing save path; rendering actions and body cards keep their behavior.
+- Added an Appearance tab with default-on status and detailed-status choices, plus window opacity. Titlebar summaries use existing rendering/crowd state; disabling status retains the detailed preference. Existing configurations keep their settings and start fully opaque.
+- Localized the new controls in all nine existing catalogs. Preserved native window identities, sizes, release version and render/performance logic. Client interaction and visual acceptance remain pending.
+
 Unreleased - RenderTrim
 
 - Added a local RenderTrim tab with the full fourteen-control catalogue, requested/actual status, availability and failure reasons, individual selections and configurable master/option/revert hotkeys. All new preferences and startup behavior begin off; every new binding begins disabled and unbound. Saved selections activate on reload only when startup restoration is explicitly enabled.

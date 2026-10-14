@@ -645,4 +645,16 @@
   <data name="K635" xml:space="preserve"><value>Échec de FlushInstructionCache.</value></data>
   <data name="K636" xml:space="preserve"><value>Échec de la restauration de la protection de l&apos;instruction.</value></data>
   <data name="K637" xml:space="preserve"><value>L&apos;opération native n&apos;a pas pu être terminée.</value></data>
+  <data name="I560_0" xml:space="preserve"><value>Apparence</value></data>
+  <data name="I560_1" xml:space="preserve"><value>Thème et langue</value></data>
+  <data name="I560_2" xml:space="preserve"><value>Barre de titre</value></data>
+  <data name="I560_3" xml:space="preserve"><value>Afficher le statut dans la barre de titre</value></data>
+  <data name="I560_4" xml:space="preserve"><value>Statut détaillé dans la barre de titre</value></data>
+  <data name="I560_5" xml:space="preserve"><value>Transparence</value></data>
+  <data name="I560_6" xml:space="preserve"><value>Opacité de la fenêtre</value></data>
+  <data name="I560_7" xml:space="preserve"><value>Avant-plan : {0} | Arrière-plan : {1} | Foule : {2}</value></data>
+  <data name="I560_8" xml:space="preserve"><value>Rendu désactivé</value></data>
+  <data name="I560_9" xml:space="preserve"><value>Rendu activé</value></data>
+  <data name="I560_10" xml:space="preserve"><value>{0} masqués</value></data>
+  <data name="I560_11" xml:space="preserve"><value>RenderTrim demandé : {0}</value></data>
 </root>

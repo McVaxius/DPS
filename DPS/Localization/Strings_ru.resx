@@ -645,4 +645,16 @@
   <data name="K635" xml:space="preserve"><value>Ошибка FlushInstructionCache.</value></data>
   <data name="K636" xml:space="preserve"><value>Не удалось восстановить защиту инструкции.</value></data>
   <data name="K637" xml:space="preserve"><value>Не удалось завершить нативную операцию.</value></data>
+  <data name="I560_0" xml:space="preserve"><value>Оформление</value></data>
+  <data name="I560_1" xml:space="preserve"><value>Тема и язык</value></data>
+  <data name="I560_2" xml:space="preserve"><value>Заголовок окна</value></data>
+  <data name="I560_3" xml:space="preserve"><value>Показывать состояние в заголовке</value></data>
+  <data name="I560_4" xml:space="preserve"><value>Подробное состояние в заголовке</value></data>
+  <data name="I560_5" xml:space="preserve"><value>Прозрачность</value></data>
+  <data name="I560_6" xml:space="preserve"><value>Непрозрачность окна</value></data>
+  <data name="I560_7" xml:space="preserve"><value>Передний план: {0} | Фон: {1} | Окружение: {2}</value></data>
+  <data name="I560_8" xml:space="preserve"><value>Отрисовка выключена</value></data>
+  <data name="I560_9" xml:space="preserve"><value>Отрисовка включена</value></data>
+  <data name="I560_10" xml:space="preserve"><value>Скрыто: {0}</value></data>
+  <data name="I560_11" xml:space="preserve"><value>RenderTrim запрошен: {0}</value></data>
 </root>
